@@ -3,7 +3,7 @@ package ui;
 import flixel.graphics.frames.FlxAtlasFrames;
 
 class AtlasMenuItem extends MenuItem
-{	
+{
 	var atlas:FlxAtlasFrames;
 
 	public function new(?x:Float = 0, ?y:Float = 0, name:String, atlas:FlxAtlasFrames, ?callback:Dynamic)

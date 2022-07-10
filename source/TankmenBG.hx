@@ -40,7 +40,7 @@ class TankmenBG extends FlxSprite
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		
+
 		if (x >= FlxG.width * 1.2 || x <= FlxG.width * -0.5)
 		{
 			visible = false;
@@ -63,7 +63,7 @@ class TankmenBG extends FlxSprite
 				x = wackyShit - (Conductor.songPosition - strumTime) * tankSpeed;
 			}
 		}
-		
+
 		if (Conductor.songPosition > strumTime)
 		{
 			animation.play('shot');
@@ -73,7 +73,7 @@ class TankmenBG extends FlxSprite
 				offset.x = 300;
 			}
 		}
-		
+
 		if (animation.curAnim.name == 'shot' && animation.curAnim.curFrame >= animation.curAnim.frames.length - 1)
 			kill();
 	}

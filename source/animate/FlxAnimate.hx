@@ -33,7 +33,7 @@ class FlxAnimate extends FlxSymbol
 	 *                        Or you can just pass a path to the JSON file in the assets directory.
 	 * @return  Newly created `FlxAtlasFrames` collection.
 	 */
-	 public static function fromAnimate(Source:FlxGraphicAsset, Description:String):FlxAtlasFrames
+	public static function fromAnimate(Source:FlxGraphicAsset, Description:String):FlxAtlasFrames
 	{
 		var graphic:FlxGraphic = FlxG.bitmap.add(Source);
 		if (graphic == null)
@@ -76,7 +76,7 @@ class FlxAnimate extends FlxSymbol
 		super.draw();
 
 		renderFrame(coolParse.AN.TL, coolParse, true);
-		
+
 		if (FlxG.keys.justPressed.E)
 		{
 			for (key in FlxSymbol.nestedShit.keys())
@@ -102,7 +102,7 @@ class FlxAnimate extends FlxSymbol
 		if (playingAnim)
 		{
 			frameTickTypeShit += elapsed;
-			
+
 			if (frameTickTypeShit >= 1 / 24)
 			{
 				changeFrame(1);

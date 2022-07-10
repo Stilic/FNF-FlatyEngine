@@ -11,18 +11,19 @@ class FlxSymbol extends FlxSprite
 	var hasFrameByPass:Bool;
 	var symbolAtlasShit:Map<String, String> = new Map();
 	var symbolMap:Map<String, Animation> = new Map();
+
 	public var drawQueue:Array<Dynamic> = [];
 	public var daFrame:Int;
 	public var nestDepth:Int;
 	public var transformMatrix:Matrix = new Matrix();
-	
+
 	var _skewMatrix = new Matrix();
-	
+
 	public var matrixExposed:Bool;
 	public var coolParse:Parsed;
 
 	public static var nestedShit:Map<Int, Array<FlxSymbol>> = new Map<Int, Array<FlxSymbol>>();
-	
+
 	public function new(x:Float, y:Float, coolParsed:Parsed)
 	{
 		super(x, y);
@@ -55,21 +56,21 @@ class FlxSymbol extends FlxSprite
 						{
 							var m3d = element.ASI.M3D;
 							var dumbassMatrix:Matrix = new Matrix(m3d[0], m3d[1], m3d[4], m3d[5], m3d[12], m3d[13]);
-	
+
 							var spr:FlxSymbol = new FlxSymbol(0, 0, coolParsed);
 							matrixExposed = true;
 							spr.frames = frames;
 							spr.frame = spr.frames.getByName(element.ASI.N);
-	
+
 							dumbassMatrix.concat(_matrix);
 							spr.matrixExposed = true;
 							spr.transformMatrix.concat(dumbassMatrix);
-	
+
 							spr.origin.set();
 
 							spr.origin.x += origin.x;
 							spr.origin.y += origin.y;
-							
+
 							spr.antialiasing = true;
 							spr.draw();
 						}
@@ -78,8 +79,9 @@ class FlxSymbol extends FlxSprite
 							var nestedSymbol = symbolMap.get(element.SI.SN);
 							var nestedShit:FlxSymbol = new FlxSymbol(0, 0, coolParse);
 							nestedShit.frames = frames;
-	
-							var swagMatrix:FlxMatrix = new FlxMatrix(element.SI.M3D[0], element.SI.M3D[1], element.SI.M3D[4], element.SI.M3D[5], element.SI.M3D[12], element.SI.M3D[13]);
+
+							var swagMatrix:FlxMatrix = new FlxMatrix(element.SI.M3D[0], element.SI.M3D[1], element.SI.M3D[4], element.SI.M3D[5],
+								element.SI.M3D[12], element.SI.M3D[13]);
 
 							swagMatrix.concat(_matrix);
 
@@ -148,13 +150,13 @@ class FlxSymbol extends FlxSprite
 			if (bakedRotationAngle <= 0)
 			{
 				updateTrig();
-	
+
 				if (angle != 0)
 					_matrix.rotateWithTrig(_cosAngle, _sinAngle);
 			}
 			_matrix.concat(_skewMatrix);
 		}
-		
+
 		_point.addPoint(origin);
 
 		if (isPixelPerfectRender(camera))
@@ -179,97 +181,97 @@ typedef Parsed =
 /**
  * Basically treated like one big symbol
  */
- typedef Animation =
- {
-	 /**
-	  * Symbol Name
-	  */
-	 var SN:String;
- 
-	 var TL:Timeline;
- 
-	 /**
-	  * Symbol Type Instance
-	  * NOT used in symbols, only the main AN animation.
-	  */
-	 var STI:Dynamic;
- }
- 
- typedef SymbolDictionary =
- {
-	 var S:Array<Animation>;
- }
- 
- typedef Timeline =
- {
-	 /**
-	  * Layers
-	  */
-	 var L:Array<Layer>;
- }
- 
- typedef Layer =
- {
-	 var LN:String;
- 
-	 /**
-	  * Frames
-	  */
-	 var FR:Array<Frame>;
- }
- 
- typedef Frame =
- {
-	 var I:Int;
- 
-	 /**
-	  * Duration, in frames
-	  */
-	 var DU:Int;
- 
-	 /**
-	  * Elements
-	  */
-	 var E:Array<Element>;
- }
- 
- typedef Element =
- {
-	 var SI:SymbolInstance;
-	 var ASI:AtlasSymbolInstance;
- }
- 
- /**
-  * Symbol instance, for SYMBOLS and refers to SYMBOLS
-  */
- typedef SymbolInstance =
- {
-	 var SN:String;
- 
-	 /**
-	  * SymbolType (Graphic, Movieclip, Button)
-	  */
-	 var ST:String;
- 
-	 var FFP:Int;
-	 var LP:String;
-	 var TRP:TransformationPoint;
-	 var M3D:Array<Float>;
- }
- 
- typedef AtlasSymbolInstance =
- {
-	 var N:String;
-	 var M3D:Array<Float>;
- }
- 
- typedef TransformationPoint =
- {
-	 var x:Float;
-	 var y:Float;
- }
- 
- typedef AtlasMetaData =
- {
-	 var FRT:Int;
- }
+typedef Animation =
+{
+	/**
+	 * Symbol Name
+	 */
+	var SN:String;
+
+	var TL:Timeline;
+
+	/**
+	 * Symbol Type Instance
+	 * NOT used in symbols, only the main AN animation.
+	 */
+	var STI:Dynamic;
+}
+
+typedef SymbolDictionary =
+{
+	var S:Array<Animation>;
+}
+
+typedef Timeline =
+{
+	/**
+	 * Layers
+	 */
+	var L:Array<Layer>;
+}
+
+typedef Layer =
+{
+	var LN:String;
+
+	/**
+	 * Frames
+	 */
+	var FR:Array<Frame>;
+}
+
+typedef Frame =
+{
+	var I:Int;
+
+	/**
+	 * Duration, in frames
+	 */
+	var DU:Int;
+
+	/**
+	 * Elements
+	 */
+	var E:Array<Element>;
+}
+
+typedef Element =
+{
+	var SI:SymbolInstance;
+	var ASI:AtlasSymbolInstance;
+}
+
+/**
+ * Symbol instance, for SYMBOLS and refers to SYMBOLS
+ */
+typedef SymbolInstance =
+{
+	var SN:String;
+
+	/**
+	 * SymbolType (Graphic, Movieclip, Button)
+	 */
+	var ST:String;
+
+	var FFP:Int;
+	var LP:String;
+	var TRP:TransformationPoint;
+	var M3D:Array<Float>;
+}
+
+typedef AtlasSymbolInstance =
+{
+	var N:String;
+	var M3D:Array<Float>;
+}
+
+typedef TransformationPoint =
+{
+	var x:Float;
+	var y:Float;
+}
+
+typedef AtlasMetaData =
+{
+	var FRT:Int;
+}

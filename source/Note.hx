@@ -6,9 +6,6 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
-#if polymod
-import polymod.format.ParseRules.TargetSignatureElement;
-#end
 
 using StringTools;
 
@@ -29,7 +26,7 @@ class Note extends FlxSprite
 	public var isSustainNote:Bool = false;
 
 	var colorSwap:ColorSwap;
-	
+
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var arrowColors = [1, 1, 1, 1];
 	public static var PURP_NOTE:Int = 0;

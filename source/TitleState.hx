@@ -49,7 +49,7 @@ class TitleState extends MusicBeatState
 	var curWacky:Array<String> = [];
 
 	var wackyImage:FlxSprite;
-	
+
 	var lastBeat:Int = 0;
 
 	var swagShader:ColorSwap;
@@ -63,10 +63,6 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		#if polymod
-		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
-		#end
-
 		FlxG.game.focusLostFramerate = 60;
 
 		swagShader = new ColorSwap();
@@ -116,10 +112,11 @@ class TitleState extends MusicBeatState
 
 		#if desktop
 		DiscordClient.initialize();
-		
-		Application.current.onExit.add (function (exitCode) {
+
+		Application.current.onExit.add(function(exitCode)
+		{
 			DiscordClient.shutdown();
-		 });
+		});
 		#end
 	}
 
@@ -462,7 +459,7 @@ class TitleState extends MusicBeatState
 						deleteCoolText();
 						ngSpr.visible = false;
 					// credTextShit.visible = false;
-		
+
 					// credTextShit.text = 'Shoutouts Tom Fulp';
 					// credTextShit.screenCenter();
 					case 9:
@@ -484,13 +481,13 @@ class TitleState extends MusicBeatState
 					// credTextShit.text += '\nNight';
 					case 15:
 						addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
-		
+
 					case 16:
 						skipIntro();
 				}
 			}
 		}
-		
+
 		lastBeat = curBeat;
 	}
 

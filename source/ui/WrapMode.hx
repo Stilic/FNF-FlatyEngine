@@ -5,5 +5,5 @@ enum WrapMode
 	Horizontal;
 	Vertical;
 	Both;
-	None;	
+	None;
 }

@@ -27,6 +27,8 @@ using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
+	public static final version:String = "0.0.1";
+
 	var menuItems:MainMenuList;
 
 	#if !switch
@@ -122,13 +124,10 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version'), 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "FNF v" + Application.current.meta.get('version') + " - Softie Engine v" + version, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
-		#if ng
-		versionShit.text += "(Newgrounds exclusive preview)";
-		#end
 
 		super.create();
 	}
@@ -143,11 +142,14 @@ class MainMenuState extends MusicBeatState
 	{
 		camFollow.setPosition(item.getGraphicMidpoint().x, item.getGraphicMidpoint().y);
 	}
-	
+
 	function selectDonate()
 	{
 		#if linux
-		Sys.command('/usr/bin/xdg-open', ["https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/", "&"]);
+		Sys.command('/usr/bin/xdg-open', [
+			"https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/",
+			"&"
+		]);
 		#else
 		FlxG.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/');
 		#end
@@ -160,7 +162,7 @@ class MainMenuState extends MusicBeatState
 		{
 			if (menuItems.selectedIndex != item.ID)
 			{
-				FlxTween.tween(item, { alpha: 0 }, 0.4, { ease: FlxEase.quadOut });
+				FlxTween.tween(item, {alpha: 0}, 0.4, {ease: FlxEase.quadOut});
 			}
 			else
 			{

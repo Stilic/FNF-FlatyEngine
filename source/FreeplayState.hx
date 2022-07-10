@@ -31,7 +31,16 @@ class FreeplayState extends MusicBeatState
 	var intendedScore:Int = 0;
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
-	private var coolColors = [0xFF9271FD, 0xFF9271FD, 0xFF223344, 0xFF941653, 0xFFFC96D7, 0xFFA0D1FF, 0xFFFF78BF, 0xFFF6B604];
+	private var coolColors = [
+		0xFF9271FD,
+		0xFF9271FD,
+		0xFF223344,
+		0xFF941653,
+		0xFFFC96D7,
+		0xFFA0D1FF,
+		0xFFFF78BF,
+		0xFFF6B604
+	];
 
 	private var curPlaying:Bool = false;
 
@@ -277,7 +286,7 @@ class FreeplayState extends MusicBeatState
 		#if PRELOAD_ALL
 		// No clue if this was removed or not, but I wanted to keep this as close as possible to the web version, and this is not in there.
 		// Yes, I know it's because the web version doesn't preload everything. If this being gone bothers you so much, then do it yourself lol.
-		//FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
+		// FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
 		#end
 
 		var bullShit:Int = 0;

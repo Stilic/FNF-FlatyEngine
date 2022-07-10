@@ -8,15 +8,16 @@ import flixel.FlxSubState;
 class Prompt extends FlxSubState
 {
 	public static var MARGIN:Float = 100;
-	
+
 	var style:ButtonStyle;
 	var buttons:TextMenuList;
 	var field:AtlasText;
+
 	public var back:FlxSprite;
 
 	public var onYes:Dynamic = null;
 	public var onNo:Dynamic = null;
-	
+
 	override public function new(text:String, style:ButtonStyle = Ok)
 	{
 		this.style = style;

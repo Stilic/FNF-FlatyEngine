@@ -55,7 +55,7 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 			case Upper:
 				return text.toUpperCase();
 			case Lower:
-				return text.toLowerCase(); 
+				return text.toLowerCase();
 		}
 	}
 
@@ -123,10 +123,10 @@ class AtlasFontData
 	public var atlas:FlxAtlasFrames;
 	public var maxHeight:Float = 0;
 	public var caseAllowed:Case = Both;
-	
+
 	public function new(font:AtlasFont)
 	{
-		var path = 'fonts/'+font.getName().toLowerCase();
+		var path = 'fonts/' + font.getName().toLowerCase();
 		atlas = Paths.getSparrowAtlas(path);
 		atlas.parent.destroyOnNoUse = false;
 		atlas.parent.persist = true;

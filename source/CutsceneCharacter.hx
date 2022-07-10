@@ -33,15 +33,15 @@ class CutsceneCharacter extends FlxTypedGroup<Dynamic>
 		{
 			var point:FlxPoint = FlxPoint.get();
 			var coords:Array<String> = stuff.split('---')[1].trim().split(' ');
-			
+
 			trace('cool split: ' + stuff.split('---')[1]);
 			trace(coords);
-			
+
 			point.set(Std.parseFloat(coords[0]), Std.parseFloat(coords[1]));
-			
+
 			var name:String = stuff.split('---')[0].trim();
 			animShit.set(name, point);
-			
+
 			arrayLMFAOOOO.push(stuff.split('---')[0].trim());
 		}
 
@@ -61,7 +61,7 @@ class CutsceneCharacter extends FlxTypedGroup<Dynamic>
 			spr.kill();
 			spr.destroy();
 			spr = null;
-			
+
 			if (num + 1 < arrayLMFAOOOO.length)
 			{
 				createCutscene(num + 1);

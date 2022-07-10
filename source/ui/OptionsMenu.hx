@@ -65,12 +65,10 @@ class OptionsMenu extends Page
 	// {
 	// 	openNgPrompt(NgPrompt.showLogin());
 	// }
-
 	// function selectLogout()
 	// {
 	// 	openNgPrompt(NgPrompt.showLogout());
 	// }
-
 	// function openNgPrompt(prompt:Prompt, ?callback:Dynamic)
 	// {
 	// 	var func:Dynamic = checkLoginStatus();
@@ -84,7 +82,6 @@ class OptionsMenu extends Page
 	// 	}
 	// 	openPrompt(prompt, func);
 	// }
-
 	// function checkLoginStatus()
 	// {
 	// 	var hasLogout:Bool = items.has('logout');

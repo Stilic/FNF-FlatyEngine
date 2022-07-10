@@ -9,7 +9,7 @@ import haxe.ds.StringMap;
 class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 {
 	public var selectedIndex:Int = 0;
-	
+
 	public var onChange:FlxTypedSignal<T->Void> = new FlxTypedSignal<T->Void>();
 	public var onAcceptPress:FlxTypedSignal<T->Void> = new FlxTypedSignal<T->Void>();
 
