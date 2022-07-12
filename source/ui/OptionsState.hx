@@ -22,7 +22,7 @@ class OptionsState extends MusicBeatState
 		bg.screenCenter();
 		bg.scrollFactor.set(0, 0);
 		add(bg);
-		var optionsmenu:OptionsMenu = addPage(Options, new OptionsMenu(false));
+		var optionsmenu:OptionsMenu = addPage(Options, new OptionsMenu());
 		var preferencesmenu:PreferencesMenu = addPage(Preferences, new PreferencesMenu());
 		var controlsmenu:ControlsMenu = addPage(Controls, new ControlsMenu());
 		if (optionsmenu.hasMultipleOptions())

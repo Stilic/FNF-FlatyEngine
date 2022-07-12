@@ -1,5 +1,13 @@
 package;
 
+#if CRASH_HANDLER
+import Discord.DiscordClient;
+import sys.io.File;
+import sys.FileSystem;
+#end
+import haxe.io.Path;
+import lime.app.Application;
+import haxe.CallStack;
 import ui.PreferencesMenu;
 import flixel.FlxG;
 import flixel.FlxGame;
@@ -7,6 +15,9 @@ import flixel.FlxState;
 import openfl.Lib;
 import openfl.display.Sprite;
 import openfl.events.Event;
+import openfl.events.UncaughtErrorEvent;
+
+using StringTools;
 
 class Main extends Sprite
 {
@@ -78,7 +89,43 @@ class Main extends Sprite
 		addChild(fpsCounter);
 		#end
 
+		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
+
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 		PreferencesMenu.initPrefs();
 	}
+
+	#if CRASH_HANDLER
+	// crash handler made by sqirra-rng
+	function onCrash(e:UncaughtErrorEvent):Void
+	{
+		var errMsg:String = "";
+		var path:String = "./crash/" + "SoftieEngine_" + Date.now().toString().replace(" ", "_").replace(":", "'") + ".txt";
+
+		for (stackItem in CallStack.exceptionStack(true))
+		{
+			switch (stackItem)
+			{
+				case FilePos(s, file, line, column):
+					errMsg += file + " (line " + line + ")\n";
+				default:
+					Sys.println(stackItem);
+			}
+		}
+
+		errMsg += "\nUncaught Error: " + e.error + "\nPlease report this error to the GitHub page: https://github.com/Stilic/FNF-SoftieEngine";
+
+		if (!FileSystem.exists("./crash/"))
+			FileSystem.createDirectory("./crash/");
+
+		File.saveContent(path, errMsg + "\n");
+
+		Sys.println(errMsg);
+		Sys.println("Crash dump saved in " + Path.normalize(path));
+
+		Application.current.window.alert(errMsg, "Error!");
+		DiscordClient.shutdown();
+		Sys.exit(1);
+	}
+	#end
 }

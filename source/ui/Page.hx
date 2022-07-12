@@ -1,10 +1,10 @@
 package ui;
 
 import flixel.FlxG;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup;
 import flixel.util.FlxSignal.FlxTypedSignal;
 
-class Page extends FlxTypedGroup<Dynamic>
+class Page extends FlxGroup
 {
 	public var onSwitch:FlxTypedSignal<PageName->Void> = new FlxTypedSignal<PageName->Void>();
 	public var onExit:FlxTypedSignal<Void->Void> = new FlxTypedSignal<Void->Void>();

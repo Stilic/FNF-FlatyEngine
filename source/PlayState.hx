@@ -159,10 +159,10 @@ class PlayState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		var instPath = Paths.inst(SONG.song.toLowerCase());
+		var instPath = Paths.instPath(SONG.song.toLowerCase());
 		if (OpenFlAssets.exists(instPath, SOUND) || OpenFlAssets.exists(instPath, MUSIC))
 			OpenFlAssets.getSound(instPath, true);
-		var vocalsPath = Paths.voices(SONG.song.toLowerCase());
+		var vocalsPath = Paths.voicesPath(SONG.song.toLowerCase());
 		if (OpenFlAssets.exists(vocalsPath, SOUND) || OpenFlAssets.exists(vocalsPath, MUSIC))
 			OpenFlAssets.getSound(vocalsPath, true);
 

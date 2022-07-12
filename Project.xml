@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project xmlns="http://lime.software/project/1.0.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://lime.software/project/1.0.3 http://lime.software/xsd/project-1.0.3.xsd">
+<project>
 	<!-- _________________________ Application Settings _________________________ -->
 
 	<app title="Friday Night Funkin': Softie Engine" file="SoftieEngine" packageName="com.stilic.softieengine" package="com.stilic.softieengine" main="Main" version="0.2.8" company="stilic" />
@@ -108,8 +108,8 @@
 	<haxelib name="flixel" />
 	<haxelib name="flixel-addons" />
 	<haxelib name="flixel-ui" />
-        <haxedev set="webgl" if="html5" />
- 
+	<haxedev set="webgl" />
+
 	<!-- <haxelib name="polymod" /> -->
 	<haxelib name="discord_rpc" if="desktop" />
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
@@ -119,6 +119,10 @@
 
 	<!--In case you want to use nape with flixel-->
 	<!--<haxelib name="nape-haxe4" />-->
+
+	<!-- ________________________________ Defines _______________________________ -->
+
+	<define name="CRASH_HANDLER" if="desktop release" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
@@ -151,6 +155,10 @@
 
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
+
+	<!--For the crash handler-->
+	<haxedef name="HXCPP_CHECK_POINTER" if="CRASH_HANDLER" />
+	<haxedef name="HXCPP_STACK_LINE" if="CRASH_HANDLER" />
 
 	<!-- _________________________________ Custom _______________________________ -->
 

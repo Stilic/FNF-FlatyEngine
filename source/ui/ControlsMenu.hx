@@ -205,12 +205,16 @@ class ControlsMenu extends Page
 					}
 				case Gamepad(id):
 					var pad:FlxGamepad = FlxG.gamepads.getByID(id);
-					var released:FlxGamepadInputID = pad.mapping.getID(pad.firstJustReleasedRawID());
-					if (released != -1)
+					var rawID:Int = pad.firstJustReleasedRawID();
+					if (rawID != -1)
 					{
-						if (released != 6)
-							onInputSelect(released);
-						closePrompt();
+						var released:FlxGamepadInputID = pad.mapping.getID(rawID);
+						if (released != -1)
+						{
+							if (released != 6)
+								onInputSelect(released);
+							closePrompt();
+						}
 					}
 			}
 		}

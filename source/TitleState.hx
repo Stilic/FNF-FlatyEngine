@@ -73,6 +73,12 @@ class TitleState extends MusicBeatState
 			FlxG.game.focusLostFramerate = 60;
 			FlxG.sound.muteKeys = [ZERO];
 
+			FlxG.signals.preStateCreate.add(function(state:FlxState)
+			{
+				if (!Std.isOfType(state, PlayState) && !Std.isOfType(state, ChartingState) && !Std.isOfType(state, AnimationDebug))
+					Cache.clear();
+			});
+
 			PlayerSettings.init();
 			Highscore.load();
 

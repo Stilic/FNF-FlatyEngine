@@ -16,14 +16,13 @@ class PlayerSettings
 	static public var player1(default, null):PlayerSettings;
 	static public var player2(default, null):PlayerSettings;
 
-	#if (haxe >= "4.0.0")
-	static public final onAvatarAdd = new FlxTypedSignal<PlayerSettings->Void>();
-	static public final onAvatarRemove = new FlxTypedSignal<PlayerSettings->Void>();
-	#else
-	static public var onAvatarAdd = new FlxTypedSignal<PlayerSettings->Void>();
-	static public var onAvatarRemove = new FlxTypedSignal<PlayerSettings->Void>();
-	#end
-
+	// #if (haxe >= "4.0.0")
+	// static public final onAvatarAdd = new FlxTypedSignal<PlayerSettings->Void>();
+	// static public final onAvatarRemove = new FlxTypedSignal<PlayerSettings->Void>();
+	// #else
+	// static public var onAvatarAdd = new FlxTypedSignal<PlayerSettings->Void>();
+	// static public var onAvatarRemove = new FlxTypedSignal<PlayerSettings->Void>();
+	// #end
 	public var id(default, null):Int;
 
 	#if (haxe >= "4.0.0")
@@ -55,7 +54,7 @@ class PlayerSettings
 			if (keys != null)
 			{
 				setDefault = false;
-				trace('loaded key data: ' + Json.stringify(keys));
+				// trace('loaded key data: ' + Json.stringify(keys));
 				controls.fromSaveData(keys, Device.Keys);
 			}
 		}
@@ -67,29 +66,32 @@ class PlayerSettings
 
 	function addGamepad(pad:FlxGamepad)
 	{
-		var setDefault:Bool = true;
-		var saveControls = FlxG.save.data.controls;
-		if (saveControls != null)
+		if (!controls.gamepadsAdded.contains(pad.id))
 		{
-			var pad = null;
-			if (id == 0 && saveControls.p1 != null && saveControls.p1.pad != null)
+			var setDefault:Bool = true;
+			var saveControls = FlxG.save.data.controls;
+			if (saveControls != null)
 			{
-				pad = saveControls.p1.pad;
+				var pad = null;
+				if (id == 0 && saveControls.p1 != null && saveControls.p1.pad != null)
+				{
+					pad = saveControls.p1.pad;
+				}
+				else if (id == 1 && saveControls.p2 != null && saveControls.p2.pad != null)
+				{
+					pad = saveControls.p2.pad;
+				}
+				if (pad != null)
+				{
+					setDefault = false;
+					// trace('loaded pad data: ' + Json.stringify(pad));
+					controls.addGamepadWithSaveData(pad.id, pad);
+				}
 			}
-			else if (id == 1 && saveControls.p2 != null && saveControls.p2.pad != null)
+			if (setDefault)
 			{
-				pad = saveControls.p2.pad;
+				controls.addDefaultGamepad(pad.id);
 			}
-			if (pad != null)
-			{
-				setDefault = false;
-				trace('loaded pad data: ' + Json.stringify(pad));
-				controls.addGamepadWithSaveData(pad.id, pad);
-			}
-		}
-		if (setDefault)
-		{
-			controls.addDefaultGamepad(pad.id);
 		}
 	}
 
@@ -120,14 +122,14 @@ class PlayerSettings
 		if (savedata != null)
 		{
 			keydata.keys = savedata;
-			trace('saving key data: ' + Json.stringify(savedata));
+			// trace('saving key data: ' + Json.stringify(savedata));
 		}
 		if (controls.gamepadsAdded.length > 0)
 		{
 			savedata = this.controls.createSaveData(Device.Gamepad(controls.gamepadsAdded[0]));
 			if (savedata != null)
 			{
-				trace('saving pad data: ' + Json.stringify(savedata));
+				// trace('saving pad data: ' + Json.stringify(savedata));
 				keydata.pad = savedata;
 			}
 		}
@@ -143,12 +145,29 @@ class PlayerSettings
 		}
 
 		FlxG.gamepads.deviceConnected.add(onGamepadAdded);
-		for (pad in FlxG.gamepads.getActiveGamepads())
+
+		var numGamepads = FlxG.gamepads.numActiveGamepads;
+		if (numGamepads > 0)
 		{
-			if (pad != null)
+			var gamepad = FlxG.gamepads.getByID(0);
+			if (gamepad == null)
+				throw 'Unexpected null gamepad. id:0';
+
+			player1.controls.addDefaultGamepad(0);
+		}
+		if (numGamepads > 1)
+		{
+			if (player2 == null)
 			{
-				onGamepadAdded(pad);
+				player2 = new PlayerSettings(1);
+				++numPlayers;
 			}
+
+			var gamepad = FlxG.gamepads.getByID(1);
+			if (gamepad == null)
+				throw 'Unexpected null gamepad. id:1';
+
+			player2.controls.addDefaultGamepad(1);
 		}
 	}
 

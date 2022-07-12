@@ -633,10 +633,10 @@ class Controls extends FlxActionSet
 
 	public function addDefaultGamepad(id):Void
 	{
-		var map = new EnumValueMap<Control, Dynamic>();
+		var map = new EnumValueMap<Control, Array<FlxGamepadInputID>>();
 		#if !switch
 		map.set(Control.ACCEPT, [A]);
-		map.set(Control.BACK, [B, BACK]);
+		map.set(Control.BACK, [B]);
 		map.set(Control.UI_UP, [DPAD_UP, LEFT_STICK_DIGITAL_UP]);
 		map.set(Control.UI_DOWN, [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN]);
 		map.set(Control.UI_LEFT, [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT]);
@@ -650,7 +650,7 @@ class Controls extends FlxActionSet
 		#else
 		// Swap A and B for switch
 		map.set(Control.ACCEPT, [B]);
-		map.set(Control.BACK, [A, BACK]);
+		map.set(Control.BACK, [A]);
 		map.set(Control.UI_UP, [DPAD_UP, LEFT_STICK_DIGITAL_UP]);
 		map.set(Control.UI_DOWN, [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN]);
 		map.set(Control.UI_LEFT, [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT]);
@@ -665,12 +665,8 @@ class Controls extends FlxActionSet
 		map.set(Control.RESET, [Y]);
 		#end
 		gamepadsAdded.push(id);
-		var keys;
-		while ((keys = map.keys()).hasNext())
-		{
-			var next = keys.next();
-			bindButtons(next, id, map.get(next));
-		}
+		for (control => buttons in map)
+			bindButtons(control, id, buttons);
 	}
 
 	/**

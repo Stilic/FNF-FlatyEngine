@@ -1,12 +1,10 @@
 package ui;
 
-import flixel.FlxG;
-
 class OptionsMenu extends Page
 {
 	var items:TextMenuList;
 
-	override public function new(showDonate:Bool)
+	override public function new()
 	{
 		super();
 		add(items = new TextMenuList());
@@ -18,10 +16,6 @@ class OptionsMenu extends Page
 		{
 			onSwitch.dispatch(PageName.Controls);
 		});
-		if (showDonate)
-		{
-			createItem('donate', selectDonate, true);
-		}
 		// if (NG.core != null && NG.core.loggedIn)
 		// {
 		// 	createItem('logout', selectLogout);
@@ -50,15 +44,6 @@ class OptionsMenu extends Page
 	public function hasMultipleOptions()
 	{
 		return items.length > 2;
-	}
-
-	function selectDonate()
-	{
-		#if linux
-		Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
-		#else
-		FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
-		#end
 	}
 
 	// function selectLogin()
