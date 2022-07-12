@@ -1,6 +1,5 @@
 package ui;
 
-import openfl.Lib;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxCamera;
@@ -10,6 +9,19 @@ import haxe.ds.StringMap;
 class PreferencesMenu extends Page
 {
 	public static var preferences:StringMap<Dynamic> = new StringMap<Dynamic>();
+
+	static var defaultPreferences:Array<Array<Dynamic>> = [
+		['naughtyness', 'censor-naughty', true],
+		['downscroll', 'downscroll', false],
+		['flashing menu', 'flashing-menu', true],
+		['camera zooming on beat', 'camera-zoom', true],
+		#if !mobile
+		['fps counter', 'fps-counter', true], ['memory counter', 'mem-counter', true], ['memory peak counter', 'mem-peak-counter', true],
+		#end
+		#if (desktop || web)
+		['auto pause', 'auto-pause', #if web false #else true #end]
+		#end
+	];
 
 	var checkboxes:Array<CheckboxThingie> = [];
 	var menuCamera:FlxCamera;
@@ -24,12 +36,10 @@ class PreferencesMenu extends Page
 		menuCamera.bgColor = FlxColor.TRANSPARENT;
 		camera = menuCamera;
 		add(items = new TextMenuList());
-		createPrefItem('naughtyness', 'censor-naughty', true);
-		createPrefItem('downscroll', 'downscroll', false);
-		createPrefItem('flashing menu', 'flashing-menu', true);
-		createPrefItem('Camera Zooming on Beat', 'camera-zoom', true);
-		createPrefItem('FPS Counter', 'fps-counter', true);
-		createPrefItem('Auto Pause', 'auto-pause', false);
+		for (pref in defaultPreferences)
+		{
+			createPrefItem(pref[0], pref[1], pref[2]);
+		}
 		camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
 		if (items != null)
 		{
@@ -44,38 +54,47 @@ class PreferencesMenu extends Page
 		});
 	}
 
-	public static function getPref(pref:String)
+	inline public static function getPref(pref:String)
 	{
 		return preferences.get(pref);
 	}
 
+	inline public static function setPref(identifier:String, value:Dynamic)
+	{
+		preferences.set(identifier, value);
+	}
+
 	public static function initPrefs()
 	{
-		preferenceCheck('censor-naughty', true);
-		preferenceCheck('downscroll', false);
-		preferenceCheck('flashing-menu', true);
-		preferenceCheck('camera-zoom', true);
-		preferenceCheck('fps-counter', true);
-		preferenceCheck('auto-pause', false);
-		preferenceCheck('master-volume', 1);
-		if (!getPref('fps-counter'))
+		if (FlxG.save.data.preferences != null)
 		{
-			Lib.current.stage.removeChild(Main.fpsCounter);
+			preferences = FlxG.save.data.preferences;
 		}
-		FlxG.autoPause = getPref('auto-pause');
+		for (pref in defaultPreferences)
+		{
+			preferenceCheck(pref[1], pref[2]);
+			prefUpdate(pref[1]);
+		}
+		savePrefs();
+	}
+
+	public static function savePrefs()
+	{
+		FlxG.save.data.preferences = preferences;
+		FlxG.save.flush();
 	}
 
 	public static function preferenceCheck(identifier:String, defaultValue:Dynamic)
 	{
-		if (preferences.get(identifier) == null)
+		if (getPref(identifier) == null)
 		{
-			preferences.set(identifier, defaultValue);
-			trace('set preference!');
+			setPref(identifier, defaultValue);
+			// trace('set preference!');
 		}
-		else
-		{
-			trace('found preference: ' + Std.string(preferences.get(identifier)));
-		}
+		// else
+		// {
+		// 	trace('found preference: ' + Std.string(getPref(identifier)));
+		// }
 	}
 
 	public function createPrefItem(label:String, identifier:String, value:Dynamic)
@@ -87,45 +106,59 @@ class PreferencesMenu extends Page
 			{
 				prefToggle(identifier);
 			}
-			else
-			{
-				trace('swag');
-			}
+			// else
+			// {
+			// 	trace('swag');
+			// }
 		});
 		if (Type.typeof(value) == TBool)
 		{
 			createCheckbox(identifier);
 		}
-		else
-		{
-			trace('swag');
-		}
-		trace(Type.typeof(value));
+		// else
+		// {
+		// 	trace('swag');
+		// }
+		// trace(Type.typeof(value));
 	}
 
 	public function createCheckbox(identifier:String)
 	{
-		var box:CheckboxThingie = new CheckboxThingie(0, 120 * (items.length - 1), preferences.get(identifier));
+		var box:CheckboxThingie = new CheckboxThingie(0, 120 * (items.length - 1), getPref(identifier));
 		checkboxes.push(box);
 		add(box);
 	}
 
 	public function prefToggle(identifier:String)
 	{
-		var value:Bool = preferences.get(identifier);
+		var value:Bool = getPref(identifier);
 		value = !value;
 		preferences.set(identifier, value);
+		savePrefs();
 		checkboxes[items.selectedIndex].daValue = value;
-		trace('toggled? ' + Std.string(preferences.get(identifier)));
+		// trace('toggled? ' + Std.string(getPref(identifier)));
+		prefUpdate(identifier);
+	}
+
+	public static function prefUpdate(identifier:String)
+	{
 		switch (identifier)
 		{
+			#if (desktop || web)
 			case 'auto-pause':
-				FlxG.autoPause = getPref('auto-pause');
+				FlxG.autoPause = getPref(identifier);
+			#end
+			#if !mobile
 			case 'fps-counter':
-				if (getPref('fps-counter'))
-					Lib.current.stage.addChild(Main.fpsCounter);
-				else
-					Lib.current.stage.removeChild(Main.fpsCounter);
+				if (Main.fpsCounter != null)
+					Main.fpsCounter.showFPS = getPref(identifier);
+			case 'mem-counter':
+				if (Main.fpsCounter != null)
+					Main.fpsCounter.showMemory = getPref(identifier);
+			case 'mem-peak-counter':
+				if (Main.fpsCounter != null)
+					Main.fpsCounter.showMemoryPeak = getPref(identifier);
+			#end
 		}
 	}
 

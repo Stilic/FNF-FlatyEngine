@@ -49,7 +49,7 @@ class FlxAnimate extends FlxSymbol
 
 		frames = new FlxAtlasFrames(graphic);
 
-		trace(Description);
+		// trace(Description);
 		if (Assets.exists(Description))
 			Description = Assets.getText(Description);
 

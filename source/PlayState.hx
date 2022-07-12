@@ -1782,7 +1782,7 @@ class PlayState extends MusicBeatState
 			if (controls.RESET)
 			{
 				health = 0;
-				trace("RESET = True");
+				// trace("RESET = True");
 			}
 
 			// CHEAT = brandon's a pussy

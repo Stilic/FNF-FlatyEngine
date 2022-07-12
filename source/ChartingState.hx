@@ -184,7 +184,7 @@ class ChartingState extends MusicBeatState
 		check_voices.callback = function()
 		{
 			_song.needsVoices = check_voices.checked;
-			trace('CHECKED!');
+			// trace('CHECKED!');
 		};
 
 		var check_mute_inst = new FlxUICheckBox(10, 200, null, null, "Mute Instrumental (in editor)", 100);
@@ -484,9 +484,9 @@ class ChartingState extends MusicBeatState
 
 		if (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
 		{
-			trace(curStep);
-			trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
-			trace('DUMBSHIT');
+			// trace(curStep);
+			// trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
+			// trace('DUMBSHIT');
 
 			if (_song.notes[curSection + 1] == null)
 			{
@@ -513,7 +513,7 @@ class ChartingState extends MusicBeatState
 						}
 						else
 						{
-							trace('tryin to delete note...');
+							// trace('tryin to delete note...');
 							deleteNote(note);
 						}
 					}
@@ -696,9 +696,9 @@ class ChartingState extends MusicBeatState
 		{
 			if (curSelectedNote[3] != null)
 			{
-				trace('ALT NOTE SHIT');
+				// trace('ALT NOTE SHIT');
 				curSelectedNote[3] = !curSelectedNote[3];
-				trace(curSelectedNote[3]);
+				// trace(curSelectedNote[3]);
 			}
 			else
 				curSelectedNote[3] = true;
@@ -749,7 +749,7 @@ class ChartingState extends MusicBeatState
 
 	function changeSection(sec:Int = 0, ?updateMusic:Bool = true):Void
 	{
-		trace('changing section' + sec);
+		// trace('changing section' + sec);
 
 		if (_song.notes[sec] != null)
 		{
@@ -974,8 +974,8 @@ class ChartingState extends MusicBeatState
 			_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + 4) % 8, 0, false]);
 		}
 
-		trace(noteStrum);
-		trace(curSection);
+		// trace(noteStrum);
+		// trace(curSection);
 
 		updateGrid();
 		updateNoteUI();
@@ -1016,24 +1016,6 @@ class ChartingState extends MusicBeatState
 
 			return daLength;
 	}*/
-	private var daSpacing:Float = 0.3;
-
-	function loadLevel():Void
-	{
-		trace(_song.notes);
-	}
-
-	function getNotes():Array<Dynamic>
-	{
-		var noteData:Array<Dynamic> = [];
-
-		for (i in _song.notes)
-		{
-			noteData.push(i.sectionNotes);
-		}
-
-		return noteData;
-	}
 
 	function loadJson(song:String):Void
 	{

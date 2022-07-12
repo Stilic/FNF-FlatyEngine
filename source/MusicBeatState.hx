@@ -16,13 +16,13 @@ class MusicBeatState extends FlxUIState
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
-	override function create()
-	{
-		if (transIn != null)
-			trace('reg ' + transIn.region);
+	// override function create()
+	// {
+	// 	if (transIn != null)
+	// 		trace('reg ' + transIn.region);
 
-		super.create();
-	}
+	// 	super.create();
+	// }
 
 	override function update(elapsed:Float)
 	{

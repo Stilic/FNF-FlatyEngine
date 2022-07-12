@@ -63,41 +63,49 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		FlxG.game.focusLostFramerate = 60;
-
 		swagShader = new ColorSwap();
 		alphaShader = new BuildingShaders();
 
-		FlxG.sound.muteKeys = [ZERO];
-
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
+		if (!initialized)
+		{
+			FlxG.game.focusLostFramerate = 60;
+			FlxG.sound.muteKeys = [ZERO];
+
+			PlayerSettings.init();
+			Highscore.load();
+
+			if (FlxG.save.data.weekUnlocked != null)
+			{
+				// FIX LATER!!!
+				// WEEK UNLOCK PROGRESSION!!
+				// StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
+
+				if (StoryMenuState.weekUnlocked.length < 4)
+					StoryMenuState.weekUnlocked.insert(0, true);
+
+				// QUICK PATCH OOPS!
+				if (!StoryMenuState.weekUnlocked[0])
+					StoryMenuState.weekUnlocked[0] = true;
+			}
+
+			if (FlxG.save.data.seenVideo != null)
+			{
+				VideoState.seenVideo = FlxG.save.data.seenVideo;
+			}
+
+			#if desktop
+			DiscordClient.initialize();
+
+			Application.current.onExit.add(function(exitCode)
+			{
+				DiscordClient.shutdown();
+			});
+			#end
+		}
+
 		super.create();
-
-		FlxG.save.bind('funkin', 'ninjamuffin99');
-
-		PreferencesMenu.initPrefs();
-		PlayerSettings.init();
-		Highscore.load();
-
-		if (FlxG.save.data.weekUnlocked != null)
-		{
-			// FIX LATER!!!
-			// WEEK UNLOCK PROGRESSION!!
-			// StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
-
-			if (StoryMenuState.weekUnlocked.length < 4)
-				StoryMenuState.weekUnlocked.insert(0, true);
-
-			// QUICK PATCH OOPS!
-			if (!StoryMenuState.weekUnlocked[0])
-				StoryMenuState.weekUnlocked[0] = true;
-		}
-
-		if (FlxG.save.data.seenVideo != null)
-		{
-			VideoState.seenVideo = FlxG.save.data.seenVideo;
-		}
 
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());
@@ -109,46 +117,7 @@ class TitleState extends MusicBeatState
 			startIntro();
 		});
 		#end
-
-		#if desktop
-		DiscordClient.initialize();
-
-		Application.current.onExit.add(function(exitCode)
-		{
-			DiscordClient.shutdown();
-		});
-		#end
 	}
-
-	#if web
-	function client_onMetaData(e)
-	{
-		video.attachNetStream(netStream);
-		video.width = video.videoWidth;
-		video.height = video.videoHeight;
-	}
-
-	function netStream_onAsyncError(e)
-	{
-		trace("Error loading video");
-	}
-
-	function netConnection_onNetStatus(e)
-	{
-		if (e.info.code == 'NetStream.Play.Complete')
-		{
-			startIntro();
-		}
-		trace(e.toString());
-	}
-
-	function overlay_onMouseDown(e)
-	{
-		netStream.soundTransform.volume = 0.2;
-		netStream.soundTransform.pan = -1;
-		Lib.current.stage.removeChild(overlay);
-	}
-	#end
 
 	var logoBl:FlxSprite;
 	var gfDance:FlxSprite;
@@ -293,11 +262,6 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.EIGHT)
-		{
-			FlxG.switchState(new CutsceneAnimTestState());
-		}
-
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
@@ -308,11 +272,6 @@ class TitleState extends MusicBeatState
 		}
 
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
-
-		if (FlxG.keys.justPressed.FIVE)
-		{
-			FlxG.switchState(new CutsceneAnimTestState());
-		}
 
 		#if mobile
 		for (touch in FlxG.touches.list)

@@ -509,7 +509,7 @@ class Character extends FlxSprite
 			}
 		}
 		TankmenBG.animationNotes = animationNotes;
-		trace(animationNotes);
+		// trace(animationNotes);
 		animationNotes.sort(sortAnims);
 	}
 
@@ -566,7 +566,7 @@ class Character extends FlxSprite
 			case 'pico-speaker':
 				if (animationNotes.length > 0 && Conductor.songPosition > animationNotes[0][0])
 				{
-					trace("played shoot anim" + animationNotes[0][1]);
+					// trace("played shoot anim" + animationNotes[0][1]);
 					var shotDirection:Int = 1;
 					if (animationNotes[0][1] >= 2)
 					{

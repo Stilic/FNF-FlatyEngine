@@ -93,7 +93,7 @@ class LoadingState extends MusicBeatState
 
 	function checkLibrary(library:String)
 	{
-		trace(Assets.hasLibrary(library));
+		// trace(Assets.hasLibrary(library));
 		if (Assets.getLibrary(library) == null)
 		{
 			@:privateAccess
@@ -312,8 +312,10 @@ class MultiCallback
 
 	inline function log(msg):Void
 	{
+		#if debug
 		if (logId != null)
 			trace('$logId: $msg');
+		#end
 	}
 
 	public function getFired()
