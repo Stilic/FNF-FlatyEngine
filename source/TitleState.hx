@@ -4,6 +4,7 @@ import openfl.display.Sprite;
 import openfl.net.NetStream;
 import openfl.media.Video;
 import ui.PreferencesMenu;
+import ui.AtlasText;
 import shaderslmfao.BuildingShaders;
 import shaderslmfao.ColorSwap;
 #if desktop
@@ -76,7 +77,10 @@ class TitleState extends MusicBeatState
 			FlxG.signals.preStateCreate.add(function(state:FlxState)
 			{
 				if (!Std.isOfType(state, PlayState) && !Std.isOfType(state, ChartingState) && !Std.isOfType(state, AnimationDebug))
+				{
+					AtlasText.fonts.clear();
 					Cache.clear();
+				}
 			});
 
 			PlayerSettings.init();

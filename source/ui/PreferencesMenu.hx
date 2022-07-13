@@ -174,4 +174,11 @@ class PreferencesMenu extends Page
 				item.x = 120;
 		});
 	}
+
+	override public function destroy()
+	{
+		super.destroy();
+		if (FlxG.cameras.list.contains(menuCamera))
+			FlxG.cameras.remove(menuCamera);
+	}
 }

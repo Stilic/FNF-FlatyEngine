@@ -1016,7 +1016,6 @@ class ChartingState extends MusicBeatState
 
 			return daLength;
 	}*/
-
 	function loadJson(song:String):Void
 	{
 		PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
