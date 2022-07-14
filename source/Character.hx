@@ -3,7 +3,6 @@ package;
 import Section.SwagSection;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
 
 using StringTools;
@@ -480,7 +479,7 @@ class Character extends FlxSprite
 			flipX = !flipX;
 
 			// Doesn't flip for BF, since his are already in the right place???
-			if (!curCharacter.startsWith('bf'))
+			if (!isPlayer)
 			{
 				// var animArray
 				var oldRight = animation.getByName('singRIGHT').frames;
@@ -535,7 +534,7 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
-		if (!curCharacter.startsWith('bf'))
+		if (!isPlayer)
 		{
 			if (animation.curAnim.name.startsWith('sing'))
 			{
@@ -546,7 +545,7 @@ class Character extends FlxSprite
 
 			if (curCharacter == 'dad')
 				dadVar = 6.1;
-			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
+			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.0011)
 			{
 				dance();
 				holdTimer = 0;

@@ -3,8 +3,6 @@ package;
 import ui.PreferencesMenu;
 import flixel.FlxG;
 import flixel.FlxObject;
-import flixel.FlxSubState;
-import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 

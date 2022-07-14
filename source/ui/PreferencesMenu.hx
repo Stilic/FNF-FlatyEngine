@@ -13,6 +13,7 @@ class PreferencesMenu extends Page
 	static var defaultPreferences:Array<Array<Dynamic>> = [
 		['naughtyness', 'censor-naughty', true],
 		['downscroll', 'downscroll', false],
+		['ghost tapping', 'ghost-tapping', true],
 		['flashing menu', 'flashing-menu', true],
 		['camera zooming on beat', 'camera-zoom', true],
 		#if !mobile

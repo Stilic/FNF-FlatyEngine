@@ -2,7 +2,6 @@ package animate;
 
 import flixel.graphics.FlxGraphic;
 import flixel.system.FlxAssets.FlxGraphicAsset;
-import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.math.FlxPoint;
 import openfl.geom.Rectangle;
 import flixel.math.FlxRect;

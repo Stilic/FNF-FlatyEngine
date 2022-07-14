@@ -1,11 +1,8 @@
 package;
 
 import flixel.input.gamepad.FlxGamepad;
-import haxe.Json;
 import Controls;
-import flixel.FlxCamera;
 import flixel.FlxG;
-import flixel.util.FlxSignal;
 
 // import ui.DeviceManager;
 // import props.Player;
