@@ -1,12 +1,9 @@
 package;
 
-import openfl.display.Sprite;
-import openfl.net.NetStream;
-import openfl.media.Video;
 import ui.AtlasText;
 import shaderslmfao.BuildingShaders;
 import shaderslmfao.ColorSwap;
-#if desktop
+#if discord_rpc
 import Discord.DiscordClient;
 import sys.thread.Thread;
 #end
@@ -50,12 +47,6 @@ class TitleState extends MusicBeatState
 	var swagShader:ColorSwap;
 	var alphaShader:BuildingShaders;
 
-	#if web
-	var video:Video;
-	var netStream:NetStream;
-	var overlay:Sprite;
-	#end
-
 	override public function create():Void
 	{
 		swagShader = new ColorSwap();
@@ -94,12 +85,7 @@ class TitleState extends MusicBeatState
 					StoryMenuState.weekUnlocked[0] = true;
 			}
 
-			if (FlxG.save.data.seenVideo != null)
-			{
-				VideoState.seenVideo = FlxG.save.data.seenVideo;
-			}
-
-			#if desktop
+			#if discord_rpc
 			DiscordClient.initialize();
 
 			Application.current.onExit.add(function(exitCode)
@@ -235,14 +221,6 @@ class TitleState extends MusicBeatState
 			initialized = true;
 
 		// credGroup.add(credTextShit);
-
-		if (FlxG.sound.music != null)
-		{
-			FlxG.sound.music.onComplete = function()
-			{
-				FlxG.switchState(new VideoState());
-			}
-		}
 	}
 
 	function getIntroTextShit():Array<Array<String>>

@@ -7,7 +7,7 @@ import ui.MenuTypedList;
 import ui.AtlasMenuItem;
 import ui.OptionsState;
 import ui.PreferencesMenu;
-#if desktop
+#if discord_rpc
 import Discord.DiscordClient;
 #end
 import flixel.FlxG;
@@ -42,7 +42,7 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
-		#if desktop
+		#if discord_rpc
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
@@ -101,14 +101,7 @@ class MainMenuState extends MusicBeatState
 		{
 			startExitState(new FreeplayState());
 		});
-		if (VideoState.seenVideo)
-		{
-			menuItems.createItem(null, null, "kickstarter", selectDonate, true);
-		}
-		else
-		{
-			menuItems.createItem(null, null, "donate", selectDonate, true);
-		}
+		menuItems.createItem(null, null, "donate", selectDonate, true);
 		menuItems.createItem(0, 0, "options", function()
 		{
 			startExitState(new OptionsState());
