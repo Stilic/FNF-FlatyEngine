@@ -162,7 +162,7 @@ class PlayState extends MusicBeatState
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
 		var splash:NoteSplash = new NoteSplash(100, 100, 0);
 		grpNoteSplashes.add(splash);
-		splash.alpha = 0.1;
+		splash.alpha = 0.00001;
 
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -177,23 +177,23 @@ class PlayState extends MusicBeatState
 
 		switch (SONG.song.toLowerCase())
 		{
-			case 'tutorial':
-				dialogue = ["Hey you're pretty cute.", 'Use the arrow keys to keep up \nwith me singing.'];
-			case 'bopeebo':
-				dialogue = [
-					'HEY!',
-					"You think you can just sing\nwith my daughter like that?",
-					"If you want to date her...",
-					"You're going to have to go \nthrough ME first!"
-				];
-			case 'fresh':
-				dialogue = ["Not too shabby boy.", ""];
-			case 'dadbattle':
-				dialogue = [
-					"gah you think you're hot stuff?",
-					"If you can beat me here...",
-					"Only then I will even CONSIDER letting you\ndate my daughter!"
-				];
+			// case 'tutorial':
+			// 	dialogue = ["Hey you're pretty cute.", 'Use the arrow keys to keep up \nwith me singing.'];
+			// case 'bopeebo':
+			// 	dialogue = [
+			// 		'HEY!',
+			// 		"You think you can just sing\nwith my daughter like that?",
+			// 		"If you want to date her...",
+			// 		"You're going to have to go \nthrough ME first!"
+			// 	];
+			// case 'fresh':
+			// 	dialogue = ["Not too shabby boy.", ""];
+			// case 'dadbattle':
+			// 	dialogue = [
+			// 		"gah you think you're hot stuff?",
+			// 		"If you can beat me here...",
+			// 		"Only then I will even CONSIDER letting you\ndate my daughter!"
+			// 	];
 			case 'senpai':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('senpai/senpaiDialogue'));
 			case 'roses':
@@ -499,8 +499,8 @@ class PlayState extends MusicBeatState
 				{
 					curStage = 'schoolEvil';
 
-					var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
-					var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
+					// var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
+					// var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
 
 					var posX = 400;
 					var posY = 200;
@@ -803,11 +803,15 @@ class PlayState extends MusicBeatState
 
 		add(foregroundSprites);
 
-		var doof:DialogueBox = new DialogueBox(false, dialogue);
-		// doof.x += 70;
-		// doof.y = FlxG.height * 0.5;
-		doof.scrollFactor.set();
-		doof.finishThing = startCountdown;
+		var doof:DialogueBox = null;
+		if (curStage.startsWith('school'))
+		{
+			doof = new DialogueBox(false, dialogue);
+			// doof.x += 70;
+			// doof.y = FlxG.height * 0.5;
+			doof.scrollFactor.set();
+			doof.finishThing = startCountdown;
+		}
 
 		Conductor.songPosition = -5000;
 
@@ -885,7 +889,8 @@ class PlayState extends MusicBeatState
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
-		doof.cameras = [camHUD];
+		if (doof != null)
+			doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -998,7 +1003,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	function schoolIntro(?dialogueBox:DialogueBox):Void
+	function schoolIntro(dialogueBox:DialogueBox):Void
 	{
 		var black:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		black.scrollFactor.set();
@@ -1980,7 +1985,7 @@ class PlayState extends MusicBeatState
 		// boyfriend.playAnim('hey');
 		vocals.volume = 1;
 
-		var coolPoint:FlxPoint = new FlxPoint(FlxG.width * 0.425, FlxG.height / 2);
+		var coolX:Float = FlxG.width * 0.425;
 		//
 
 		var rating:FlxSprite = new FlxSprite();
@@ -2036,8 +2041,8 @@ class PlayState extends MusicBeatState
 		}
 
 		rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2));
-		rating.screenCenter();
-		rating.x = coolPoint.x - 40;
+		rating.screenCenter(Y);
+		rating.x = coolX - 40;
 		rating.y -= 60;
 		rating.acceleration.y = 550;
 		rating.velocity.y -= FlxG.random.int(140, 175);
@@ -2045,8 +2050,8 @@ class PlayState extends MusicBeatState
 		rating.cameras = [camHUD];
 
 		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
-		comboSpr.screenCenter();
-		comboSpr.x = coolPoint.x;
+		comboSpr.screenCenter(Y);
+		comboSpr.x = coolX;
 		comboSpr.acceleration.y = 600;
 		comboSpr.velocity.y -= 150;
 		comboSpr.cameras = [camHUD];
@@ -2082,8 +2087,8 @@ class PlayState extends MusicBeatState
 		for (i in seperatedScore)
 		{
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
-			numScore.screenCenter();
-			numScore.x = coolPoint.x + (43 * daLoop) - 90;
+			numScore.screenCenter(Y);
+			numScore.x = coolX + (43 * daLoop) - 90;
 			numScore.y += 80;
 
 			if (!curStage.startsWith('school'))
@@ -2102,7 +2107,7 @@ class PlayState extends MusicBeatState
 			numScore.velocity.x = FlxG.random.float(-5, 5);
 			numScore.cameras = [camHUD];
 
-			if (combo >= 10 || combo == 0)
+			if (combo >= 10)
 				insert(members.indexOf(strumLineNotes), numScore);
 
 			FlxTween.tween(numScore, {alpha: 0}, 0.2, {
@@ -2127,9 +2132,7 @@ class PlayState extends MusicBeatState
 		FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
 			onComplete: function(tween:FlxTween)
 			{
-				coolPoint.destroy();
 				comboSpr.destroy();
-
 				rating.destroy();
 			},
 			startDelay: Conductor.crochet * 0.001

@@ -22,7 +22,7 @@ class StoryMenuState extends MusicBeatState
 {
 	var scoreText:FlxText;
 
-	var weekData:Array<Dynamic> = [
+	var weekData:Array<Array<String>> = [
 		['Tutorial'],
 		['Bopeebo', 'Fresh', 'Dadbattle'],
 		['Spookeez', 'South', "Monster"],
@@ -36,7 +36,7 @@ class StoryMenuState extends MusicBeatState
 
 	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true, true];
 
-	var weekCharacters:Array<Dynamic> = [
+	var weekCharacters:Array<Array<String>> = [
 		['dad', 'bf', 'gf'],
 		['dad', 'bf', 'gf'],
 		['spooky', 'bf', 'gf'],
@@ -85,8 +85,7 @@ class StoryMenuState extends MusicBeatState
 		txtWeekTitle.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
 		txtWeekTitle.alpha = 0.7;
 
-		var rankText:FlxText = new FlxText(0, 10);
-		rankText.text = 'RANK: GREAT';
+		var rankText:FlxText = new FlxText(0, 10, 0, 'RANK: GREAT');
 		rankText.setFormat(Paths.font("vcr.ttf"), 32);
 		rankText.size = scoreText.size;
 		rankText.screenCenter(X);
@@ -393,7 +392,6 @@ class StoryMenuState extends MusicBeatState
 		grpWeekCharacters.members[0].animation.play(weekCharacters[curWeek][0]);
 		grpWeekCharacters.members[1].animation.play(weekCharacters[curWeek][1]);
 		grpWeekCharacters.members[2].animation.play(weekCharacters[curWeek][2]);
-		txtTracklist.text = "Tracks\n";
 
 		switch (grpWeekCharacters.members[0].animation.curAnim.name)
 		{
@@ -423,14 +421,15 @@ class StoryMenuState extends MusicBeatState
 				// grpWeekCharacters.members[0].updateHitbox();
 		}
 
-		var stringThing:Array<String> = weekData[curWeek];
-
-		for (i in stringThing)
+		var cock:String = "Tracks\n";
+		for (i in weekData[curWeek])
 		{
-			txtTracklist.text += "\n" + i;
+			cock += "\n" + i;
 		}
+		cock = cock.toUpperCase();
+		cock += "\n";
 
-		txtTracklist.text = txtTracklist.text.toUpperCase();
+		txtTracklist.text = cock;
 
 		txtTracklist.screenCenter(X);
 		txtTracklist.x -= FlxG.width * 0.35;

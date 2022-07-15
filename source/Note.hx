@@ -29,7 +29,7 @@ class Note extends FlxSprite
 	public var copyX:Bool = true;
 	public var copyY:Bool = true;
 	public var copyAngle:Bool = true;
-	public var copyAlpha:Bool = true;
+	public var copyAlpha:Bool = false;
 
 	public var offsetX:Float = 0;
 	public var offsetY:Float = 0;

@@ -19,7 +19,6 @@ class FreeplayState extends MusicBeatState
 {
 	var songs:Array<SongMetadata> = [];
 
-	var selector:FlxText;
 	var curSelected:Int = 0;
 	var curDifficulty:Int = 1;
 
@@ -41,8 +40,6 @@ class FreeplayState extends MusicBeatState
 		0xFFFF78BF,
 		0xFFF6B604
 	];
-
-	private var curPlaying:Bool = false;
 
 	private var iconArray:Array<HealthIcon> = [];
 
@@ -144,11 +141,6 @@ class FreeplayState extends MusicBeatState
 
 		// FlxG.sound.playMusic(Paths.music('title'), 0);
 		// FlxG.sound.music.fadeIn(2, 0, 0.8);
-		selector = new FlxText();
-
-		selector.size = 40;
-		selector.text = ">";
-		// add(selector);
 
 		var swag:Alphabet = new Alphabet(1, 0, "swag");
 
@@ -276,18 +268,16 @@ class FreeplayState extends MusicBeatState
 		if (curSelected >= songs.length)
 			curSelected = 0;
 
-		// selector.y = (70 * curSelected) + 30;
-
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 		// lerpScore = 0;
 		#end
 
-		#if PRELOAD_ALL
+		// #if PRELOAD_ALL
 		// No clue if this was removed or not, but I wanted to keep this as close as possible to the web version, and this is not in there.
 		// Yes, I know it's because the web version doesn't preload everything. If this being gone bothers you so much, then do it yourself lol.
 		// FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
-		#end
+		// #end
 
 		var bullShit:Int = 0;
 
