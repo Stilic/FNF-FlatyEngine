@@ -1,18 +1,15 @@
 package;
 
+#if discord_rpc
+import Discord.DiscordClient;
+#end
 import ui.AtlasText;
 import shaderslmfao.BuildingShaders;
 import shaderslmfao.ColorSwap;
-#if discord_rpc
-import Discord.DiscordClient;
-import sys.thread.Thread;
-#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.TransitionData;
 import flixel.graphics.FlxGraphic;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
@@ -30,7 +27,9 @@ using StringTools;
 
 class TitleState extends MusicBeatState
 {
-	public static var initialized:Bool = false;
+	static var initialized:Bool = false;
+
+	var startedIntro:Bool = false;
 
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
@@ -67,6 +66,9 @@ class TitleState extends MusicBeatState
 					Cache.clear();
 				}
 			});
+
+			FlxTransitionableState.defaultTransIn = FadeTransitionSubstate;
+			FlxTransitionableState.defaultTransOut = FadeTransitionSubstate;
 
 			PlayerSettings.init();
 			Highscore.load();
@@ -118,22 +120,6 @@ class TitleState extends MusicBeatState
 	{
 		if (!initialized)
 		{
-			var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
-			diamond.persist = true;
-			diamond.destroyOnNoUse = false;
-
-			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
-				new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
-				{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-
-			transIn = FlxTransitionableState.defaultTransIn;
-			transOut = FlxTransitionableState.defaultTransOut;
-
-			// HAD TO MODIFY SOME BACKEND SHIT
-			// IF THIS PR IS HERE IF ITS ACCEPTED UR GOOD TO GO
-			// https://github.com/HaxeFlixel/flixel-addons/pull/348
-
 			// var music:FlxSound = new FlxSound();
 			// music.loadStream(Paths.music('freakyMenu'));
 			// FlxG.sound.list.add(music);
@@ -142,6 +128,8 @@ class TitleState extends MusicBeatState
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
+
+		startedIntro = true;
 
 		Conductor.changeBPM(102);
 		persistentUpdate = true;
@@ -285,13 +273,13 @@ class TitleState extends MusicBeatState
 				FlxG.sound.music.onComplete = null;
 			}
 
-			#if !switch
-			// If it's Friday according to da clock
-			if (Date.now().getDay() == 5)
-			{
-				// Unlock Friday medal
-			}
-			#end
+			// #if !switch
+			// // If it's Friday according to da clock
+			// if (Date.now().getDay() == 5)
+			// {
+			// 	// Unlock Friday medal
+			// }
+			// #end
 
 			titleText.animation.play('press');
 
@@ -301,12 +289,10 @@ class TitleState extends MusicBeatState
 			transitioning = true;
 			// FlxG.sound.music.stop();
 
-			// Check if version is outdated
-			if (!OutdatedSubState.leftState)
+			new FlxTimer().start(2, function(twn:FlxTimer)
 			{
-				// TODO: Make a check here or delete this since no NGAPI
 				FlxG.switchState(new MainMenuState());
-			}
+			});
 
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
@@ -362,71 +348,76 @@ class TitleState extends MusicBeatState
 	{
 		super.beatHit();
 
-		logoBl.animation.play('bump');
+		if (logoBl != null)
+			logoBl.animation.play('bump');
 		danceLeft = !danceLeft;
 
-		if (danceLeft)
-			gfDance.animation.play('danceRight');
-		else
-			gfDance.animation.play('danceLeft');
+		if (gfDance != null)
+		{
+			if (danceLeft)
+				gfDance.animation.play('danceRight');
+			else
+				gfDance.animation.play('danceLeft');
+		}
 
 		FlxG.log.add(curBeat);
 
 		if (curBeat > lastBeat)
 		{
-			for (i in lastBeat...curBeat)
-			{
-				switch (i + 1)
+			if (startedIntro)
+				for (i in lastBeat...curBeat)
 				{
-					case 1:
-						createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
-					// credTextShit.visible = true;
-					case 3:
-						addMoreText('present');
-					// credTextShit.text += '\npresent...';
-					// credTextShit.addText();
-					case 4:
-						deleteCoolText();
-					// credTextShit.visible = false;
-					// credTextShit.text = 'In association \nwith';
-					// credTextShit.screenCenter();
-					case 5:
-						createCoolText(['In association', 'with']);
-					case 7:
-						addMoreText('newgrounds');
-						ngSpr.visible = true;
-					// credTextShit.text += '\nNewgrounds';
-					case 8:
-						deleteCoolText();
-						ngSpr.visible = false;
-					// credTextShit.visible = false;
+					switch (i + 1)
+					{
+						case 1:
+							createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+						// credTextShit.visible = true;
+						case 3:
+							addMoreText('present');
+						// credTextShit.text += '\npresent...';
+						// credTextShit.addText();
+						case 4:
+							deleteCoolText();
+						// credTextShit.visible = false;
+						// credTextShit.text = 'In association \nwith';
+						// credTextShit.screenCenter();
+						case 5:
+							createCoolText(['In association', 'with']);
+						case 7:
+							addMoreText('newgrounds');
+							ngSpr.visible = true;
+						// credTextShit.text += '\nNewgrounds';
+						case 8:
+							deleteCoolText();
+							ngSpr.visible = false;
+						// credTextShit.visible = false;
 
-					// credTextShit.text = 'Shoutouts Tom Fulp';
-					// credTextShit.screenCenter();
-					case 9:
-						createCoolText([curWacky[0]]);
-					// credTextShit.visible = true;
-					case 11:
-						addMoreText(curWacky[1]);
-					// credTextShit.text += '\nlmao';
-					case 12:
-						deleteCoolText();
-					// credTextShit.visible = false;
-					// credTextShit.text = "Friday";
-					// credTextShit.screenCenter();
-					case 13:
-						addMoreText('Friday');
-					// credTextShit.visible = true;
-					case 14:
-						addMoreText('Night');
-					// credTextShit.text += '\nNight';
-					case 15:
-						addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
+						// credTextShit.text = 'Shoutouts Tom Fulp';
+						// credTextShit.screenCenter();
+						case 9:
+							createCoolText([curWacky[0]]);
+						// credTextShit.visible = true;
+						case 11:
+							addMoreText(curWacky[1]);
+						// credTextShit.text += '\nlmao';
+						case 12:
+							deleteCoolText();
+						// credTextShit.visible = false;
+						// credTextShit.text = "Friday";
+						// credTextShit.screenCenter();
+						case 13:
+							addMoreText('Friday');
+						// credTextShit.visible = true;
+						case 14:
+							addMoreText('Night');
+						// credTextShit.text += '\nNight';
+						case 15:
+							addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
 
-					case 16:
-						skipIntro();
+						case 16:
+							skipIntro();
+					}
 				}
-			}
 		}
 
 		lastBeat = curBeat;

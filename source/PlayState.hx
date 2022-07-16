@@ -1377,6 +1377,8 @@ class PlayState extends MusicBeatState
 		FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
 	}
 
+	var oldFollowTarget:FlxObject;
+
 	override function openSubState(SubState:FlxSubState)
 	{
 		if (paused)
@@ -1390,6 +1392,9 @@ class PlayState extends MusicBeatState
 			if (!startTimer.finished)
 				startTimer.active = false;
 		}
+
+		oldFollowTarget = FlxG.camera.target;
+		FlxG.camera.target = null;
 
 		super.openSubState(SubState);
 	}
@@ -1418,6 +1423,9 @@ class PlayState extends MusicBeatState
 			}
 			#end
 		}
+
+		FlxG.camera.target = oldFollowTarget;
+		oldFollowTarget = null;
 
 		super.closeSubState();
 	}
@@ -1911,9 +1919,6 @@ class PlayState extends MusicBeatState
 			{
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 
-				transIn = FlxTransitionableState.defaultTransIn;
-				transOut = FlxTransitionableState.defaultTransOut;
-
 				FlxG.switchState(new StoryMenuState());
 
 				// if ()
@@ -1979,13 +1984,13 @@ class PlayState extends MusicBeatState
 
 	var endingSong:Bool = false;
 
-	private function popUpScore(strumtime:Float, daNote:Note):Void
+	private function popUpScore(daNote:Note):Void
 	{
-		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
+		var noteDiff:Float = Math.abs(daNote.strumTime - Conductor.songPosition);
 		// boyfriend.playAnim('hey');
 		vocals.volume = 1;
 
-		var coolX:Float = FlxG.width * 0.425;
+		var coolX:Float = FlxG.width * 0.35;
 		//
 
 		var rating:FlxSprite = new FlxSprite();
@@ -2363,7 +2368,7 @@ class PlayState extends MusicBeatState
 		{
 			if (!note.isSustainNote)
 			{
-				popUpScore(note.strumTime, note);
+				popUpScore(note);
 				combo += 1;
 			}
 
