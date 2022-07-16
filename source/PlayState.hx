@@ -1766,11 +1766,11 @@ class PlayState extends MusicBeatState
 								daNote.y += (daNote.height / 2) * mult;
 							if (!daNote.prevNote.isSustainNote)
 							{
-								var shit:Float = 1.75;
+								var offset:Float = 1.75;
 								if (strum.downscroll)
-									daNote.y += daNote.height / (shit * 2.25);
+									daNote.y += daNote.height / (offset * 2.25);
 								else
-									daNote.y += daNote.height * shit;
+									daNote.y += daNote.height * offset;
 							}
 						}
 					}
