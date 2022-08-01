@@ -1555,18 +1555,18 @@ class PlayState extends MusicBeatState
 			paused = true;
 
 			// 1 / 1000 chance for Gitaroo Man easter egg
-			if (FlxG.random.bool(0.1))
-			{
-				// gitaroo man easter egg
-				MusicBeatState.switchState(new GitarooPause());
-			}
-			else
-			{
-				var screenPos:FlxPoint = boyfriend.getScreenPosition();
-				var pauseMenu:PauseSubState = new PauseSubState(screenPos.x, screenPos.y);
-				openSubState(pauseMenu);
-				pauseMenu.camera = camHUD;
-			}
+			// if (FlxG.random.bool(0.1))
+			// {
+			// 	// gitaroo man easter egg
+			// 	MusicBeatState.switchState(new GitarooPause());
+			// }
+			// else
+			// {
+			var screenPos:FlxPoint = boyfriend.getScreenPosition();
+			var pauseMenu:PauseSubState = new PauseSubState(screenPos.x, screenPos.y);
+			openSubState(pauseMenu);
+			pauseMenu.camera = camHUD;
+			// }
 
 			#if discord_rpc
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
@@ -1612,10 +1612,8 @@ class PlayState extends MusicBeatState
 		/* if (FlxG.keys.justPressed.NINE)
 			MusicBeatState.switchState(new Charting()); */
 
-		#if debug
 		if (FlxG.keys.justPressed.EIGHT)
 			MusicBeatState.switchState(new AnimationDebug(SONG.player2));
-		#end
 
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
 		{
