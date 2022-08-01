@@ -6,6 +6,7 @@ import openfl.events.Event;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.system.System;
+import flixel.math.FlxMath;
 
 class CoolCounter extends TextField
 {
@@ -35,7 +36,7 @@ class CoolCounter extends TextField
 		addEventListener(Event.ENTER_FRAME, onEnter);
 	}
 
-	function onEnter(_)
+	@:noCompletion function onEnter(_)
 	{
 		var now:Float = Timer.stamp();
 		times.push(now);
@@ -43,7 +44,7 @@ class CoolCounter extends TextField
 		while (times[0] < now - 1)
 			times.shift();
 
-		var mem:Float = Math.round(System.totalMemory / 1024 / 1024 * 100) / 100;
+		var mem:Float = FlxMath.roundDecimal(System.totalMemory / 1000000, 1);
 		if (mem > memoryPeak)
 			memoryPeak = mem;
 
