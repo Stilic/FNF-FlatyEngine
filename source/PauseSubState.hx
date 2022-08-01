@@ -140,7 +140,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "Resume":
 					close();
 				case "Restart Song":
-					FlxG.resetState();
+					MusicBeatState.resetState();
 				case "Change Difficulty":
 					menuItems = difficultyChoices;
 					regenMenu();
@@ -151,15 +151,15 @@ class PauseSubState extends MusicBeatSubstate
 					PlayState.seenCutscene = false;
 					PlayState.deathCounter = 0;
 					if (PlayState.isStoryMode)
-						FlxG.switchState(new StoryMenuState());
+						MusicBeatState.switchState(new StoryMenuState());
 					else
-						FlxG.switchState(new FreeplayState());
+						MusicBeatState.switchState(new FreeplayState());
 
 				case "EASY" | "NORMAL" | "HARD":
 					PlayState.SONG = Song.loadFromJson(Highscore.formatSong(PlayState.SONG.song.toLowerCase(), curSelected),
 						PlayState.SONG.song.toLowerCase());
 					PlayState.storyDifficulty = curSelected;
-					FlxG.resetState();
+					MusicBeatState.resetState();
 				case "BACK":
 					menuItems = pauseOG;
 					regenMenu();

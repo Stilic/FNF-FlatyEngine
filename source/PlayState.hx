@@ -1558,7 +1558,7 @@ class PlayState extends MusicBeatState
 			if (FlxG.random.bool(0.1))
 			{
 				// gitaroo man easter egg
-				FlxG.switchState(new GitarooPause());
+				MusicBeatState.switchState(new GitarooPause());
 			}
 			else
 			{
@@ -1575,7 +1575,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
-			FlxG.switchState(new ChartingState());
+			MusicBeatState.switchState(new ChartingState());
 
 			#if discord_rpc
 			DiscordClient.changePresence("Chart Editor", null, null, true);
@@ -1610,11 +1610,11 @@ class PlayState extends MusicBeatState
 			iconP2.animation.curAnim.curFrame = 0;
 
 		/* if (FlxG.keys.justPressed.NINE)
-			FlxG.switchState(new Charting()); */
+			MusicBeatState.switchState(new Charting()); */
 
 		#if debug
 		if (FlxG.keys.justPressed.EIGHT)
-			FlxG.switchState(new AnimationDebug(SONG.player2));
+			MusicBeatState.switchState(new AnimationDebug(SONG.player2));
 		#end
 
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
@@ -1652,7 +1652,7 @@ class PlayState extends MusicBeatState
 					gfSpeed = 1;
 					// case 163:
 					// FlxG.sound.music.stop();
-					// FlxG.switchState(new TitleState());
+					// MusicBeatState.switchState(new TitleState());
 			}
 		}
 
@@ -1663,7 +1663,7 @@ class PlayState extends MusicBeatState
 				case 128, 129, 130:
 					vocals.volume = 0;
 					// FlxG.sound.music.stop();
-					// FlxG.switchState(new PlayState());
+					// MusicBeatState.switchState(new PlayState());
 			}
 		}
 		// better streaming of shit
@@ -1699,7 +1699,7 @@ class PlayState extends MusicBeatState
 
 				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
-				// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+				// MusicBeatState.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 				#if discord_rpc
 				// Game Over doesn't get his own variable because it's only used here
@@ -1919,7 +1919,7 @@ class PlayState extends MusicBeatState
 			{
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 
-				FlxG.switchState(new StoryMenuState());
+				MusicBeatState.switchState(new StoryMenuState());
 
 				// if ()
 				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
@@ -1978,7 +1978,7 @@ class PlayState extends MusicBeatState
 		else
 		{
 			trace('WENT BACK TO FREEPLAY??');
-			FlxG.switchState(new FreeplayState());
+			MusicBeatState.switchState(new FreeplayState());
 		}
 	}
 

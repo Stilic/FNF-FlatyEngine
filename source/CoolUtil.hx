@@ -9,7 +9,7 @@ class CoolUtil
 {
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
-	public static function difficultyString():String
+	inline public static function difficultyString():String
 	{
 		return difficultyArray[PlayState.storyDifficulty];
 	}
@@ -36,13 +36,18 @@ class CoolUtil
 		return dumbArray;
 	}
 
-	public static function camLerpShit(ratio:Float)
+	inline public static function camLerpShit(ratio:Float):Float
 	{
 		return FlxG.elapsed / (1 / 60) * ratio;
 	}
 
-	public static function coolLerp(a:Float, b:Float, ratio:Float)
+	inline public static function coolLerp(a:Float, b:Float, ratio:Float):Float
 	{
 		return a + camLerpShit(ratio) * (b - a);
+	}
+
+	inline public static function boundTo(value:Float, min:Float, max:Float):Float
+	{
+		return Math.max(min, Math.min(max, value));
 	}
 }

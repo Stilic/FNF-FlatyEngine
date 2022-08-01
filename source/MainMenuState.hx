@@ -89,7 +89,6 @@ class MainMenuState extends MusicBeatState
 		{
 			FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
 		});
-		menuItems.enabled = false;
 		menuItems.createItem(null, null, "story mode", function()
 		{
 			startExitState(new StoryMenuState());
@@ -120,12 +119,6 @@ class MainMenuState extends MusicBeatState
 		add(versionShit);
 
 		super.create();
-	}
-
-	override function finishTransIn()
-	{
-		super.finishTransIn();
-		menuItems.enabled = true;
 	}
 
 	function onMenuItemChange(item:MenuItem)
@@ -161,7 +154,7 @@ class MainMenuState extends MusicBeatState
 		});
 		new FlxTimer().start(0.4, function(tmr:FlxTimer)
 		{
-			FlxG.switchState(nextState);
+			MusicBeatState.switchState(nextState);
 		});
 	}
 
@@ -181,7 +174,7 @@ class MainMenuState extends MusicBeatState
 
 		if (controls.BACK && menuItems.enabled && !menuItems.busy)
 		{
-			FlxG.switchState(new TitleState());
+			MusicBeatState.switchState(new TitleState());
 		}
 
 		super.update(elapsed);

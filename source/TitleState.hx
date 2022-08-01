@@ -68,17 +68,17 @@ class TitleState extends MusicBeatState
 				}
 			});
 
-			var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
-			diamond.persist = true;
-			diamond.destroyOnNoUse = false;
+			// var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
+			// diamond.persist = true;
+			// diamond.destroyOnNoUse = false;
 
-			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(0, -1),
-				{asset: diamond, width: 32, height: 32}, new FlxRect(FlxG.width / 2, 0, FlxG.width * 2, FlxG.height));
-			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(0, 1),
-				{asset: diamond, width: 32, height: 32}, new FlxRect(FlxG.width / 2, 0, FlxG.width * 2, FlxG.height));
+			// FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(0, -1),
+			// 	{asset: diamond, width: 32, height: 32}, new FlxRect(0, 0, FlxG.width, FlxG.height));
+			// FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(0, 1),
+			// 	{asset: diamond, width: 32, height: 32}, new FlxRect(0, 0, FlxG.width, FlxG.height));
 
-			transIn = FlxTransitionableState.defaultTransIn;
-			transOut = FlxTransitionableState.defaultTransOut;
+			// transIn = FlxTransitionableState.defaultTransIn;
+			// transOut = FlxTransitionableState.defaultTransOut;
 
 			PlayerSettings.init();
 			Highscore.load();
@@ -295,7 +295,7 @@ class TitleState extends MusicBeatState
 
 			new FlxTimer().start(2, function(twn:FlxTimer)
 			{
-				FlxG.switchState(new MainMenuState());
+				MusicBeatState.switchState(new MainMenuState());
 			});
 
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
