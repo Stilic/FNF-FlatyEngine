@@ -42,7 +42,6 @@ class OptionsState extends MusicBeatState
 			controlsmenu.onExit.add(exitToMainMenu);
 			setPage(Controls);
 		}
-		currentPage.enabled = false;
 		super.create();
 	}
 
@@ -66,12 +65,6 @@ class OptionsState extends MusicBeatState
 		{
 			currentPage.exists = true;
 		}
-	}
-
-	override function finishTransIn()
-	{
-		super.finishTransIn();
-		currentPage.enabled = true;
 	}
 
 	function switchPage(name:PageName)
