@@ -151,6 +151,8 @@ class PlayState extends MusicBeatState
 		if (OpenFlAssets.exists(vocalsPath, SOUND) || OpenFlAssets.exists(vocalsPath, MUSIC))
 			OpenFlAssets.getSound(vocalsPath, true);
 
+		persistentUpdate = persistentDraw = true;
+
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
@@ -163,9 +165,6 @@ class PlayState extends MusicBeatState
 		var splash:NoteSplash = new NoteSplash(100, 100, 0);
 		grpNoteSplashes.add(splash);
 		splash.alpha = 0.00001;
-
-		persistentUpdate = true;
-		persistentDraw = true;
 
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
@@ -1297,21 +1296,24 @@ class PlayState extends MusicBeatState
 				susLength /= Conductor.stepCrochet;
 				unspawnNotes.push(swagNote);
 
-				for (susNote in 0...Math.floor(susLength))
+				if (susLength > 0)
 				{
-					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+					for (susNote in 0...Math.floor(susLength))
+					{
+						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + (Conductor.stepCrochet / speed), daNoteData, oldNote,
-						true);
-					sustainNote.scrollFactor.set();
-					unspawnNotes.push(sustainNote);
+						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + (Conductor.stepCrochet / speed), daNoteData,
+							oldNote, true);
+						sustainNote.scrollFactor.set();
+						unspawnNotes.push(sustainNote);
 
-					sustainNote.mustPress = gottaHitNote;
+						sustainNote.mustPress = gottaHitNote;
 
-					// if (sustainNote.mustPress)
-					// {
-					// 	sustainNote.x += FlxG.width / 2; // general offset
-					// }
+						// if (sustainNote.mustPress)
+						// {
+						// 	sustainNote.x += FlxG.width / 2; // general offset
+						// }
+					}
 				}
 
 				swagNote.mustPress = gottaHitNote;
