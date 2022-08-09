@@ -1,27 +1,15 @@
 package;
 
-#if discord_rpc
-import Discord.DiscordClient;
-#end
-import ui.AtlasText;
 import shaderslmfao.BuildingShaders;
 import shaderslmfao.ColorSwap;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.FlxState;
-import flixel.addons.transition.TransitionData;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
-import flixel.graphics.FlxGraphic;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
-import flixel.math.FlxPoint;
-import flixel.math.FlxRect;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import lime.app.Application;
 import openfl.Assets;
 
 using StringTools;
@@ -30,6 +18,8 @@ class TitleState extends MusicBeatState
 {
 	static var initialized:Bool = false;
 
+	static var curWacky:Array<String>;
+
 	var startedIntro:Bool = false;
 
 	var blackScreen:FlxSprite;
@@ -37,8 +27,6 @@ class TitleState extends MusicBeatState
 	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
-
-	var curWacky:Array<String> = [];
 
 	var wackyImage:FlxSprite;
 
@@ -52,60 +40,8 @@ class TitleState extends MusicBeatState
 		swagShader = new ColorSwap();
 		alphaShader = new BuildingShaders();
 
-		curWacky = FlxG.random.getObject(getIntroTextShit());
-
-		if (!initialized)
-		{
-			FlxG.game.focusLostFramerate = 60;
-			FlxG.sound.muteKeys = [ZERO];
-
-			FlxG.signals.preStateCreate.add(function(state:FlxState)
-			{
-				if (!Std.isOfType(state, PlayState) && !Std.isOfType(state, ChartingState) && !Std.isOfType(state, AnimationDebug))
-				{
-					AtlasText.fonts.clear();
-					Cache.clear();
-				}
-			});
-
-			// var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
-			// diamond.persist = true;
-			// diamond.destroyOnNoUse = false;
-
-			// FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(0, -1),
-			// 	{asset: diamond, width: 32, height: 32}, new FlxRect(0, 0, FlxG.width, FlxG.height));
-			// FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.5, new FlxPoint(0, 1),
-			// 	{asset: diamond, width: 32, height: 32}, new FlxRect(0, 0, FlxG.width, FlxG.height));
-
-			// transIn = FlxTransitionableState.defaultTransIn;
-			// transOut = FlxTransitionableState.defaultTransOut;
-
-			PlayerSettings.init();
-			Highscore.load();
-
-			if (FlxG.save.data.weekUnlocked != null)
-			{
-				// FIX LATER!!!
-				// WEEK UNLOCK PROGRESSION!!
-				// StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
-
-				if (StoryMenuState.weekUnlocked.length < 4)
-					StoryMenuState.weekUnlocked.insert(0, true);
-
-				// QUICK PATCH OOPS!
-				if (!StoryMenuState.weekUnlocked[0])
-					StoryMenuState.weekUnlocked[0] = true;
-			}
-
-			#if discord_rpc
-			DiscordClient.initialize();
-
-			Application.current.onExit.add(function(exitCode)
-			{
-				DiscordClient.shutdown();
-			});
-			#end
-		}
+		if (curWacky == null)
+			curWacky = FlxG.random.getObject(getIntroTextShit());
 
 		super.create();
 

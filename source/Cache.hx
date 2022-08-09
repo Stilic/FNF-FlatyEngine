@@ -1,12 +1,13 @@
 package;
 
 import flixel.FlxG;
-import openfl.system.System;
 import flixel.graphics.FlxGraphic;
+import openfl.system.System;
+import openfl.utils.Assets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
-import openfl.utils.Assets;
 import openfl.display3D.textures.Texture;
+import ui.AtlasText;
 
 class Cache
 {
@@ -46,6 +47,7 @@ class Cache
 
 	public static function clear()
 	{
+		AtlasText.fonts.clear();
 		clearBitmaps();
 		clearSounds();
 		System.gc();

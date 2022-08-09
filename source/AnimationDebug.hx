@@ -167,6 +167,7 @@ class AnimationDebug extends FlxState
 		var rightP = FlxG.keys.anyJustPressed([RIGHT]);
 		var downP = FlxG.keys.anyJustPressed([DOWN]);
 		var leftP = FlxG.keys.anyJustPressed([LEFT]);
+		var exit = FlxG.keys.anyJustPressed([ESCAPE]);
 
 		var holdShift = FlxG.keys.pressed.SHIFT;
 		var multiplier = 1;
@@ -189,6 +190,9 @@ class AnimationDebug extends FlxState
 			genBoyOffsets(false);
 			char.playAnim(animList[curAnim]);
 		}
+
+		if (exit)
+			MusicBeatState.switchState(new PlayState());
 
 		super.update(elapsed);
 	}

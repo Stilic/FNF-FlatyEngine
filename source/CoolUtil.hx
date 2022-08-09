@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxG;
+import flixel.math.FlxMath;
 import lime.utils.Assets;
 
 using StringTools;
@@ -43,7 +44,7 @@ class CoolUtil
 
 	inline public static function coolLerp(a:Float, b:Float, ratio:Float):Float
 	{
-		return a + camLerpShit(ratio) * (b - a);
+		return FlxMath.lerp(a, b, camLerpShit(ratio));
 	}
 
 	inline public static function boundTo(value:Float, min:Float, max:Float):Float
