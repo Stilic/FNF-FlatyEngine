@@ -78,6 +78,7 @@ class TitleState extends MusicBeatState
 		// bg.antialiasing = true;
 		// bg.setGraphicSize(Std.int(bg.width * 0.6));
 		// bg.updateHitbox();
+		bg.shader = new GridPlane(30, FlxColor.BLUE).shader;
 		add(bg);
 
 		logoBl = new FlxSprite(-150, -100);

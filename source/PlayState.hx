@@ -957,40 +957,31 @@ class PlayState extends MusicBeatState
 		super.create();
 	}
 
-	#if hxCodec
-	function playCutscene(name:String, ?callback:Void->Void)
+	function playCutscene(name:String, atEndOfSong:Bool = false, ?callback:Void->Void)
 	{
-		inCutscene = true;
-
-		var video:MP4Handler = new MP4Handler();
-		video.finishCallback = function()
+		var endShit = function()
 		{
 			if (callback != null)
 				callback();
-			startCountdown();
-		}
-		video.playVideo(Paths.video(name));
-	}
-
-	function playEndCutscene(name:String, ?callback:Void->Void)
-	{
+			if (atEndOfSong)
+				endSong();
+			else
+				startCountdown();
+		};
+		#if hxCodec
 		inCutscene = true;
 
 		var video:MP4Handler = new MP4Handler();
-		video.finishCallback = function()
-		{
-			if (callback != null)
-				callback();
-			SONG = Song.loadFromJson(storyPlaylist[0].toLowerCase());
-			LoadingState.loadAndSwitchState(new PlayState());
-		}
+		video.finishCallback = endShit;
 		video.playVideo(Paths.video(name));
+		#else
+		endShit();
+		#end
 	}
-	#end
 
 	function tankIntro(video:String, zoom:Bool = false):Void
 	{
-		playCutscene(video, function()
+		playCutscene(video, false, function()
 		{
 			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.stepCrochet / 1000) * 5, {ease: FlxEase.quadInOut});
 			cameraMovement();
@@ -1264,7 +1255,7 @@ class PlayState extends MusicBeatState
 		notes = new FlxTypedGroup<Note>();
 		add(notes);
 
-		var speed:Float = FlxMath.roundDecimal(SONG.speed, 2);
+		var speedCrochet:Float = Conductor.stepCrochet / FlxMath.roundDecimal(SONG.speed, 2);
 
 		for (section in SONG.notes)
 		{
@@ -1302,8 +1293,7 @@ class PlayState extends MusicBeatState
 					{
 						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + (Conductor.stepCrochet / speed), daNoteData,
-							oldNote, true);
+						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + speedCrochet, daNoteData, oldNote, true);
 						sustainNote.scrollFactor.set();
 						unspawnNotes.push(sustainNote);
 
@@ -1613,13 +1603,8 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
 		{
-			if (curBeat % 4 == 0)
-			{
-				// trace(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
-			}
-
 			cameraRightSide = PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection;
-			cameraMovement();
+			cameraMovement(true);
 		}
 
 		if (camZooming)
@@ -1809,57 +1794,8 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				if (!daNote.mustPress && !daNote.wasGoodHit && daNote.strumTime <= Conductor.songPosition)
-				{
-					if (SONG.song != 'Tutorial')
-						camZooming = true;
-
-					var altAnim:String = "";
-
-					if (SONG.notes[Math.floor(curStep / 16)] != null)
-					{
-						if (SONG.notes[Math.floor(curStep / 16)].altAnim)
-							altAnim = '-alt';
-					}
-					if (daNote.altNote)
-						altAnim = '-alt';
-
-					switch (Math.abs(daNote.noteData))
-					{
-						case 0:
-							dad.playAnim('singLEFT' + altAnim, true);
-						case 1:
-							dad.playAnim('singDOWN' + altAnim, true);
-						case 2:
-							dad.playAnim('singUP' + altAnim, true);
-						case 3:
-							dad.playAnim('singRIGHT' + altAnim, true);
-					}
-
-					dad.holdTimer = 0;
-
-					daNote.wasGoodHit = true;
-					if (SONG.needsVoices)
-						vocals.volume = 1;
-
-					opponentStrums.forEach(function(spr:StrumNote)
-					{
-						if (Math.abs(daNote.noteData) == spr.ID)
-						{
-							var time:Float = 0.15;
-							if (daNote.isSustainNote && !daNote.animation.curAnim.name.endsWith('end'))
-								time += 0.15;
-							spr.autoConfirm(time);
-						}
-					});
-
-					if (!daNote.isSustainNote)
-					{
-						daNote.kill();
-						notes.remove(daNote, true);
-						daNote.destroy();
-					}
-				}
+				if (!daNote.mustPress && daNote.strumTime <= Conductor.songPosition)
+					goodNoteHit(dad, daNote);
 
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
@@ -1918,9 +1854,7 @@ class PlayState extends MusicBeatState
 				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
 
 				if (SONG.validScore)
-				{
 					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
-				}
 
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 				FlxG.save.flush();
@@ -1964,7 +1898,6 @@ class PlayState extends MusicBeatState
 					prevCamFollowPos = camFollowPos;
 
 					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
-
 					LoadingState.loadAndSwitchState(new PlayState());
 				}
 			}
@@ -2138,50 +2071,62 @@ class PlayState extends MusicBeatState
 		});
 	}
 
-	private function cameraMovement():Void
+	private function cameraMovement(followChar:Bool = false):Void
 	{
-		if (camFollow.x != dad.getMidpoint().x + 150 && !cameraRightSide)
+		var char:Character;
+		if (!cameraRightSide)
+			char = dad;
+		else
+			char = boyfriend;
+
+		followChar = followChar && char.cameraMove;
+
+		if (!cameraRightSide)
 		{
-			camFollow.set(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
-			// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
-
-			switch (dad.curCharacter)
+			if (followChar || camFollow.x != char.getMidpoint().x + 150)
 			{
-				case 'mom':
-					camFollow.y = dad.getMidpoint().y;
-				case 'senpai' | 'senpai-angry':
-					camFollow.y = dad.getMidpoint().y - 430;
-					camFollow.x = dad.getMidpoint().x - 100;
-			}
+				camFollow.set(char.getMidpoint().x + 150, char.getMidpoint().y - 100);
+				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
 
-			if (SONG.song.toLowerCase() == 'tutorial')
-			{
-				tweenCamIn();
+				switch (char.curCharacter)
+				{
+					case 'mom':
+						camFollow.y = char.getMidpoint().y;
+					case 'senpai' | 'senpai-angry':
+						camFollow.y = char.getMidpoint().y - 430;
+						camFollow.x = char.getMidpoint().x - 100;
+				}
+
+				if (SONG.song.toLowerCase() == 'tutorial')
+					tweenCamIn();
 			}
 		}
-
-		if (cameraRightSide && camFollow.x != boyfriend.getMidpoint().x - 100)
+		else if (followChar || camFollow.x != char.getMidpoint().x - 100)
 		{
-			camFollow.set(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
+			camFollow.set(char.getMidpoint().x - 100, char.getMidpoint().y - 100);
 
 			switch (curStage)
 			{
 				case 'limo':
-					camFollow.x = boyfriend.getMidpoint().x - 300;
+					camFollow.x = char.getMidpoint().x - 300;
 				case 'mall':
-					camFollow.y = boyfriend.getMidpoint().y - 200;
+					camFollow.y = char.getMidpoint().y - 200;
 				case 'school':
-					camFollow.x = boyfriend.getMidpoint().x - 200;
-					camFollow.y = boyfriend.getMidpoint().y - 200;
+					camFollow.x = char.getMidpoint().x - 200;
+					camFollow.y = char.getMidpoint().y - 200;
 				case 'schoolEvil':
-					camFollow.x = boyfriend.getMidpoint().x - 200;
-					camFollow.y = boyfriend.getMidpoint().y - 200;
+					camFollow.x = char.getMidpoint().x - 200;
+					camFollow.y = char.getMidpoint().y - 200;
 			}
 
 			if (SONG.song.toLowerCase() == 'tutorial')
-			{
 				FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
-			}
+		}
+
+		if (followChar && char.cameraMoveArray != null)
+		{
+			camFollow.x += char.cameraMoveArray[0];
+			camFollow.y += char.cameraMoveArray[1];
 		}
 	}
 
@@ -2376,6 +2321,8 @@ class PlayState extends MusicBeatState
 				else
 					health += 0.004;
 			}
+			else if (SONG.song != 'Tutorial')
+				camZooming = true;
 
 			var altAnim:String = '';
 			var curSection:SwagSection = SONG.notes[Math.floor(curStep / 16)];
@@ -2402,7 +2349,8 @@ class PlayState extends MusicBeatState
 			});
 
 			note.wasGoodHit = true;
-			vocals.volume = 1;
+			if (vocals != null)
+				vocals.volume = 1;
 
 			if (!note.isSustainNote)
 			{

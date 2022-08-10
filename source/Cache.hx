@@ -1,5 +1,6 @@
 package;
 
+import haxe.ds.StringMap;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import openfl.system.System;
@@ -11,13 +12,13 @@ import ui.AtlasText;
 
 class Cache
 {
-	public static var dumpExclusions:Array<String> = [
+	static final dumpExclusions:Array<String> = [
 		'assets/preload/music/freakyMenu.${Paths.SOUND_EXT}',
 		'assets/shared/music/breakfast.${Paths.SOUND_EXT}'
 	];
 
 	static var bitmaps:Array<BitmapAsset> = [];
-	static var sounds:Map<String, Sound> = [];
+	static var sounds:StringMap<Sound> = new StringMap<Sound>();
 
 	public static function getGraphic(path:String, storeInGpu:Bool = false)
 	{
@@ -81,19 +82,9 @@ class Cache
 class BitmapAsset
 {
 	public var path:String;
+	public var graphic:FlxGraphic;
 
 	var texture:Texture;
-
-	public var graphic:FlxGraphic;
-	public var bitmap(get, never):BitmapData;
-
-	public function get_bitmap():BitmapData
-	{
-		if (texture != null)
-			return BitmapData.fromTexture(texture);
-		else
-			return graphic.bitmap;
-	}
 
 	public function new(path:String, storeInGpu:Bool = true)
 	{
@@ -106,11 +97,13 @@ class BitmapAsset
 			texture.uploadFromBitmapData(data);
 			data.dispose();
 			data.disposeImage();
+			data = null;
 		}
 
 		graphic = FlxGraphic.fromBitmapData(storeInGpu ? BitmapData.fromTexture(texture) : data);
 		graphic.persist = true;
 		graphic.destroyOnNoUse = false;
+
 		// trace('new bitmap: ' + path);
 	}
 
@@ -118,17 +111,15 @@ class BitmapAsset
 	{
 		if (texture != null)
 			texture.dispose();
-		else if (bitmap != null)
+		graphic.bitmap.dispose();
+		graphic.bitmap.disposeImage();
+
+		if (Assets.cache.hasBitmapData(path))
 		{
-			bitmap.dispose();
-			bitmap.disposeImage();
+			Assets.cache.removeBitmapData(path);
+			FlxG.bitmap.remove(graphic);
 		}
 
-		Assets.cache.removeBitmapData(path);
-		@:privateAccess
-		FlxG.bitmap._cache.remove(path);
-
-		graphic.destroy();
 		// trace('disposed bitmap: ' + path);
 	}
 }

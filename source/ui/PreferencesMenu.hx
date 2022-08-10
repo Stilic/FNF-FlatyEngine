@@ -10,12 +10,13 @@ class PreferencesMenu extends Page
 {
 	public static var preferences:StringMap<Dynamic> = new StringMap<Dynamic>();
 
-	static var defaultPreferences:Array<Array<Dynamic>> = [
+	static final defaultPreferences:Array<Array<Dynamic>> = [
 		['naughtyness', 'censor-naughty', true],
 		['downscroll', 'downscroll', false],
 		['ghost tapping', 'ghost-tapping', true],
 		['flashing menu', 'flashing-menu', true],
 		['camera zooming on beat', 'camera-zoom', true],
+		['camera movement on hit', 'camera-move-on-hit', true],
 		#if !mobile
 		['fps counter', 'fps-counter', true], ['memory counter', 'mem-counter', true], ['memory peak counter', 'mem-peak-counter', true],
 		#end

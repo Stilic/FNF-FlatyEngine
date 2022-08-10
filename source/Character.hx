@@ -1,5 +1,6 @@
 package;
 
+import ui.PreferencesMenu;
 import Section.SwagSection;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -14,18 +15,23 @@ class Character extends FlxSprite
 	public var animOffsets:Map<String, Array<Float>>;
 	public var debugMode:Bool = false;
 
-	public var isPlayer:Bool = false;
-	public var curCharacter:String = 'bf';
+	public var isPlayer:Bool;
+	public var curCharacter:String;
 
 	public var holdTimer:Float = 0;
 
 	public var animationNotes:Array<Dynamic> = [];
+
+	public var cameraMove:Bool;
+	public var cameraMoveAdd:Float = 10;
+	public var cameraMoveArray:Array<Float>;
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
 
 		animOffsets = new Map<String, Array<Float>>();
+		cameraMove = PreferencesMenu.getPref('camera-move-on-hit');
 		curCharacter = character;
 		this.isPlayer = isPlayer;
 
@@ -484,9 +490,9 @@ class Character extends FlxSprite
 			if (!isPlayer)
 			{
 				// var animArray
-				var oldRight = animation.getByName('singRIGHT').frames;
-				animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
-				animation.getByName('singLEFT').frames = oldRight;
+				var oldRight = animation.getByName(singAnimations[3]).frames;
+				animation.getByName(singAnimations[3]).frames = animation.getByName(singAnimations[0]).frames;
+				animation.getByName(singAnimations[0]).frames = oldRight;
 
 				// IF THEY HAVE MISS ANIMATIONS??
 				if (animation.getByName('singRIGHTmiss') != null)
@@ -640,20 +646,36 @@ class Character extends FlxSprite
 
 		if (curCharacter == 'gf')
 		{
-			if (AnimName == 'singLEFT')
+			if (AnimName == singAnimations[0])
 			{
 				danced = true;
 			}
-			else if (AnimName == 'singRIGHT')
+			else if (AnimName == singAnimations[3])
 			{
 				danced = false;
 			}
 
-			if (AnimName == 'singUP' || AnimName == 'singDOWN')
+			if (AnimName == singAnimations[1] || AnimName == singAnimations[2])
 			{
 				danced = !danced;
 			}
 		}
+
+		if (cameraMove)
+		{
+			if (AnimName.startsWith(singAnimations[0]))
+				cameraMoveArray = [-cameraMoveAdd, 0];
+			else if (AnimName.startsWith(singAnimations[1]))
+				cameraMoveArray = [0, cameraMoveAdd];
+			else if (AnimName.startsWith(singAnimations[2]))
+				cameraMoveArray = [0, -cameraMoveAdd];
+			else if (AnimName.startsWith(singAnimations[3]))
+				cameraMoveArray = [cameraMoveAdd, 0];
+			else
+				cameraMoveArray = null;
+		}
+		else
+			cameraMoveArray = null;
 	}
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
