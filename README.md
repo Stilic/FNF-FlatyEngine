@@ -1,4 +1,4 @@
-# Friday Night Funkin' - Softie Engine
+# Friday Night Funkin' - Flaty Engine
 
 A engine based off [the Week 7 reverse engineering of AngelDTF](https://github.com/AngelDTF/FNF-NewgroundsPort).
 
