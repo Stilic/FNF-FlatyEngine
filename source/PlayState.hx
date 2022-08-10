@@ -1755,7 +1755,7 @@ class PlayState extends MusicBeatState
 							{
 								var offset:Float = 1.75;
 								if (strum.downscroll)
-									daNote.y += daNote.height / (offset * 2.25);
+									daNote.y += daNote.height / (offset * offset);
 								else
 									daNote.y += daNote.height * offset;
 							}
