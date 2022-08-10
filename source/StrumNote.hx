@@ -31,7 +31,7 @@ class StrumNote extends FlxSprite
 
 		if (PlayState.curStage.startsWith('school'))
 		{
-			loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
+			loadGraphic(Paths.image('pixelUI/arrows-pixels'), true, 17, 17);
 
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 			updateHitbox();
