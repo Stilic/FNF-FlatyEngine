@@ -146,12 +146,10 @@ class PlayState extends MusicBeatState
 
 		var instPath = Paths.instPath(SONG.song.toLowerCase());
 		if (OpenFlAssets.exists(instPath, SOUND) || OpenFlAssets.exists(instPath, MUSIC))
-			OpenFlAssets.getSound(instPath, true);
+			Paths.inst(SONG.song.toLowerCase());
 		var vocalsPath = Paths.voicesPath(SONG.song.toLowerCase());
 		if (OpenFlAssets.exists(vocalsPath, SOUND) || OpenFlAssets.exists(vocalsPath, MUSIC))
-			OpenFlAssets.getSound(vocalsPath, true);
-
-		persistentUpdate = persistentDraw = true;
+			Paths.voices(SONG.song.toLowerCase());
 
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
@@ -160,6 +158,8 @@ class PlayState extends MusicBeatState
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD, false);
+
+		persistentUpdate = persistentDraw = true;
 
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
 		var splash:NoteSplash = new NoteSplash(100, 100, 0);
@@ -1753,7 +1753,7 @@ class PlayState extends MusicBeatState
 								daNote.y += (daNote.height / 2) * mult;
 							if (!daNote.prevNote.isSustainNote)
 							{
-								var offset:Float = 1.75;
+								var offset:Float = 1.85;
 								if (strum.downscroll)
 									daNote.y += daNote.height / (offset * offset);
 								else
