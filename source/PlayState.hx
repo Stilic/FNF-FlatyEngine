@@ -117,8 +117,8 @@ class PlayState extends MusicBeatState
 
 	// var gfCutsceneLayer:FlxTypedGroup<FlxAnimate>;
 	// var bfTankCutsceneLayer:FlxTypedGroup<FlxAnimate>;
-	var talking:Bool = true;
 	var songScore:Int = 0;
+	var songMisses:Int = 0;
 	var scoreTxt:FlxText;
 
 	public static var campaignScore:Int = 0;
@@ -869,11 +869,6 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
-		scoreTxt.scrollFactor.set();
-		add(scoreTxt);
-
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
@@ -881,6 +876,11 @@ class PlayState extends MusicBeatState
 		iconP2 = new HealthIcon(SONG.player2, false);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
+
+		scoreTxt = new FlxText(0, healthBarBG.y + 30, FlxG.width, "", 20);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 17, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
+		scoreTxt.scrollFactor.set();
+		add(scoreTxt);
 
 		grpNoteSplashes.cameras = [camHUD];
 		strumLineNotes.cameras = [camHUD];
@@ -953,6 +953,8 @@ class PlayState extends MusicBeatState
 		}
 		else
 			startCountdown();
+
+		recalculateRating();
 
 		super.create();
 	}
@@ -1092,7 +1094,6 @@ class PlayState extends MusicBeatState
 		generateStaticArrows(0);
 		generateStaticArrows(1);
 
-		talking = false;
 		startedCountdown = true;
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
@@ -1532,8 +1533,6 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore;
-
 		if (controls.PAUSE && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
@@ -1805,6 +1804,11 @@ class PlayState extends MusicBeatState
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
 						health -= 0.0475;
+						songMisses++;
+
+						totalPlayed++;
+						recalculateRating();
+
 						vocals.volume = 0;
 					}
 
@@ -1822,6 +1826,44 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.ONE)
 			endSong();
 		#end
+	}
+
+	static inline var scoreSeparator:String = ' / ';
+
+	var ratingName:String = '?';
+	var ratingPercent:Float = 0;
+
+	function recalculateRating()
+	{
+		if (totalPlayed < 1)
+			ratingName = '?';
+		else
+		{
+			ratingPercent = Math.min(1, Math.max(0, totalNotesHit / totalPlayed));
+
+			if (ratingPercent >= 1)
+				ratingName = Conductor.ratings[Conductor.ratings.length - 1][0];
+			else
+			{
+				for (i in 0...Conductor.ratings.length - 1)
+				{
+					if (ratingPercent < Conductor.ratings[i][1])
+					{
+						ratingName = Conductor.ratings[i][0];
+						break;
+					}
+				}
+			}
+		}
+
+		scoreTxt.text = 'Score: '
+			+ songScore
+			+ scoreSeparator
+			+ 'Combo Breaks: '
+			+ songMisses
+			+ scoreSeparator
+			+ 'Accuracy: '
+			+ (ratingName != '?' ? '${CoolUtil.floorDecimal(ratingPercent * 100, 2)}% [$ratingName]' : '?');
 	}
 
 	function endSong():Void
@@ -1909,6 +1951,9 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	var totalPlayed:Int = 0;
+	var totalNotesHit:Float = 0;
+
 	var endingSong:Bool = false;
 
 	private function popUpScore(daNote:Note):Void
@@ -1924,23 +1969,27 @@ class PlayState extends MusicBeatState
 		var score:Int = 350;
 
 		var daRating:String = "sick";
+		var daMod:Float = 1;
 		var doSplash:Bool = true;
 
 		if (noteDiff > Conductor.safeZoneOffset * 0.9)
 		{
 			daRating = 'shit';
+			daMod = 0;
 			score = 50;
 			doSplash = false;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
+			daMod = 0.4;
 			score = 100;
 			doSplash = false;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
+			daMod = 0.7;
 			score = 200;
 			doSplash = false;
 		}
@@ -1952,8 +2001,14 @@ class PlayState extends MusicBeatState
 			grpNoteSplashes.add(splash);
 		}
 
+		totalNotesHit += daMod;
 		if (!practiceMode)
+		{
 			songScore += score;
+
+			totalPlayed++;
+			recalculateRating();
+		}
 
 		/* if (combo > 60)
 				daRating = 'sick';
@@ -2247,11 +2302,15 @@ class PlayState extends MusicBeatState
 		if (!boyfriend.stunned)
 		{
 			health -= 0.04;
+			songMisses++;
 			if (combo > 5 && gf.animOffsets.exists('sad'))
 			{
 				gf.playAnim('sad');
 			}
 			combo = 0;
+
+			totalPlayed++;
+			recalculateRating();
 
 			if (!practiceMode)
 				songScore -= 10;
