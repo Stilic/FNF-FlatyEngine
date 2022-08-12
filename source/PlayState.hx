@@ -986,7 +986,7 @@ class PlayState extends MusicBeatState
 		playCutscene(video, false, function()
 		{
 			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.stepCrochet / 1000) * 5, {ease: FlxEase.quadInOut});
-			cameraMovement();
+			cameraMovement(true);
 		});
 		if (zoom)
 		{
@@ -1465,7 +1465,6 @@ class PlayState extends MusicBeatState
 	private var paused:Bool = false;
 	var startedCountdown:Bool = false;
 	var canPause:Bool = true;
-	var cameraRightSide:Bool = false;
 
 	override public function update(elapsed:Float)
 	{
@@ -1600,11 +1599,8 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.EIGHT)
 			MusicBeatState.switchState(new AnimationDebug(SONG.player2));
 
-		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
-		{
-			cameraRightSide = PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection;
-			cameraMovement(true);
-		}
+		if (generatedMusic)
+			cameraSection(Std.int(curStep / 16));
 
 		if (camZooming)
 		{
@@ -2126,17 +2122,17 @@ class PlayState extends MusicBeatState
 		});
 	}
 
-	private function cameraMovement(followChar:Bool = false):Void
+	private function cameraMovement(isDad:Bool, followChar:Bool = false):Void
 	{
 		var char:Character;
-		if (!cameraRightSide)
+		if (isDad)
 			char = dad;
 		else
 			char = boyfriend;
 
 		followChar = followChar && char.cameraMove;
 
-		if (!cameraRightSide)
+		if (isDad)
 		{
 			if (followChar || camFollow.x != char.getMidpoint().x + 150)
 			{
@@ -2183,6 +2179,13 @@ class PlayState extends MusicBeatState
 			camFollow.x += char.cameraMoveArray[0];
 			camFollow.y += char.cameraMoveArray[1];
 		}
+	}
+
+	private function cameraSection(section:Int = 0):Void
+	{
+		var leSection:SwagSection = SONG.notes[section];
+		if (leSection != null)
+			cameraMovement(!leSection.mustHitSection, true);
 	}
 
 	private function snapCamFollowToPos(x:Float, y:Float)
