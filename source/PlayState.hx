@@ -141,6 +141,7 @@ class PlayState extends MusicBeatState
 	public static function set_storyPlaylist(playlist:Array<String>)
 	{
 		isFirstStorySong = true;
+		storyPlaylist = playlist;
 		return playlist;
 	}
 
@@ -1078,6 +1079,26 @@ class PlayState extends MusicBeatState
 	var startTimer:FlxTimer = new FlxTimer();
 	var perfectMode:Bool = false;
 
+	function noteUpdateShit(strumline:Strumline):Note->Void
+	{
+		return function(daNote:Note)
+		{
+			if (!daNote.mustPress && daNote.strumTime <= Conductor.songPosition)
+				goodNoteHit(dad, strumline, daNote);
+
+			if (Strumline.isOutsideScreen(daNote.strumTime) && (daNote.tooLate || !daNote.wasGoodHit))
+			{
+				health -= 0.0475;
+				songMisses++;
+
+				totalPlayed++;
+				recalculateRating();
+
+				vocals.volume = 0;
+			}
+		};
+	}
+
 	function startCountdown():Void
 	{
 		inCutscene = false;
@@ -1086,10 +1107,14 @@ class PlayState extends MusicBeatState
 
 		var baseXShit:Int = 15;
 		var baseX:Float = FlxG.width / baseXShit;
+
 		opponentStrumline = new Strumline(baseX, strumLine.y, PreferencesMenu.getPref('downscroll'), false);
 		opponentStrumline.updateNotes = false;
+		opponentStrumline.onNoteUpdate = noteUpdateShit(opponentStrumline);
+
 		playerStrumline = new Strumline(baseX * (baseXShit / 1.75), strumLine.y, PreferencesMenu.getPref('downscroll'), true);
 		playerStrumline.updateNotes = false;
+		playerStrumline.onNoteUpdate = noteUpdateShit(playerStrumline);
 
 		strumlines.add(opponentStrumline);
 		strumlines.add(playerStrumline);
@@ -1632,22 +1657,6 @@ class PlayState extends MusicBeatState
 			strumlines.forEachAlive(function(strumline:Strumline)
 			{
 				strumline.updateNotes = true;
-				strumline.allNotes.forEachAlive(function(daNote:Note)
-				{
-					if (!daNote.mustPress && daNote.strumTime <= Conductor.songPosition)
-						goodNoteHit(dad, strumline, daNote);
-
-					if (Strumline.isOutsideScreen(daNote.strumTime) && (daNote.tooLate || !daNote.wasGoodHit))
-					{
-						health -= 0.0475;
-						songMisses++;
-
-						totalPlayed++;
-						recalculateRating();
-
-						vocals.volume = 0;
-					}
-				});
 			});
 		}
 

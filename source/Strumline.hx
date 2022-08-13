@@ -23,6 +23,8 @@ class Strumline extends FlxGroup
 	public var downscroll:Bool;
 	public var updateNotes:Bool = true;
 
+	public var onNoteUpdate:Note->Void;
+
 	inline public static function isOutsideScreen(strumTime:Float)
 	{
 		return Conductor.songPosition > 350 * FlxMath.roundDecimal(PlayState.SONG.speed, 2) + strumTime;
@@ -164,6 +166,9 @@ class Strumline extends FlxGroup
 					}
 				}
 			}
+
+			if (onNoteUpdate != null)
+				onNoteUpdate(daNote);
 
 			if (isOutsideScreen)
 				removeNote(daNote);

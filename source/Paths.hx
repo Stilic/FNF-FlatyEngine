@@ -1,5 +1,6 @@
 package;
 
+import ui.PreferencesMenu;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
@@ -105,9 +106,9 @@ class Paths
 		return returnSound(null, '${song.toLowerCase()}/Inst', 'songs');
 	}
 
-	inline static public function image(key:String, ?library:String, storeInGpu:Bool = false)
+	inline static public function image(key:String, ?library:String)
 	{
-		return returnGraphic('images/$key', library, storeInGpu);
+		return returnGraphic('images/$key', library);
 	}
 
 	inline static public function font(key:String)
@@ -122,19 +123,19 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
-		return FlxAtlasFrames.fromSparrow(image(key, library, true), file('images/$key.xml', library));
+		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
 	}
 
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library, true), file('images/$key.txt', library));
+		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
 	}
 
-	public static function returnGraphic(key:String, ?library:String, storeInGpu:Bool = false)
+	public static function returnGraphic(key:String, ?library:String)
 	{
 		var path = getPath('$key.png', IMAGE, library);
 		if (OpenFlAssets.exists(path, IMAGE))
-			return Cache.getGraphic(path, storeInGpu);
+			return Cache.getGraphic(path, PreferencesMenu.getPref('hardware-caching'));
 		trace('oh no ${key} is returning null NOOOO');
 		return null;
 	}

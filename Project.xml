@@ -119,6 +119,9 @@
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
+	<!--Enable a new and optimized OpenFL game loop (boosts performance, and takes less memory)-->
+	<haxedef name="queue_experimental_optimization" />
+
 	<!--Enable the Flixel core recording system-->
 	<!--<haxedef name="FLX_RECORD" />-->
 
