@@ -12,7 +12,9 @@ class PreferencesMenu extends Page
 
 	static final defaultPreferences:Array<Array<Dynamic>> = [
 		['naughtyness', 'censor-naughty', true],
+		['note splashes', 'note-splashes', true],
 		['downscroll', 'downscroll', false],
+		['stepmania clip style', 'sm-clip', false],
 		['ghost tapping', 'ghost-tapping', true],
 		['flashing menu', 'flashing-menu', true],
 		['camera zooming on beat', 'camera-zoom', true],

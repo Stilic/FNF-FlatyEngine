@@ -1,8 +1,6 @@
 package;
 
-import flixel.FlxG;
 import flixel.FlxSprite;
-import ui.PreferencesMenu;
 import shaderslmfao.ColorSwap;
 
 using StringTools;
@@ -10,24 +8,19 @@ using StringTools;
 class StrumNote extends FlxSprite
 {
 	public var noteData:Int;
-	public var player:Int;
 
 	public var direction:Float = 90;
-	public var downscroll:Bool = false;
 	public var sustainReduce:Bool = true;
 
 	var resetAnim:Float = 0;
 
 	var colorSwap:ColorSwap;
 
-	public function new(x:Float, y:Float, noteData:Int, player:Int)
+	public function new(x:Float, y:Float, noteData:Int)
 	{
 		super(x, y);
 
 		this.noteData = noteData;
-		this.player = player;
-
-		downscroll = PreferencesMenu.getPref('downscroll');
 
 		if (PlayState.curStage.startsWith('school'))
 		{
@@ -132,7 +125,7 @@ class StrumNote extends FlxSprite
 	{
 		scrollFactor.set();
 		playAnim('static');
-		x += Note.swagWidth * noteData + 50 + (FlxG.width / 2) * player;
+		x += Note.swagWidth * noteData;
 		ID = noteData;
 	}
 }
