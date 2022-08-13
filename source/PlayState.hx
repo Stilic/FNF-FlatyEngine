@@ -1729,7 +1729,7 @@ class PlayState extends MusicBeatState
 								if (strum.downscroll)
 									daNote.y += daNote.height / offset;
 								else
-									daNote.y += daNote.height * (offset / 1.25);
+									daNote.y += daNote.height * (offset / 1.91);
 							}
 						}
 					}

@@ -23,7 +23,7 @@ class Character extends FlxSprite
 	public var animationNotes:Array<Dynamic> = [];
 
 	public var cameraMove:Bool;
-	public var cameraMoveAdd:Float = 10;
+	public var cameraMoveAdd:Float = 15;
 	public var cameraMoveArray:Array<Float>;
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
