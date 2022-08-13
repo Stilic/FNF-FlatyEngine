@@ -1708,7 +1708,6 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.copyY)
 					{
-						// code from forever engine (YOU SHOULD TRY IT NOW!!)
 						daNote.y -= (daNote.height / 2) * mult;
 						if (daNote.animation.curAnim.name.endsWith('holdend') && daNote.prevNote != null)
 						{
@@ -1729,7 +1728,7 @@ class PlayState extends MusicBeatState
 								if (strum.downscroll)
 									daNote.y += daNote.height / offset;
 								else
-									daNote.y += daNote.height * (offset / 1.915);
+									daNote.y += daNote.height * (offset / 2);
 							}
 						}
 					}
