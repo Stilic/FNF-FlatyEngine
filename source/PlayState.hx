@@ -1823,7 +1823,7 @@ class PlayState extends MusicBeatState
 
 		var coolX:Float = FlxG.width * 0.35;
 
-		var rating:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + daRating.image + pixelShitPart2));
+		var rating:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + daRating.name + pixelShitPart2));
 		rating.screenCenter(Y);
 		rating.x = coolX - 40;
 		rating.y -= 60;

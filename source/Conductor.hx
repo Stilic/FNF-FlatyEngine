@@ -11,7 +11,7 @@ typedef BPMChangeEvent =
 
 typedef Rating =
 {
-	var image:String;
+	var name:String;
 	var time:Float;
 	var score:Int;
 	var mod:Float;
@@ -22,28 +22,28 @@ class Conductor
 {
 	public static var ratings:Array<Rating> = [
 		{
-			image: 'sick',
+			name: 'sick',
 			time: 45,
 			score: 350,
 			mod: 1,
 			splash: true
 		},
 		{
-			image: 'good',
+			name: 'good',
 			time: 90,
 			score: 200,
 			mod: 0.7,
 			splash: false
 		},
 		{
-			image: 'bad',
+			name: 'bad',
 			time: 135,
 			score: 100,
 			mod: 0.4,
 			splash: false
 		},
 		{
-			image: 'shit',
+			name: 'shit',
 			time: 180,
 			score: 50,
 			mod: 0,
