@@ -9,18 +9,56 @@ typedef BPMChangeEvent =
 	var bpm:Float;
 }
 
+typedef Rating =
+{
+	var image:String;
+	var time:Float;
+	var score:Int;
+	var mod:Float;
+	var splash:Bool;
+}
+
 class Conductor
 {
-	public static final ratings:Array<Array<Dynamic>> = [
-		['G', 0.2],
-		['F', 0.4],
-		['E', 0.5],
-		['D', 0.6],
-		['C', 0.69],
-		['B', 0.7],
-		['A', 0.8],
-		['S', 0.9],
-		['S+', 1]
+	public static var ratings:Array<Rating> = [
+		{
+			image: 'sick',
+			time: 45,
+			score: 350,
+			mod: 1,
+			splash: true
+		},
+		{
+			image: 'good',
+			time: 90,
+			score: 200,
+			mod: 0.7,
+			splash: false
+		},
+		{
+			image: 'bad',
+			time: 135,
+			score: 100,
+			mod: 0.4,
+			splash: false
+		},
+		{
+			image: 'shit',
+			time: 180,
+			score: 50,
+			mod: 0,
+			splash: false
+		}
+	];
+	public static var ranks:Map<Int, String> = [
+		100 => "S+",
+		90 => "S",
+		80 => "A",
+		70 => "B",
+		60 => "C",
+		50 => "D",
+		40 => "E",
+		10 => "F"
 	];
 
 	public static var bpm:Float = 100;
@@ -68,5 +106,32 @@ class Conductor
 
 		crochet = ((60 / bpm) * 1000);
 		stepCrochet = crochet / 4;
+	}
+
+	public static function getRating(diff:Float)
+	{
+		for (i in 0...ratings.length - 1) // skips last window (Shit)
+			if (diff <= ratings[i].time)
+				return ratings[i];
+		return ratings[ratings.length - 1];
+	}
+
+	public static function getRank(accuracy:Float)
+	{
+		accuracy = CoolUtil.floorDecimal(accuracy * 100, 2);
+
+		var lastAccuracy:Int = 0;
+		var leRank:String = '';
+
+		for (minAccuracy => rank in ranks)
+		{
+			if (minAccuracy <= accuracy && minAccuracy >= lastAccuracy)
+			{
+				lastAccuracy = minAccuracy;
+				leRank = rank;
+			}
+		}
+
+		return leRank;
 	}
 }

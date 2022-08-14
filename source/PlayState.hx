@@ -8,6 +8,7 @@ import vlc.MP4Handler;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
+import Conductor.Rating;
 import Section.SwagSection;
 import Song.SwagSong;
 import flixel.FlxCamera;
@@ -1680,30 +1681,17 @@ class PlayState extends MusicBeatState
 
 	static inline var scoreSeparator:String = ' / ';
 
-	var ratingName:String = '?';
-	var ratingPercent:Float = 0;
+	var rank:String = '?';
+	var accuracy:Float = 0;
 
 	function recalculateRating()
 	{
 		if (totalPlayed < 1)
-			ratingName = '?';
+			rank = '?';
 		else
 		{
-			ratingPercent = Math.min(1, Math.max(0, totalNotesHit / totalPlayed));
-
-			if (ratingPercent >= 1)
-				ratingName = Conductor.ratings[Conductor.ratings.length - 1][0];
-			else
-			{
-				for (i in 0...Conductor.ratings.length - 1)
-				{
-					if (ratingPercent < Conductor.ratings[i][1])
-					{
-						ratingName = Conductor.ratings[i][0];
-						break;
-					}
-				}
-			}
+			accuracy = Math.min(1, Math.max(0, totalNotesHit / totalPlayed));
+			rank = Conductor.getRank(accuracy);
 		}
 
 		scoreTxt.text = 'Score: '
@@ -1713,7 +1701,7 @@ class PlayState extends MusicBeatState
 			+ songMisses
 			+ scoreSeparator
 			+ 'Accuracy: '
-			+ (ratingName != '?' ? '${CoolUtil.floorDecimal(ratingPercent * 100, 2)}% [$ratingName]' : '?');
+			+ (rank != '?' ? '${CoolUtil.floorDecimal(accuracy * 100, 2)}% [$rank]' : '?');
 	}
 
 	function endSong():Void
@@ -1810,60 +1798,19 @@ class PlayState extends MusicBeatState
 
 	private function popUpScore(daNote:Note):Void
 	{
-		var noteDiff:Float = Math.abs(daNote.strumTime - Conductor.songPosition);
-		// boyfriend.playAnim('hey');
 		vocals.volume = 1;
 
-		var coolX:Float = FlxG.width * 0.35;
-
-		var rating:FlxSprite = new FlxSprite();
-		var score:Int = 350;
-
-		var daRating:String = "sick";
-		var daMod:Float = 1;
-		var doSplash:Bool = true;
-
-		if (noteDiff > Conductor.safeZoneOffset * 0.9)
-		{
-			daRating = 'shit';
-			daMod = 0;
-			score = 50;
-			doSplash = false;
-		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
-		{
-			daRating = 'bad';
-			daMod = 0.4;
-			score = 100;
-			doSplash = false;
-		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
-		{
-			daRating = 'good';
-			daMod = 0.7;
-			score = 200;
-			doSplash = false;
-		}
-
-		if (doSplash && PreferencesMenu.getPref('note-splashes'))
-			playerStrumline.spawnSplash(daNote.noteData);
-
-		totalNotesHit += daMod;
+		var daRating:Rating = Conductor.getRating(Math.abs(daNote.strumTime - Conductor.songPosition));
+		totalNotesHit += daRating.mod;
 		if (!practiceMode)
 		{
-			songScore += score;
+			songScore += daRating.score;
 
 			totalPlayed++;
 			recalculateRating();
 		}
-
-		/* if (combo > 60)
-				daRating = 'sick';
-			else if (combo > 12)
-				daRating = 'good'
-			else if (combo > 4)
-				daRating = 'bad';
-		 */
+		if (daRating.splash && PreferencesMenu.getPref('note-splashes'))
+			playerStrumline.spawnSplash(daNote.noteData);
 
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
@@ -1874,7 +1821,9 @@ class PlayState extends MusicBeatState
 			pixelShitPart2 = '-pixel';
 		}
 
-		rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2));
+		var coolX:Float = FlxG.width * 0.35;
+
+		var rating:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + daRating.image + pixelShitPart2));
 		rating.screenCenter(Y);
 		rating.x = coolX - 40;
 		rating.y -= 60;
