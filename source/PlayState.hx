@@ -822,6 +822,29 @@ class PlayState extends MusicBeatState
 		strumlines = new FlxTypedGroup<Strumline>();
 		add(strumlines);
 
+		var baseXShit:Int = 15;
+		var baseX:Float = FlxG.width / baseXShit;
+
+		opponentStrumline = new Strumline(baseX, strumLine.y, PreferencesMenu.getPref('downscroll'), false);
+		opponentStrumline.onNoteUpdate = noteUpdateShit(opponentStrumline);
+
+		playerStrumline = new Strumline(baseX * (baseXShit / 1.75), strumLine.y, PreferencesMenu.getPref('downscroll'), true);
+		playerStrumline.onNoteUpdate = noteUpdateShit(playerStrumline);
+
+		strumlines.add(opponentStrumline);
+		strumlines.add(playerStrumline);
+
+		if (!PlayState.isStoryMode || PlayState.isFirstStorySong)
+		{
+			strumlines.forEachAlive(function(strumline:Strumline)
+			{
+				strumline.strumsGroup.forEachAlive(function(strum:StrumNote)
+				{
+					strum.alpha = 0;
+				});
+			});
+		}
+
 		// startCountdown();
 
 		generateSong();
@@ -1105,19 +1128,13 @@ class PlayState extends MusicBeatState
 
 		camHUD.visible = true;
 
-		var baseXShit:Int = 15;
-		var baseX:Float = FlxG.width / baseXShit;
-
-		opponentStrumline = new Strumline(baseX, strumLine.y, PreferencesMenu.getPref('downscroll'), false);
-		opponentStrumline.updateNotes = false;
-		opponentStrumline.onNoteUpdate = noteUpdateShit(opponentStrumline);
-
-		playerStrumline = new Strumline(baseX * (baseXShit / 1.75), strumLine.y, PreferencesMenu.getPref('downscroll'), true);
-		playerStrumline.updateNotes = false;
-		playerStrumline.onNoteUpdate = noteUpdateShit(playerStrumline);
-
-		strumlines.add(opponentStrumline);
-		strumlines.add(playerStrumline);
+		if (!PlayState.isStoryMode || PlayState.isFirstStorySong)
+		{
+			strumlines.forEachAlive(function(strumline:Strumline)
+			{
+				strumline.tweenStrums();
+			});
+		}
 
 		startedCountdown = true;
 		Conductor.songPosition = 0;
@@ -1652,14 +1669,6 @@ class PlayState extends MusicBeatState
 				break;
 		}
 
-		if (generatedMusic)
-		{
-			strumlines.forEachAlive(function(strumline:Strumline)
-			{
-				strumline.updateNotes = true;
-			});
-		}
-
 		if (!inCutscene)
 			keyShit();
 
@@ -2129,12 +2138,12 @@ class PlayState extends MusicBeatState
 		{
 			boyfriend.playAnim('idle');
 		}
-		playerStrumline.strumsGroup.forEachAlive(function(spr:StrumNote)
+		playerStrumline.strumsGroup.forEachAlive(function(strum:StrumNote)
 		{
-			if (controlArray[spr.ID] && spr.animation.curAnim.name != 'confirm')
-				spr.playAnim('pressed');
-			if (!holdingArray[spr.ID])
-				spr.playAnim('static');
+			if (controlArray[strum.noteData] && strum.animation.curAnim.name != 'confirm')
+				strum.playAnim('pressed');
+			if (!holdingArray[strum.noteData])
+				strum.playAnim('static');
 		});
 	}
 
@@ -2232,18 +2241,18 @@ class PlayState extends MusicBeatState
 			char.playAnim(Character.singAnimations[note.noteData] + altAnim, true);
 			char.holdTimer = 0;
 
-			strumline.strumsGroup.forEach(function(spr:StrumNote)
+			strumline.strumsGroup.forEach(function(strum:StrumNote)
 			{
-				if (Math.abs(note.noteData) == spr.ID)
+				if (Math.abs(note.noteData) == strum.noteData)
 				{
 					if (note.mustPress)
-						spr.playAnim('confirm', true);
+						strum.playAnim('confirm', true);
 					else
 					{
 						var time:Float = 0.15;
 						if (note.isSustainNote && !note.animation.curAnim.name.endsWith('end'))
 							time += 0.15;
-						spr.autoConfirm(time);
+						strum.autoConfirm(time);
 					}
 				}
 			});

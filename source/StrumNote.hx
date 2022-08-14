@@ -126,6 +126,5 @@ class StrumNote extends FlxSprite
 		scrollFactor.set();
 		playAnim('static');
 		x += Note.swagWidth * noteData;
-		ID = noteData;
 	}
 }

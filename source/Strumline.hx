@@ -21,7 +21,6 @@ class Strumline extends FlxGroup
 	public var splashesGroup:FlxTypedGroup<NoteSplash>;
 
 	public var downscroll:Bool;
-	public var updateNotes:Bool = true;
 
 	public var onNoteUpdate:Note->Void;
 
@@ -50,14 +49,6 @@ class Strumline extends FlxGroup
 		for (i in 0...keyCount)
 		{
 			var babyArrow:StrumNote = new StrumNote(x, y, i);
-
-			if (!PlayState.isStoryMode || PlayState.isFirstStorySong)
-			{
-				babyArrow.y -= 10;
-				babyArrow.alpha = 0;
-				FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
-			}
-
 			strumsGroup.add(babyArrow);
 			babyArrow.postAddedToGroup();
 		}
@@ -196,6 +187,16 @@ class Strumline extends FlxGroup
 		else
 			notesGroup.remove(daNote, true);
 		daNote.destroy();
+	}
+
+	public function tweenStrums()
+	{
+		strumsGroup.forEachAlive(function(strum:StrumNote)
+		{
+			strum.y -= 10;
+			strum.alpha = 0;
+			FlxTween.tween(strum, {y: strum.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * strum.noteData)});
+		});
 	}
 
 	public function spawnSplash(noteData:Int)

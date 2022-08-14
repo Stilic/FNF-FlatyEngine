@@ -12,7 +12,16 @@ typedef BPMChangeEvent =
 class Conductor
 {
 	public static final ratings:Array<Array<Dynamic>> = [
-		['G', 0.2], ['F', 0.4], ['E', 0.5], ['D', 0.6], ['C', 0.69], ['B', 0.7], ['A', 0.8], ['S', 0.9], ['S+', 1]];
+		['G', 0.2],
+		['F', 0.4],
+		['E', 0.5],
+		['D', 0.6],
+		['C', 0.69],
+		['B', 0.7],
+		['A', 0.8],
+		['S', 0.9],
+		['S+', 1]
+	];
 
 	public static var bpm:Float = 100;
 	public static var crochet:Float = ((60 / bpm) * 1000); // beats in milliseconds
