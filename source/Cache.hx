@@ -51,7 +51,6 @@ class Cache
 		AtlasText.fonts.clear();
 		clearBitmaps();
 		clearSounds();
-		System.gc();
 	}
 
 	public static function clearBitmaps()
