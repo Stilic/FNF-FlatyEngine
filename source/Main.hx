@@ -5,7 +5,6 @@ import Discord.DiscordClient;
 import sys.io.File;
 import sys.FileSystem;
 #end
-import haxe.io.Path;
 import lime.app.Application;
 import haxe.CallStack;
 import ui.PreferencesMenu;
@@ -91,7 +90,7 @@ class Main extends Sprite
 
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 
-		// better put init stuff here
+		// this runs just after flixel is ready, sooooo... yeah
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 		PreferencesMenu.initPrefs();
 		PlayerSettings.init();
@@ -105,6 +104,8 @@ class Main extends Sprite
 		{
 			if (!Std.isOfType(state, PlayState) && !Std.isOfType(state, ChartingState) && !Std.isOfType(state, AnimationDebug))
 				Cache.clear();
+                        // prevent memory leaks (thing from leather engine)
+                        System.gc();
 		});
 
 		if (FlxG.save.data.weekUnlocked != null)
@@ -136,7 +137,6 @@ class Main extends Sprite
 	function onCrash(e:UncaughtErrorEvent):Void
 	{
 		var errMsg:String = "";
-		var path:String = "./crash/" + "SoftieEngine_" + Date.now().toString().replace(" ", "_").replace(":", "'") + ".txt";
 
 		for (stackItem in CallStack.exceptionStack(true))
 		{
@@ -153,13 +153,11 @@ class Main extends Sprite
 
 		if (!FileSystem.exists("./crash/"))
 			FileSystem.createDirectory("./crash/");
-
-		File.saveContent(path, errMsg + "\n");
+		File.saveContent("./crash/" + Date.now().toString().replace(" ", "_").replace(":", "'") + ".txt", errMsg + "\n");
 
 		Sys.println(errMsg);
-		Sys.println("Crash dump saved in " + Path.normalize(path));
-
 		Application.current.window.alert(errMsg, "Error!");
+
 		DiscordClient.shutdown();
 		Sys.exit(1);
 	}
