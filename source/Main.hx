@@ -12,6 +12,7 @@ import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
 import openfl.Lib;
+import openfl.system.System;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.UncaughtErrorEvent;
@@ -90,7 +91,6 @@ class Main extends Sprite
 
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 
-		// this runs just after flixel is ready, sooooo... yeah
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 		PreferencesMenu.initPrefs();
 		PlayerSettings.init();
@@ -104,8 +104,8 @@ class Main extends Sprite
 		{
 			if (!Std.isOfType(state, PlayState) && !Std.isOfType(state, ChartingState) && !Std.isOfType(state, AnimationDebug))
 				Cache.clear();
-                        // prevent memory leaks (thing from leather engine)
-                        System.gc();
+			// prevent memory leaks (thing from leather engine)
+			System.gc();
 		});
 
 		if (FlxG.save.data.weekUnlocked != null)
