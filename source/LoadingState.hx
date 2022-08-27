@@ -144,12 +144,12 @@ class LoadingState extends MusicBeatState
 		MusicBeatState.switchState(target);
 	}
 
-	static function getSongPath()
+	inline static function getSongPath()
 	{
 		return Paths.instPath(PlayState.SONG.song);
 	}
 
-	static function getVocalPath()
+	inline static function getVocalPath()
 	{
 		return Paths.voicesPath(PlayState.SONG.song);
 	}

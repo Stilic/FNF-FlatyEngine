@@ -1,9 +1,17 @@
 package;
 
+#if cpp
+import cpp.vm.Gc;
+#elseif hl
+import hl.Gc;
+#elseif java
+import java.vm.Gc;
+#elseif neko
+import neko.vm.Gc;
+#end
 import haxe.ds.StringMap;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
-import openfl.system.System;
 import openfl.utils.Assets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
@@ -12,23 +20,18 @@ import ui.AtlasText;
 
 class Cache
 {
-	static final dumpExclusions:Array<String> = [
-		'assets/preload/music/freakyMenu.${Paths.SOUND_EXT}',
-		'assets/shared/music/breakfast.${Paths.SOUND_EXT}'
-	];
-
-	static var bitmaps:Array<BitmapAsset> = [];
+	static var images:Array<CoolImage> = [];
 	static var sounds:StringMap<Sound> = new StringMap<Sound>();
 
-	public static function getGraphic(path:String, storeInGpu:Bool = false)
+	public static function getGraphic(path:String)
 	{
-		for (bitmap in bitmaps)
+		for (bitmap in images)
 			if (bitmap.path == path)
 				return bitmap.graphic;
 
-		var dumbMap:BitmapAsset = new BitmapAsset(path, storeInGpu);
-		bitmaps.push(dumbMap);
-		return dumbMap.graphic;
+		var image:CoolImage = new CoolImage(path);
+		images.push(image);
+		return image.graphic;
 	}
 
 	public static function getSound(path:String)
@@ -36,89 +39,59 @@ class Cache
 		if (sounds.exists(path))
 			return sounds.get(path);
 
-		var fartSound:Sound = Assets.getSound(path);
-		sounds.set(path, fartSound);
-		return fartSound;
-	}
-
-	inline static public function hasSound(path:String)
-	{
-		return sounds.exists(path);
+		var sound:Sound = Assets.getSound(path, false);
+		sounds.set(path, sound);
+		return sound;
 	}
 
 	public static function clear()
 	{
+		for (image in images)
+			image.dispose();
+		images = [];
+
+		sounds.clear();
 		AtlasText.fonts.clear();
-		clearBitmaps();
-		clearSounds();
-	}
 
-	public static function clearBitmaps()
-	{
-		for (bitmap in bitmaps)
-		{
-			if (!dumpExclusions.contains(bitmap.path))
-			{
-				bitmaps.remove(bitmap);
-				bitmap.dispose();
-			}
-		}
-	}
-
-	public static function clearSounds()
-	{
-		for (key in sounds.keys())
-		{
-			if (!dumpExclusions.contains(key))
-			{
-				sounds.remove(key);
-				Assets.cache.clear(key);
-			}
-		}
+		#if cpp
+		Gc.compact();
+		Gc.run(true);
+		#elseif hl
+		Gc.major();
+		#elseif (java || neko)
+		Gc.run(true);
+		#end
 	}
 }
 
-class BitmapAsset
+class CoolImage
 {
-	public var path:String;
-	public var graphic:FlxGraphic;
+	public var path(default, null):String;
+	public var graphic(default, null):FlxGraphic;
 
 	var texture:Texture;
 
-	public function new(path:String, storeInGpu:Bool = true)
+	public function new(path:String)
 	{
 		this.path = path;
 
-		var data:BitmapData = Assets.getBitmapData(path, !storeInGpu);
-		if (storeInGpu)
-		{
-			texture = FlxG.stage.context3D.createTexture(data.width, data.height, BGRA, false);
-			texture.uploadFromBitmapData(data);
-			data.dispose();
-			data.disposeImage();
-			data = null;
-		}
+		#if !flash
+		var data:BitmapData = Assets.getBitmapData(path, false);
+		texture = FlxG.stage.context3D.createTexture(data.width, data.height, BGRA, true);
+		texture.uploadFromBitmapData(data);
+		data.dispose();
+		data.disposeImage();
+		#end
 
-		graphic = FlxGraphic.fromBitmapData(storeInGpu ? BitmapData.fromTexture(texture) : data);
+		graphic = FlxGraphic.fromBitmapData(#if flash Assets.getBitmapData(path, false) #else BitmapData.fromTexture(texture) #end, false, null, false);
 		graphic.persist = true;
-		graphic.destroyOnNoUse = false;
-
-		// trace('new bitmap: ' + path);
 	}
 
 	public function dispose()
 	{
-		if (texture != null)
-			texture.dispose();
-		graphic.bitmap.dispose();
-		graphic.bitmap.disposeImage();
-
-		if (Assets.cache.hasBitmapData(path))
-		{
-			Assets.cache.removeBitmapData(path);
-			FlxG.bitmap.remove(graphic);
-		}
-
-		// trace('disposed bitmap: ' + path);
+		#if !flash
+		texture.dispose();
+		#end
+		graphic.destroy();
 	}
 }

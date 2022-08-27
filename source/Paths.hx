@@ -1,10 +1,10 @@
 package;
 
-import ui.PreferencesMenu;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
+import openfl.media.Sound;
 
 class Paths
 {
@@ -73,7 +73,7 @@ class Paths
 
 	static public function sound(key:String, ?library:String)
 	{
-		return returnSound('sounds', key, library);
+		return returnSound('sounds/$key', library);
 	}
 
 	inline static public function soundRandom(key:String, min:Int, max:Int, ?library:String)
@@ -83,7 +83,7 @@ class Paths
 
 	inline static public function music(key:String, ?library:String)
 	{
-		return returnSound('music', key, library);
+		return returnSound('music/$key', library);
 	}
 
 	inline static public function voicesPath(song:String)
@@ -98,12 +98,12 @@ class Paths
 
 	inline static public function voices(song:String)
 	{
-		return returnSound(null, '${song.toLowerCase()}/Voices', 'songs');
+		return returnSound('${song.toLowerCase()}/Voices', 'songs');
 	}
 
 	inline static public function inst(song:String)
 	{
-		return returnSound(null, '${song.toLowerCase()}/Inst', 'songs');
+		return returnSound('${song.toLowerCase()}/Inst', 'songs');
 	}
 
 	inline static public function image(key:String, ?library:String)
@@ -133,21 +133,20 @@ class Paths
 
 	public static function returnGraphic(key:String, ?library:String)
 	{
-		var path = getPath('$key.png', IMAGE, library);
+		var path:String = getPath('$key.png', IMAGE, library);
 		if (OpenFlAssets.exists(path, IMAGE))
-			return Cache.getGraphic(path, PreferencesMenu.getPref('hardware-caching'));
+			return Cache.getGraphic(path);
+
 		trace('oh no ${key} is returning null NOOOO');
 		return null;
 	}
 
-	public static function returnSound(?path:String, key:String, ?library:String)
+	public static function returnSound(key:String, ?library:String)
 	{
-		var drip:String = '$key.$SOUND_EXT';
-		if (path != null && path.length > 0)
-			drip = '$path/$drip';
-		var sound = Cache.getSound(getPath(drip, SOUND, library));
+		var sound:Sound = Cache.getSound(getPath('$key.$SOUND_EXT', SOUND, library));
 		if (sound != null)
 			return sound;
+
 		trace('oh no ${key} is returning null NOOOO');
 		return null;
 	}

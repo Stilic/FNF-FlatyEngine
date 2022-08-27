@@ -104,8 +104,6 @@ class Main extends Sprite
 		{
 			if (!Std.isOfType(state, PlayState) && !Std.isOfType(state, ChartingState) && !Std.isOfType(state, AnimationDebug))
 				Cache.clear();
-			// prevent memory leaks (thing from leather engine)
-			System.gc();
 		});
 
 		if (FlxG.save.data.weekUnlocked != null)

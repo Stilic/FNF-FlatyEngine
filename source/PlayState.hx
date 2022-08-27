@@ -151,11 +151,9 @@ class PlayState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		var instPath = Paths.instPath(SONG.song.toLowerCase());
-		if (OpenFlAssets.exists(instPath, SOUND) || OpenFlAssets.exists(instPath, MUSIC))
-			Paths.inst(SONG.song.toLowerCase());
-		var vocalsPath = Paths.voicesPath(SONG.song.toLowerCase());
-		if (OpenFlAssets.exists(vocalsPath, SOUND) || OpenFlAssets.exists(vocalsPath, MUSIC))
+		// CACHE MUSIC
+		Paths.inst(SONG.song.toLowerCase());
+		if (SONG.needsVoices)
 			Paths.voices(SONG.song.toLowerCase());
 
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -1930,54 +1928,52 @@ class PlayState extends MusicBeatState
 		else
 			char = boyfriend;
 
-		followChar = followChar && char.cameraMove;
+		var centerX:Float = char.getMidpoint().x;
+		var centerY:Float = char.getMidpoint().y - 100;
+		if (isDad)
+			centerX += 150;
+		else
+			centerX -= 100;
+
+		if (followChar && char.cameraMove && char.cameraMoveArray != null)
+		{
+			centerX += char.cameraMoveArray[0];
+			centerY += char.cameraMoveArray[1];
+		}
 
 		if (isDad)
 		{
-			if (followChar || camFollow.x != char.getMidpoint().x + 150)
+			switch (char.curCharacter)
 			{
-				camFollow.set(char.getMidpoint().x + 150, char.getMidpoint().y - 100);
-				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
-
-				switch (char.curCharacter)
-				{
-					case 'mom':
-						camFollow.y = char.getMidpoint().y;
-					case 'senpai' | 'senpai-angry':
-						camFollow.y = char.getMidpoint().y - 430;
-						camFollow.x = char.getMidpoint().x - 100;
-				}
-
-				if (SONG.song.toLowerCase() == 'tutorial')
-					tweenCamIn();
+				case 'mom':
+					centerY -= 150;
+				case 'senpai' | 'senpai-angry':
+					centerY -= 430;
+					centerX -= 100;
 			}
 		}
-		else if (followChar || camFollow.x != char.getMidpoint().x - 100)
+		else
 		{
-			camFollow.set(char.getMidpoint().x - 100, char.getMidpoint().y - 100);
-
 			switch (curStage)
 			{
 				case 'limo':
-					camFollow.x = char.getMidpoint().x - 300;
+					centerX -= 300;
 				case 'mall':
-					camFollow.y = char.getMidpoint().y - 200;
-				case 'school':
-					camFollow.x = char.getMidpoint().x - 200;
-					camFollow.y = char.getMidpoint().y - 200;
-				case 'schoolEvil':
-					camFollow.x = char.getMidpoint().x - 200;
-					camFollow.y = char.getMidpoint().y - 200;
+					centerY -= 200;
+				case 'school' | 'schoolEvil':
+					centerX -= 200;
+					centerY -= 200;
 			}
-
-			if (SONG.song.toLowerCase() == 'tutorial')
-				FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
 		}
 
-		if (followChar && char.cameraMoveArray != null)
+		camFollow.set(centerX, centerY);
+
+		if (SONG.song.toLowerCase() == 'tutorial')
 		{
-			camFollow.x += char.cameraMoveArray[0];
-			camFollow.y += char.cameraMoveArray[1];
+			if (isDad)
+				tweenCamIn();
+			else
+				FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
 		}
 	}
 
@@ -2256,7 +2252,6 @@ class PlayState extends MusicBeatState
 
 	var trainMoving:Bool = false;
 	var trainFrameTiming:Float = 0;
-
 	var trainCars:Int = 8;
 	var trainFinishing:Bool = false;
 	var trainCooldown:Int = 0;

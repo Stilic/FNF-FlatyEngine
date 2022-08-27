@@ -19,7 +19,6 @@ class PreferencesMenu extends Page
 		['flashing menu', 'flashing-menu', true],
 		['camera zooming on beat', 'camera-zoom', true],
 		['camera movement on hit', 'camera-move-on-hit', true],
-		['hardware caching', 'hardware-caching', true],
 		#if !mobile
 		['fps counter', 'fps-counter', true], ['memory counter', 'mem-counter', true], ['memory peak counter', 'mem-peak-counter', true],
 		#end
