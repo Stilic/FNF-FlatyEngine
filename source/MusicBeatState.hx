@@ -3,8 +3,6 @@ package;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.FlxState;
-import flixel.FlxSubState;
-import flixel.FlxObject;
 import flixel.addons.ui.FlxUIState;
 import flixel.addons.transition.FlxTransitionableState;
 
@@ -46,7 +44,7 @@ class MusicBeatState extends FlxUIState
 		super.create();
 
 		if (!skip)
-			openSubState(new CustomFadeTransition(0.625, true));
+			openSubState(new CustomFadeTransition(0.6, true));
 		FlxTransitionableState.skipNextTransOut = false;
 	}
 

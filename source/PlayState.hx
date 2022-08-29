@@ -1522,11 +1522,13 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		var mult:Float = CoolUtil.coolLerp(1, iconP1.scale.x, 0.2, true);
+		var lerpVal:Float = 0.2;
+
+		var mult:Float = CoolUtil.coolLerp(1, iconP1.scale.x, lerpVal, true);
 		iconP1.scale.set(mult, mult);
 		iconP1.updateHitbox();
 
-		mult = CoolUtil.coolLerp(1, iconP2.scale.x, 0.2, true);
+		mult = CoolUtil.coolLerp(1, iconP2.scale.x, lerpVal, true);
 		iconP2.scale.set(mult, mult);
 		iconP2.updateHitbox();
 
