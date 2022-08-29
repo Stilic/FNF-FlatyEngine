@@ -3,6 +3,8 @@ package;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.FlxState;
+import flixel.FlxSubState;
+import flixel.FlxObject;
 import flixel.addons.ui.FlxUIState;
 import flixel.addons.transition.FlxTransitionableState;
 
@@ -33,7 +35,7 @@ class MusicBeatState extends FlxUIState
 		FlxG.switchState(nextState);
 	}
 
-	inline public static function resetState()
+	inline static public function resetState()
 	{
 		switchState(FlxG.state);
 	}

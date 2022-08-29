@@ -659,8 +659,20 @@ class Controls extends FlxActionSet
 		map.set(Control.RESET, [Y]);
 		#end
 		gamepadsAdded.push(id);
-		for (control => buttons in map)
-			bindButtons(control, id, buttons);
+		#if (haxe >= "4.0.0")
+		for (k => v in map)
+		{
+			bindButtons(k, id, v);
+		}
+		#else
+		var keys = map.keys();
+		while (keys.hasNext())
+		{
+			var k = keys.next();
+			var v = map.get(k);
+			bindButtons(k, id, v);
+		}
+		#end
 	}
 
 	/**

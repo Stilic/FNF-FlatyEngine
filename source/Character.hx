@@ -3,16 +3,14 @@ package;
 import ui.PreferencesMenu;
 import Section.SwagSection;
 import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 
 using StringTools;
 
-class Character extends FlxSprite
+class Character extends FNFSprite
 {
 	public static final singAnimations:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
 
-	public var animOffsets:Map<String, Array<Float>>;
 	public var debugMode:Bool = false;
 
 	public var isPlayer:Bool;
@@ -23,14 +21,13 @@ class Character extends FlxSprite
 	public var animationNotes:Array<Dynamic> = [];
 
 	public var cameraMove:Bool;
-	public var cameraMoveAdd:Int = 20;
+	public var cameraMoveAdd:Int = 15;
 	public var cameraMoveArray:Array<Float>;
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
 
-		animOffsets = new Map<String, Array<Float>>();
 		cameraMove = PreferencesMenu.getPref('camera-move-on-hit');
 		curCharacter = character;
 		this.isPlayer = isPlayer;
@@ -632,17 +629,9 @@ class Character extends FlxSprite
 		}
 	}
 
-	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
+	override function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0)
 	{
-		animation.play(AnimName, Force, Reversed, Frame);
-
-		var daOffset = animOffsets.get(AnimName);
-		if (animOffsets.exists(AnimName))
-		{
-			offset.set(daOffset[0], daOffset[1]);
-		}
-		else
-			offset.set(0, 0);
+		super.playAnim(AnimName, Force, Reversed, Frame);
 
 		if (curCharacter == 'gf')
 		{
@@ -676,10 +665,5 @@ class Character extends FlxSprite
 		}
 		else
 			cameraMoveArray = null;
-	}
-
-	public function addOffset(name:String, x:Float = 0, y:Float = 0)
-	{
-		animOffsets[name] = [x, y];
 	}
 }

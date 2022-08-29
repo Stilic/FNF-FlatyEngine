@@ -9,7 +9,7 @@ import flixel.util.FlxTimer;
 class GameOverSubstate extends MusicBeatSubstate
 {
 	var bf:Boyfriend;
-	var camFollow:FlxObject;
+	var camGame:FNFCamera;
 
 	var stageSuffix:String = "";
 
@@ -40,16 +40,18 @@ class GameOverSubstate extends MusicBeatSubstate
 		bf = new Boyfriend(x, y, daBf);
 		add(bf);
 
-		camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);
-		add(camFollow);
+		camGame = cast FlxG.camera;
+		camGame.camFollow.copyFrom(bf.getGraphicMidpoint());
 
 		FlxG.sound.play(Paths.sound('fnf_loss_sfx' + stageSuffix));
 		Conductor.changeBPM(100);
 
 		// FlxG.camera.followLerp = 1;
 		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
-		FlxG.camera.scroll.set();
-		FlxG.camera.target = null;
+		camGame.scroll.set();
+		camGame.target.setPosition(camGame.scroll.x + (camGame.width / 2), camGame.scroll.y + (camGame.height / 2));
+		camGame.target = null;
+		camGame.lerp = 0.01;
 
 		bf.playAnim('firstDeath');
 
@@ -85,7 +87,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
 		{
-			FlxG.camera.follow(camFollow, LOCKON, 0.01);
+			camGame.resetTarget();
 		}
 
 		if (PlayState.storyWeek == 7)
@@ -137,7 +139,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			FlxG.sound.play(Paths.music('gameOverEnd' + stageSuffix));
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{
-				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
+				camGame.fade(FlxColor.BLACK, 2, false, function()
 				{
 					LoadingState.loadAndSwitchState(new PlayState());
 				});

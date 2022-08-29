@@ -28,14 +28,13 @@ class PreferencesMenu extends Page
 	];
 
 	var checkboxes:Array<CheckboxThingie> = [];
-	var menuCamera:FlxCamera;
+	var menuCamera:FNFCamera;
 	var items:TextMenuList;
-	var camFollow:FlxObject;
 
 	override public function new()
 	{
 		super();
-		menuCamera = new FlxCamera();
+		menuCamera = new FNFCamera(0.06);
 		FlxG.cameras.add(menuCamera, false);
 		menuCamera.bgColor = FlxColor.TRANSPARENT;
 		camera = menuCamera;
@@ -44,17 +43,17 @@ class PreferencesMenu extends Page
 		{
 			createPrefItem(pref[0], pref[1], pref[2]);
 		}
-		camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
+		menuCamera.camFollow.x = FlxG.width / 2;
 		if (items != null)
 		{
-			camFollow.y = items.members[items.selectedIndex].y;
+			menuCamera.camFollow.y = items.members[items.selectedIndex].y;
 		}
-		menuCamera.follow(camFollow, null, 0.06);
+		menuCamera.target.setSize(140, 70);
 		menuCamera.deadzone.set(0, 160, menuCamera.width, 40);
 		menuCamera.minScrollY = 0;
 		items.onChange.add(function(item:TextMenuItem)
 		{
-			camFollow.y = item.y;
+			menuCamera.camFollow.y = item.y;
 		});
 	}
 
@@ -169,7 +168,6 @@ class PreferencesMenu extends Page
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		menuCamera.followLerp = CoolUtil.camLerpShit(0.05);
 		items.forEach(function(item:MenuItem)
 		{
 			if (item == items.members[items.selectedIndex])

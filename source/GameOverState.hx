@@ -32,7 +32,7 @@ class GameOverState extends FlxTransitionableState
 		add(bf);
 		bf.playAnim('firstDeath');
 
-		FlxG.camera.follow(bf, LOCKON, 0.001);
+		FlxG.camera.follow(bf, LOCKON, 1);
 		/* 
 			var restart:FlxSprite = new FlxSprite(500, 50).loadGraphic(AssetPaths.restart.png);
 			restart.setGraphicSize(Std.int(restart.width * 0.6));

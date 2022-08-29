@@ -10,17 +10,19 @@ class StrumNote extends FlxSprite
 	public var noteData:Int;
 
 	public var direction:Float = 90;
+	public var downscroll:Bool = false;
 	public var sustainReduce:Bool = true;
 
 	var resetAnim:Float = 0;
 
 	var colorSwap:ColorSwap;
 
-	public function new(x:Float, y:Float, noteData:Int)
+	public function new(x:Float, y:Float, noteData:Int, downscroll:Bool)
 	{
 		super(x, y);
 
 		this.noteData = noteData;
+		this.downscroll = downscroll;
 
 		if (PlayState.curStage.startsWith('school'))
 		{

@@ -20,20 +20,16 @@ class Strumline extends FlxGroup
 
 	public var splashesGroup:FlxTypedGroup<NoteSplash>;
 
-	public var downscroll:Bool;
-
 	public var onNoteUpdate:Note->Void;
 
-	inline public static function isOutsideScreen(strumTime:Float)
+	inline static public function isOutsideScreen(strumTime:Float)
 	{
 		return Conductor.songPosition > 350 * FlxMath.roundDecimal(PlayState.SONG.speed, 2) + strumTime;
 	}
 
-	public function new(x:Float, y:Float, downscroll:Bool, splashes:Bool = false, keyCount:Int = 4)
+	public function new(x:Float, y:Float, downscroll:Bool)
 	{
 		super();
-
-		this.downscroll = downscroll;
 
 		var smClipStyle:Bool = PreferencesMenu.getPref('sm-clip');
 
@@ -46,9 +42,9 @@ class Strumline extends FlxGroup
 		strumsGroup = new FlxTypedGroup<StrumNote>();
 		add(strumsGroup);
 
-		for (i in 0...keyCount)
+		for (i in 0...4)
 		{
-			var babyArrow:StrumNote = new StrumNote(x, y, i);
+			var babyArrow:StrumNote = new StrumNote(x, y, i, downscroll);
 			strumsGroup.add(babyArrow);
 			babyArrow.postAddedToGroup();
 		}
@@ -76,7 +72,6 @@ class Strumline extends FlxGroup
 	{
 		super.update(elapsed);
 
-		var scrollMult:Int = downscroll ? -1 : 1;
 		allNotes.forEachAlive(function(daNote:Note)
 		{
 			var isOutsideScreen:Bool = isOutsideScreen(daNote.strumTime);
@@ -86,7 +81,8 @@ class Strumline extends FlxGroup
 			var strum:StrumNote = strumsGroup.members[Std.int(Math.abs(daNote.noteData))];
 			var angleDir:Float = (strum.direction * Math.PI) / 180;
 
-			daNote.distance = (-0.45 * scrollMult) * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(PlayState.SONG.speed, 2);
+			daNote.distance = (0.45 * (strum.downscroll ? 1 : -1)) * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(PlayState.SONG.speed,
+				2);
 
 			if (daNote.copyX)
 				daNote.x = (strum.x + daNote.offsetX) + Math.cos(angleDir) * daNote.distance;
@@ -102,27 +98,25 @@ class Strumline extends FlxGroup
 			{
 				if (daNote.copyY)
 				{
-					daNote.y -= (daNote.height / 2) * scrollMult;
+					if (strum.downscroll)
+						daNote.y += daNote.height / 2;
 					if (daNote.animation.curAnim.name.endsWith('holdend') && daNote.prevNote != null)
 					{
-						daNote.y -= (daNote.prevNote.height / 2) * scrollMult;
-						if (downscroll)
+						if (strum.downscroll)
 						{
-							daNote.y += daNote.height * 2;
+							daNote.y += daNote.prevNote.height / 2 + daNote.height * 2;
 							if (daNote.endHoldOffset == Math.NEGATIVE_INFINITY)
 								daNote.endHoldOffset = daNote.prevNote.y - (daNote.y + daNote.height) + 2;
 							else
 								daNote.y += daNote.endHoldOffset;
 						}
-						else
-							daNote.y += (daNote.height / 2) * scrollMult;
 						if (!daNote.prevNote.isSustainNote)
 						{
 							var offset:Float = 3.25;
-							if (downscroll)
+							if (strum.downscroll)
 								daNote.y += daNote.height / offset;
 							else
-								daNote.y += daNote.height * (offset / 2);
+								daNote.y += daNote.height * (offset / 7);
 						}
 					}
 				}
@@ -130,7 +124,7 @@ class Strumline extends FlxGroup
 				if (strum.sustainReduce)
 				{
 					var center:Float = strum.y + (Note.swagWidth / 2);
-					if (downscroll)
+					if (strum.downscroll)
 					{
 						if (daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= center
 							&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
@@ -175,7 +169,7 @@ class Strumline extends FlxGroup
 		else
 			leGroup = notesGroup;
 		leGroup.add(daNote);
-		leGroup.sort(FlxSort.byY, downscroll ? FlxSort.DESCENDING : FlxSort.ASCENDING);
+		leGroup.sort(CoolUtil.sortNotes);
 	}
 
 	public function removeNote(daNote:Note)

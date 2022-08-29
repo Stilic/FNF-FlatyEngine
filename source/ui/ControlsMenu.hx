@@ -24,8 +24,7 @@ class ControlsMenu extends Page
 	var deviceListSelected:Bool = false;
 	var controlGrid:MenuTypedList<InputItem>;
 	var itemGroups:Array<Array<InputItem>>;
-	var menuCamera:FlxCamera;
-	var camFollow:FlxObject;
+	var menuCamera:FNFCamera;
 	var labels:FlxTypedGroup<AtlasText>;
 	var prompt:Prompt;
 
@@ -38,7 +37,7 @@ class ControlsMenu extends Page
 		}
 		itemGroups = array;
 		super();
-		menuCamera = new FlxCamera();
+		menuCamera = new FNFCamera(0.06);
 		FlxG.cameras.add(menuCamera, false);
 		menuCamera.bgColor = FlxColor.TRANSPARENT;
 		camera = menuCamera;
@@ -99,23 +98,23 @@ class ControlsMenu extends Page
 			createItem(text.x + 400 + 300, ypos, ctrl, 1);
 			ypos += 70;
 		}
-		camFollow = new FlxObject(FlxG.width / 2, 0, 70, 70);
+		menuCamera.camFollow.x = FlxG.width / 2;
 		if (deviceList != null)
 		{
-			camFollow.y = deviceList.members[deviceList.selectedIndex].y;
+			menuCamera.camFollow.y = deviceList.members[deviceList.selectedIndex].y;
 			controlGrid.members[controlGrid.selectedIndex].idle();
 			controlGrid.enabled = false;
 		}
 		else
 		{
-			camFollow.y = controlGrid.members[controlGrid.selectedIndex].y;
+			menuCamera.camFollow.y = controlGrid.members[controlGrid.selectedIndex].y;
 		}
-		menuCamera.follow(camFollow, null, 0.06);
+		menuCamera.target.setSize(70, 70);
 		menuCamera.deadzone.set(0, 100, menuCamera.width, menuCamera.height - 200);
 		menuCamera.minScrollY = 0;
 		controlGrid.onChange.add(function(item:InputItem)
 		{
-			camFollow.y = item.y;
+			menuCamera.camFollow.y = item.y;
 			labels.forEach(function(text:AtlasText)
 			{
 				text.alpha = 0.6;
@@ -155,7 +154,7 @@ class ControlsMenu extends Page
 		controlGrid.enabled = false;
 		canExit = true;
 		deviceList.enabled = true;
-		camFollow.y = deviceList.members[deviceList.selectedIndex].y;
+		menuCamera.camFollow.y = deviceList.members[deviceList.selectedIndex].y;
 		deviceListSelected = true;
 	}
 

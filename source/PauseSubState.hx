@@ -11,15 +11,16 @@ import flixel.util.FlxColor;
 
 class PauseSubState extends MusicBeatSubstate
 {
-	var grpMenuShit:FlxTypedGroup<Alphabet>;
-
-	var pauseOG:Array<String> = [
+	static final pauseOG:Array<String> = [
 		'Resume',
 		'Restart Song',
 		'Change Difficulty',
 		'Toggle Practice Mode',
 		'Exit to menu'
 	];
+
+	var grpMenuShit:FlxTypedGroup<Alphabet>;
+
 	var difficultyChoices:Array<String> = ['EASY', 'NORMAL', 'HARD', 'BACK'];
 
 	var menuItems:Array<String> = [];
@@ -29,7 +30,7 @@ class PauseSubState extends MusicBeatSubstate
 
 	var practiceText:FlxText;
 
-	public function new(x:Float, y:Float)
+	public function new()
 	{
 		super();
 

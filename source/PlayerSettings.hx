@@ -4,8 +4,6 @@ import flixel.input.gamepad.FlxGamepad;
 import Controls;
 import flixel.FlxG;
 
-// import ui.DeviceManager;
-// import props.Player;
 class PlayerSettings
 {
 	static public var numPlayers(default, null) = 0;
@@ -63,32 +61,29 @@ class PlayerSettings
 
 	function addGamepad(pad:FlxGamepad)
 	{
-		if (!controls.gamepadsAdded.contains(pad.id))
+		var setDefault:Bool = true;
+		var saveControls = FlxG.save.data.controls;
+		if (saveControls != null)
 		{
-			var setDefault:Bool = true;
-			var saveControls = FlxG.save.data.controls;
-			if (saveControls != null)
+			var buttons = null;
+			if (id == 0 && saveControls.p1 != null && saveControls.p1.pad != null)
 			{
-				var pad = null;
-				if (id == 0 && saveControls.p1 != null && saveControls.p1.pad != null)
-				{
-					pad = saveControls.p1.pad;
-				}
-				else if (id == 1 && saveControls.p2 != null && saveControls.p2.pad != null)
-				{
-					pad = saveControls.p2.pad;
-				}
-				if (pad != null)
-				{
-					setDefault = false;
-					// trace('loaded pad data: ' + Json.stringify(pad));
-					controls.addGamepadWithSaveData(pad.id, pad);
-				}
+				buttons = saveControls.p1.pad;
 			}
-			if (setDefault)
+			else if (id == 1 && saveControls.p2 != null && saveControls.p2.pad != null)
 			{
-				controls.addDefaultGamepad(pad.id);
+				buttons = saveControls.p2.pad;
 			}
+			if (buttons != null)
+			{
+				setDefault = false;
+				// trace('loaded pad data: ' + Json.stringify(buttons));
+				controls.addGamepadWithSaveData(pad.id, buttons);
+			}
+		}
+		if (setDefault)
+		{
+			controls.addDefaultGamepad(pad.id);
 		}
 	}
 

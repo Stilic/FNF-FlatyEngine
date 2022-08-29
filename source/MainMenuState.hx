@@ -38,7 +38,7 @@ class MainMenuState extends MusicBeatState
 	#end
 
 	var magenta:FlxSprite;
-	var camFollow:FlxObject;
+	var menuCamera:FNFCamera;
 
 	override function create()
 	{
@@ -52,6 +52,9 @@ class MainMenuState extends MusicBeatState
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		}
 
+		menuCamera = new FNFCamera(0.06);
+		FlxG.cameras.reset(menuCamera);
+
 		persistentUpdate = persistentDraw = true;
 
 		var bg:FlxSprite = new FlxSprite(null, null, Paths.image('menuBG'));
@@ -62,9 +65,6 @@ class MainMenuState extends MusicBeatState
 		bg.screenCenter();
 		bg.antialiasing = true;
 		add(bg);
-
-		camFollow = new FlxObject(0, 0, 1, 1);
-		add(camFollow);
 
 		magenta = new FlxSprite(null, null, Paths.image('menuDesat'));
 		magenta.scrollFactor.x = bg.scrollFactor.x;
@@ -111,8 +111,6 @@ class MainMenuState extends MusicBeatState
 			item.y = pos + (160 * i);
 		}
 
-		FlxG.camera.follow(camFollow, null, 0.06);
-
 		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "FNF v" + Application.current.meta.get('version') + " - Flaty Engine v" + version, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -123,19 +121,12 @@ class MainMenuState extends MusicBeatState
 
 	function onMenuItemChange(item:MenuItem)
 	{
-		camFollow.setPosition(item.getGraphicMidpoint().x, item.getGraphicMidpoint().y);
+		menuCamera.camFollow.copyFrom(item.getGraphicMidpoint());
 	}
 
 	function selectDonate()
 	{
-		#if linux
-		Sys.command('/usr/bin/xdg-open', [
-			"https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/",
-			"&"
-		]);
-		#else
-		FlxG.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/');
-		#end
+		CoolUtil.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game');
 	}
 
 	function startExitState(nextState:FlxState)
@@ -160,8 +151,6 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		FlxG.camera.followLerp = CoolUtil.camLerpShit(0.06);
-
 		if (FlxG.sound.music.volume < 0.8)
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
