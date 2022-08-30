@@ -2,13 +2,10 @@ package;
 
 import ui.PreferencesMenu;
 import flixel.math.FlxMath;
-import flixel.util.FlxSort;
 import flixel.math.FlxRect;
 import flixel.group.FlxGroup;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
-
-using StringTools;
 
 class Strumline extends FlxGroup
 {
@@ -100,15 +97,15 @@ class Strumline extends FlxGroup
 				{
 					if (strum.downscroll)
 						daNote.y += daNote.height / 2;
-					if (daNote.animation.curAnim.name.endsWith('holdend') && daNote.prevNote != null)
+					if (daNote.isSustainEnd && daNote.prevNote != null)
 					{
 						if (strum.downscroll)
 						{
 							daNote.y += daNote.prevNote.height / 2 + daNote.height * 2;
-							if (daNote.endHoldOffset == Math.NEGATIVE_INFINITY)
-								daNote.endHoldOffset = daNote.prevNote.y - (daNote.y + daNote.height) + 2;
+							if (daNote.sustainEndOffset == Math.NEGATIVE_INFINITY)
+								daNote.sustainEndOffset = daNote.prevNote.y - (daNote.y + daNote.height) + 2;
 							else
-								daNote.y += daNote.endHoldOffset;
+								daNote.y += daNote.sustainEndOffset;
 						}
 						if (!daNote.prevNote.isSustainNote)
 						{

@@ -167,6 +167,8 @@ class PlayState extends MusicBeatState
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
 
+		GameOverSubstate.resetAssets();
+
 		foregroundSprites = new FlxTypedGroup<BGSprite>();
 
 		switch (SONG.song.toLowerCase())
@@ -1109,6 +1111,13 @@ class PlayState extends MusicBeatState
 
 	function startCountdown():Void
 	{
+		Paths.image('alphabet');
+		// Paths.image('characters/' + GameOverSubstate.character);
+
+		Paths.music('breakfast');
+		for (i in 1...3)
+			Paths.sound('missnote' + i);
+
 		inCutscene = false;
 
 		camHUD.visible = true;
@@ -2163,7 +2172,7 @@ class PlayState extends MusicBeatState
 			if ((curSection != null && curSection.altAnim) || note.altNote)
 				altAnim = '-alt';
 
-			char.playAnim(Character.singAnimations[note.noteData] + altAnim, true);
+			char.playAnim(Character.singAnimations[note.noteData] + altAnim, !note.isSustainNote || note.prevNote.isSustainNote || !note.isSustainEnd);
 			char.holdTimer = 0;
 
 			strumline.strumsGroup.forEach(function(strum:StrumNote)
@@ -2175,7 +2184,7 @@ class PlayState extends MusicBeatState
 					else
 					{
 						var time:Float = 0.15;
-						if (note.isSustainNote && !note.animation.curAnim.name.endsWith('end'))
+						if (note.isSustainNote && !note.isSustainEnd)
 							time += 0.15;
 						strum.autoConfirm(time);
 					}

@@ -22,7 +22,8 @@ class Note extends FlxSprite
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
-	public var endHoldOffset:Float = Math.NEGATIVE_INFINITY;
+	public var isSustainEnd:Bool = false;
+	public var sustainEndOffset:Float = Math.NEGATIVE_INFINITY;
 
 	var colorSwap:ColorSwap;
 
@@ -136,6 +137,8 @@ class Note extends FlxSprite
 
 		if (isSustainNote && prevNote != null)
 		{
+			isSustainEnd = true;
+
 			alpha = multAlpha = 0.6;
 			copyAngle = false;
 
@@ -167,6 +170,8 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
+				prevNote.isSustainEnd = false;
+
 				switch (prevNote.noteData)
 				{
 					case 0:
