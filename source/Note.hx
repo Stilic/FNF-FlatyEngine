@@ -1,8 +1,8 @@
 package;
 
+import flixel.FlxSprite;
 import ui.PreferencesMenu;
 import shaderslmfao.ColorSwap;
-import flixel.FlxSprite;
 
 using StringTools;
 

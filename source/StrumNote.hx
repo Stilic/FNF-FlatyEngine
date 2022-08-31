@@ -1,11 +1,11 @@
 package;
 
-import flixel.FlxSprite;
+import flixel.math.FlxPoint;
 import shaderslmfao.ColorSwap;
 
 using StringTools;
 
-class StrumNote extends FlxSprite
+class StrumNote extends FNFSprite
 {
 	public var noteData:Int;
 
@@ -17,7 +17,7 @@ class StrumNote extends FlxSprite
 
 	var colorSwap:ColorSwap;
 
-	public function new(x:Float, y:Float, noteData:Int, downscroll:Bool)
+	override public function new(x:Float, y:Float, noteData:Int, downscroll:Bool)
 	{
 		super(x, y);
 
@@ -104,17 +104,19 @@ class StrumNote extends FlxSprite
 			}
 		}
 
-		if (animation.curAnim.name == 'confirm' && !PlayState.curStage.startsWith('school'))
-			centerOrigin();
-
 		super.update(elapsed);
 	}
 
-	public function playAnim(anim:String, ?force:Bool = false)
+	override function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0)
 	{
-		animation.play(anim, force);
+		super.playAnim(AnimName, Force, Reversed, Frame);
+
+		var leOffset:FlxPoint = offset.copyTo();
+
 		centerOffsets();
 		centerOrigin();
+
+		offset.addPoint(leOffset);
 	}
 
 	public function autoConfirm(time:Float)
