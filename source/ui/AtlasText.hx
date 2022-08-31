@@ -111,14 +111,14 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 		var x:LabelValuePair = LabelValuePair.weak('x', this.x);
 		var y:LabelValuePair = LabelValuePair.weak('y', this.y);
 		var text:LabelValuePair = LabelValuePair.weak('text', this.text);
-		return "InputItem, " + FlxStringUtil.getDebugString([x, y, text]);
+		return 'InputItem, ' + FlxStringUtil.getDebugString([x, y, text]);
 	}
 }
 
 class AtlasFontData
 {
-	public static var upperChar:EReg = new EReg("^[A-Z]\\d+$", "");
-	public static var lowerChar:EReg = new EReg("^[a-z]\\d+$", "");
+	static var upperChar:EReg = new EReg('^[A-Z]\\d+$', '');
+	static var lowerChar:EReg = new EReg('^[a-z]\\d+$', '');
 
 	public var atlas:FlxAtlasFrames;
 	public var maxHeight:Float = 0;
@@ -126,10 +126,7 @@ class AtlasFontData
 
 	public function new(font:AtlasFont)
 	{
-		var path = 'fonts/' + font.getName().toLowerCase();
-		atlas = Paths.getSparrowAtlas(path);
-		atlas.parent.destroyOnNoUse = false;
-		atlas.parent.persist = true;
+		atlas = Paths.getSparrowAtlas('fonts/' + font.getName().toLowerCase());
 
 		var hasUpper:Bool = false;
 		var hasLower:Bool = false;

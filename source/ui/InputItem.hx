@@ -1,6 +1,5 @@
 package ui;
 
-import flixel.input.keyboard.FlxKey;
 import Controls.Control;
 import Controls.Device;
 

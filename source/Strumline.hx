@@ -112,11 +112,11 @@ class Strumline extends FlxGroup
 						}
 						if (!daNote.prevNote.isSustainNote)
 						{
-							var offset:Float = 3.25;
+							var offset:Int = 3;
 							if (strum.downscroll)
 								daNote.y += daNote.height / offset;
 							else
-								daNote.y += daNote.height * (offset / 7);
+								daNote.y += daNote.height * (offset / 8);
 						}
 					}
 					// daNote.y += (daNote.height / 2) * scrollMult;

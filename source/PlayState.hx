@@ -329,16 +329,6 @@ class PlayState extends MusicBeatState
 						grpLimoDancers.add(dancer);
 					}
 
-					var overlayShit:FlxSprite = new FlxSprite(-500, -600).loadGraphic(Paths.image('limo/limoOverlay'));
-					overlayShit.alpha = 0.5;
-					// add(overlayShit);
-
-					// var shaderBullshit = new BlendModeEffect(new OverlayShader(), FlxColor.RED);
-
-					// FlxG.camera.setFilters([new ShaderFilter(cast shaderBullshit.shader)]);
-
-					// overlayShit.shader = shaderBullshit;
-
 					limo = new FlxSprite(-120, 550);
 					limo.frames = Paths.getSparrowAtlas('limo/limoDrive');
 					limo.animation.addByPrefix('drive', "Limo stage", 24);
@@ -860,6 +850,8 @@ class PlayState extends MusicBeatState
 		camGame.zoom = defaultCamZoom;
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
+
+		cameraSection();
 
 		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
 		healthBarBG.screenCenter(X);
@@ -2172,7 +2164,7 @@ class PlayState extends MusicBeatState
 			if ((curSection != null && curSection.altAnim) || note.altNote)
 				altAnim = '-alt';
 
-			char.playAnim(Character.singAnimations[note.noteData] + altAnim, !note.isSustainNote || note.prevNote.isSustainNote || !note.isSustainEnd);
+			char.playAnim(Character.singAnimations[note.noteData] + altAnim, true);
 			char.holdTimer = 0;
 
 			strumline.strumsGroup.forEach(function(strum:StrumNote)

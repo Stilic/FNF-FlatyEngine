@@ -12,6 +12,7 @@ import neko.vm.Gc;
 import haxe.ds.StringMap;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
+import flixel.util.FlxDestroyUtil;
 import openfl.utils.Assets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
@@ -46,9 +47,7 @@ class Cache
 
 	public static function clear()
 	{
-		for (image in images)
-			image.dispose();
-		images = [];
+		FlxDestroyUtil.destroyArray(images);
 
 		sounds.clear();
 		AtlasText.fonts.clear();
@@ -64,7 +63,7 @@ class Cache
 	}
 }
 
-class CoolImage
+class CoolImage implements IFlxDestroyable
 {
 	public var path(default, null):String;
 	public var graphic(default, null):FlxGraphic;
@@ -75,23 +74,25 @@ class CoolImage
 	{
 		this.path = path;
 
-		#if !flash
 		var data:BitmapData = Assets.getBitmapData(path, false);
 		texture = FlxG.stage.context3D.createTexture(data.width, data.height, BGRA, true);
 		texture.uploadFromBitmapData(data);
 		data.dispose();
 		data.disposeImage();
-		#end
 
-		graphic = FlxGraphic.fromBitmapData(#if flash Assets.getBitmapData(path, false) #else BitmapData.fromTexture(texture) #end, false, null, false);
+		graphic = FlxGraphic.fromBitmapData(BitmapData.fromTexture(texture), false, null, false);
 		graphic.persist = true;
+		graphic.destroyOnNoUse = false;
 	}
 
-	public function dispose()
+	public function destroy()
 	{
-		#if !flash
 		texture.dispose();
-		#end
-		graphic.destroy();
+		texture = null;
+
+		graphic.bitmap.dispose();
+		graphic.bitmap.disposeImage();
+
+		graphic = FlxDestroyUtil.destroy(graphic);
 	}
 }

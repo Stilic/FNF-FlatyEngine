@@ -28,9 +28,8 @@ class StrumNote extends FNFSprite
 		{
 			loadGraphic(Paths.image('pixelUI/arrows-pixels'), true, 17, 17);
 
-			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-			updateHitbox();
 			antialiasing = false;
+			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 
 			switch (noteData)
 			{
@@ -65,18 +64,26 @@ class StrumNote extends FNFSprite
 					animation.addByPrefix('static', 'arrowLEFT');
 					animation.addByPrefix('pressed', 'left press', 24, false);
 					animation.addByPrefix('confirm', 'left confirm', 24, false);
+
+					addOffset('confirm', -2, -2);
 				case 1:
 					animation.addByPrefix('static', 'arrowDOWN');
 					animation.addByPrefix('pressed', 'down press', 24, false);
 					animation.addByPrefix('confirm', 'down confirm', 24, false);
+
+					addOffset('confirm', -3, -1);
 				case 2:
 					animation.addByPrefix('static', 'arrowUP');
 					animation.addByPrefix('pressed', 'up press', 24, false);
 					animation.addByPrefix('confirm', 'up confirm', 24, false);
+
+					addOffset('confirm', -1, -2);
 				case 3:
 					animation.addByPrefix('static', 'arrowRIGHT');
 					animation.addByPrefix('pressed', 'right press', 24, false);
 					animation.addByPrefix('confirm', 'right confirm', 24, false);
+
+					addOffset('confirm', -2, 0);
 			}
 		}
 
@@ -84,11 +91,6 @@ class StrumNote extends FNFSprite
 
 		colorSwap = new ColorSwap();
 		shader = colorSwap.shader;
-		updateColors();
-	}
-
-	function updateColors()
-	{
 		colorSwap.update(Note.arrowColors[noteData]);
 	}
 
