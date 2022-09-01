@@ -54,10 +54,10 @@ class PreferencesMenu extends Page
 		add(items = new TextMenuList());
 		for (i in 0...sections.length)
 		{
-			var length:Int = items.length;
+			var idx:Int = items.length;
 			if (i > 0)
-				length += i;
-			var sectionText:AtlasText = new AtlasText(0, 120 * length + 30, sections[i][0], AtlasFont.Bold);
+				idx += i;
+			var sectionText:AtlasText = new AtlasText(0, 120 * idx + 30, sections[i][0], AtlasFont.Bold);
 			sectionText.screenCenter(X);
 			add(sectionText);
 			for (j in 1...sections[i].length)
@@ -66,8 +66,8 @@ class PreferencesMenu extends Page
 				{
 					if (pref[1] == sections[i][j])
 					{
-						createPrefItem(120 * (length + 1) + 30, pref[0], pref[1], pref[2]);
-						length++;
+						createPrefItem(120 * (idx + 1) + 30, pref[0], pref[1], pref[2]);
+						idx++;
 						break;
 					}
 				}
