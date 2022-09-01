@@ -28,7 +28,7 @@ class Character extends FNFSprite
 	{
 		super(x, y);
 
-		cameraMove = PreferencesMenu.getPref('camera-move-on-hit');
+		cameraMove = PreferencesMenu.getPref('camera-follow-char');
 		curCharacter = character;
 		this.isPlayer = isPlayer;
 

@@ -13,7 +13,7 @@ class PreferencesMenu extends Page
 		['flashing menu', 'flashing-menu', true],
 		['note splashes', 'note-splashes', true],
 		['camera zooming on beat', 'camera-zoom', true],
-		['camera movement on hit', 'camera-move-on-hit', true],
+		['camera follows character', 'camera-follow-char', true],
 		['stepmania clip style', 'sm-clip', false],
 		['downscroll', 'downscroll', false],
 		['ghost tapping', 'ghost-tapping', true],
@@ -33,7 +33,7 @@ class PreferencesMenu extends Page
 			'flashing-menu',
 			'note-splashes',
 			'camera-zoom',
-			'camera-move-on-hit',
+			'camera-follow-char',
 			'sm-clip'
 		],
 		['gameplay', 'downscroll', 'ghost-tapping'],
