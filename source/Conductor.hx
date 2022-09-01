@@ -58,7 +58,7 @@ class Conductor
 		60 => "C",
 		50 => "D",
 		40 => "E",
-		10 => "F"
+		0 => "F"
 	];
 
 	public static var bpm:Float = 100;
@@ -118,10 +118,8 @@ class Conductor
 
 	public static function getRank(accuracy:Float)
 	{
-		accuracy = CoolUtil.floorDecimal(accuracy * 100, 2);
-
 		var lastAccuracy:Int = 0;
-		var leRank:String = '';
+		var leRank:String = '?';
 
 		for (minAccuracy => rank in ranks)
 		{

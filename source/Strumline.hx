@@ -77,9 +77,7 @@ class Strumline extends FlxGroup
 			daNote.visible = !isOutsideScreen;
 
 			var strum:StrumNote = strumsGroup.members[Std.int(Math.abs(daNote.noteData))];
-			var scrollMult:Int = strum.downscroll ? 1 : -1;
-
-			daNote.distance = (0.45 * scrollMult) * (Conductor.songPosition - daNote.strumTime) * roundedSpeed;
+			daNote.distance = (0.45 * (strum.downscroll ? 1 : -1)) * (Conductor.songPosition - daNote.strumTime) * roundedSpeed;
 
 			var angleDir:Float = (strum.direction * Math.PI) / 180;
 			if (daNote.copyX)
@@ -96,30 +94,17 @@ class Strumline extends FlxGroup
 			// i am so fucking sorry for these if conditions
 			if (daNote.isSustainNote)
 			{
-				if (daNote.copyY)
+				if (daNote.copyY && strum.downscroll)
 				{
-					if (strum.downscroll)
-						daNote.y += daNote.height / 2;
+					daNote.y += daNote.height / 2;
 					if (daNote.isSustainEnd && daNote.prevNote != null)
 					{
-						if (strum.downscroll)
-						{
-							daNote.y += daNote.prevNote.height / 2 + daNote.height * 2;
-							if (daNote.sustainEndOffset == Math.NEGATIVE_INFINITY)
-								daNote.sustainEndOffset = daNote.prevNote.y - (daNote.y + daNote.height) + 2;
-							else
-								daNote.y += daNote.sustainEndOffset;
-						}
-						if (!daNote.prevNote.isSustainNote)
-						{
-							var offset:Int = 3;
-							if (strum.downscroll)
-								daNote.y += daNote.height / offset;
-							else
-								daNote.y += daNote.height * (offset / 8);
-						}
+						daNote.y += daNote.prevNote.height / 2 + daNote.height * 2;
+						if (daNote.sustainEndOffset == Math.NEGATIVE_INFINITY)
+							daNote.sustainEndOffset = daNote.prevNote.y - (daNote.y + daNote.height) + 2;
+						else
+							daNote.y += daNote.sustainEndOffset;
 					}
-					// daNote.y += (daNote.height / 2) * scrollMult;
 				}
 
 				if (strum.sustainReduce)
