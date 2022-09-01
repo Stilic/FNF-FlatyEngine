@@ -16,7 +16,7 @@ class InputItem extends TextMenuItem
 		control = ctrl;
 		this.index = index;
 		input = getInput();
-		super(x, y, getLabel(input), Default, callback);
+		super(x, y, getLabel(input), AtlasFont.Default, callback);
 	}
 
 	public function updateDevice(dev:Device)

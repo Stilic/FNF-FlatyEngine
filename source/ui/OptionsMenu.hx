@@ -10,11 +10,11 @@ class OptionsMenu extends Page
 		add(items = new TextMenuList());
 		createItem('preferences', function()
 		{
-			onSwitch.dispatch(PageName.Preferences);
+			onSwitch.dispatch('preferences');
 		});
 		createItem('controls', function()
 		{
-			onSwitch.dispatch(PageName.Controls);
+			onSwitch.dispatch('controls');
 		});
 		// if (NG.core != null && NG.core.loggedIn)
 		// {
@@ -29,7 +29,7 @@ class OptionsMenu extends Page
 
 	public function createItem(label:String, callback:Dynamic, ?fireInstantly:Bool = false)
 	{
-		var item:TextMenuItem = items.createItem(0, 100 + 100 * items.length, label, Bold, callback);
+		var item:TextMenuItem = items.createItem(0, 100 + 100 * items.length, label, AtlasFont.Bold, callback);
 		item.fireInstantly = fireInstantly;
 		item.screenCenter(X);
 		return item;

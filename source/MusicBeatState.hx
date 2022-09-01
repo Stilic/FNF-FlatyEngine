@@ -8,9 +8,10 @@ import flixel.addons.transition.FlxTransitionableState;
 
 class MusicBeatState extends FlxUIState
 {
-	private var curStep:Int = 0;
-	private var curBeat:Int = 0;
-	private var controls(get, never):Controls;
+	var curStep:Int = 0;
+	var curBeat:Int = 0;
+
+	var controls(get, never):Controls;
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
@@ -33,7 +34,7 @@ class MusicBeatState extends FlxUIState
 		FlxG.switchState(nextState);
 	}
 
-	inline static public function resetState()
+	inline public static function resetState()
 	{
 		switchState(FlxG.state);
 	}

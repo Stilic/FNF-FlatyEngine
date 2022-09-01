@@ -1254,8 +1254,6 @@ class PlayState extends MusicBeatState
 
 	private function generateSong():Void
 	{
-		// FlxG.log.add(ChartParser.parse());
-
 		curSong = SONG.song;
 		Conductor.changeBPM(SONG.bpm);
 
@@ -1292,7 +1290,7 @@ class PlayState extends MusicBeatState
 				swagNote.mustPress = gottaHitNote;
 				swagNote.sustainLength = songNotes[2];
 				swagNote.altNote = songNotes[3];
-				swagNote.scrollFactor.set(0, 0);
+				swagNote.scrollFactor.set();
 				unspawnNotes.push(swagNote);
 
 				var floorSus:Int = Math.floor(swagNote.sustainLength / Conductor.stepCrochet);
@@ -1306,6 +1304,7 @@ class PlayState extends MusicBeatState
 
 						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true);
 						sustainNote.mustPress = gottaHitNote;
+						sustainNote.altNote = songNotes[3];
 						sustainNote.scrollFactor.set();
 						unspawnNotes.push(sustainNote);
 					}
@@ -1492,17 +1491,14 @@ class PlayState extends MusicBeatState
 			paused = true;
 
 			// 1 / 1000 chance for Gitaroo Man easter egg
-			// if (FlxG.random.bool(0.1))
-			// {
-			// 	// gitaroo man easter egg
-			// 	MusicBeatState.switchState(new GitarooPause());
-			// }
-			// else
-			// {
-			var pauseMenu:PauseSubState = new PauseSubState();
-			openSubState(pauseMenu);
-			pauseMenu.camera = camHUD;
-			// }
+			if (FlxG.random.bool(0.1))
+				MusicBeatState.switchState(new GitarooPause());
+			else
+			{
+				var pauseMenu:PauseSubState = new PauseSubState();
+				openSubState(pauseMenu);
+				pauseMenu.camera = camHUD;
+			}
 
 			#if discord_rpc
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);

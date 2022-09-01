@@ -31,12 +31,6 @@ class MainMenuState extends MusicBeatState
 
 	var menuItems:MainMenuList;
 
-	#if !switch
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'options'];
-	#else
-	var optionShit:Array<String> = ['story mode', 'freeplay'];
-	#end
-
 	var magenta:FlxSprite;
 	var menuCamera:FNFCamera;
 
@@ -97,7 +91,9 @@ class MainMenuState extends MusicBeatState
 		{
 			startExitState(new FreeplayState());
 		});
+		#if !switch
 		menuItems.createItem(null, null, "donate", selectDonate, true);
+		#end
 		menuItems.createItem(0, 0, "options", function()
 		{
 			startExitState(new OptionsState());
@@ -124,10 +120,12 @@ class MainMenuState extends MusicBeatState
 		menuCamera.camFollow.copyFrom(item.getGraphicMidpoint());
 	}
 
+	#if !switch
 	function selectDonate()
 	{
 		CoolUtil.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game');
 	}
+	#end
 
 	function startExitState(nextState:FlxState)
 	{

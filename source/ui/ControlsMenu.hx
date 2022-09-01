@@ -42,10 +42,8 @@ class ControlsMenu extends Page
 		menuCamera.bgColor = FlxColor.TRANSPARENT;
 		camera = menuCamera;
 		labels = new FlxTypedGroup<AtlasText>();
-		var grpText:FlxTypedGroup<AtlasText> = new FlxTypedGroup<AtlasText>();
 		controlGrid = new MenuTypedList(Columns(2), Vertical);
 		add(labels);
-		add(grpText);
 		add(controlGrid);
 		if (FlxG.gamepads.numActiveGamepads > 0)
 		{
@@ -55,13 +53,13 @@ class ControlsMenu extends Page
 			deviceList = new TextMenuList(Horizontal, None);
 			add(deviceList);
 			deviceListSelected = true;
-			var kbItem:TextMenuItem = deviceList.createItem(null, null, 'Keyboard', Bold, function()
+			var kbItem:TextMenuItem = deviceList.createItem(null, null, 'Keyboard', AtlasFont.Bold, function()
 			{
 				selectDevice(Device.Keys);
 			});
 			kbItem.x = FlxG.width / 2 - kbItem.width - 30;
 			kbItem.y = (spr.height - kbItem.height) / 2;
-			var gpItem:TextMenuItem = deviceList.createItem(null, null, 'Gamepad', Bold, function()
+			var gpItem:TextMenuItem = deviceList.createItem(null, null, 'Gamepad', AtlasFont.Bold, function()
 			{
 				selectDevice(Device.Gamepad(FlxG.gamepads.firstActive.id));
 			});
@@ -76,22 +74,24 @@ class ControlsMenu extends Page
 			if (curSection != 'UI_' && name.indexOf('UI_') == 0)
 			{
 				curSection = 'UI_';
-				var sectionText:AtlasText = new AtlasText(0, ypos, 'UI', Bold);
-				grpText.add(sectionText).screenCenter(X);
+				var sectionText:AtlasText = new AtlasText(0, ypos, 'UI', AtlasFont.Bold);
+				sectionText.screenCenter(X);
+				add(sectionText);
 				ypos += 70;
 			}
 			else if (curSection != 'NOTE_' && name.indexOf('NOTE_') == 0)
 			{
 				curSection = 'NOTE_';
-				var sectionText:AtlasText = new AtlasText(0, ypos, 'NOTES', Bold);
-				grpText.add(sectionText).screenCenter(X);
+				var sectionText:AtlasText = new AtlasText(0, ypos, 'NOTES', AtlasFont.Bold);
+				sectionText.screenCenter(X);
+				add(sectionText);
 				ypos += 70;
 			}
 			if (curSection != null && name.indexOf(curSection) == 0)
 			{
 				name = name.substr(curSection.length);
 			}
-			var text:AtlasText = new AtlasText(150, ypos, name, Bold);
+			var text:AtlasText = new AtlasText(150, ypos, name, AtlasFont.Bold);
 			text = labels.add(text);
 			text.alpha = 0.6;
 			createItem(text.x + 400, ypos, ctrl, 0);

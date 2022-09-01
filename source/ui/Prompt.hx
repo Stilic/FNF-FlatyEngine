@@ -23,7 +23,7 @@ class Prompt extends FlxSubState
 		this.style = style;
 		super(0x80000000);
 		buttons = new TextMenuList(Horizontal);
-		field = new AtlasText(0, 0, text, Bold);
+		field = new AtlasText(0, 0, text, AtlasFont.Bold);
 		field.scrollFactor.set(0, 0);
 	}
 

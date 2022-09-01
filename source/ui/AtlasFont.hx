@@ -1,7 +1,7 @@
 package ui;
 
-enum AtlasFont
+@:enum abstract AtlasFont(String) to String
 {
-	Default;
-	Bold;
+	var Default = 'default';
+	var Bold = 'bold';
 }

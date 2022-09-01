@@ -1,8 +1,6 @@
 package ui;
 
 import flixel.FlxG;
-import flixel.FlxObject;
-import flixel.FlxCamera;
 import flixel.util.FlxColor;
 import haxe.ds.StringMap;
 
@@ -12,19 +10,34 @@ class PreferencesMenu extends Page
 
 	static final defaultPreferences:Array<Array<Dynamic>> = [
 		['naughtyness', 'censor-naughty', true],
-		['note splashes', 'note-splashes', true],
-		['downscroll', 'downscroll', false],
-		['stepmania clip style', 'sm-clip', false],
-		['ghost tapping', 'ghost-tapping', true],
 		['flashing menu', 'flashing-menu', true],
+		['note splashes', 'note-splashes', true],
 		['camera zooming on beat', 'camera-zoom', true],
 		['camera movement on hit', 'camera-move-on-hit', true],
-		#if !mobile
-		['fps counter', 'fps-counter', true], ['memory counter', 'mem-counter', true], ['memory peak counter', 'mem-peak-counter', true],
-		#end
+		['stepmania clip style', 'sm-clip', false],
+		['downscroll', 'downscroll', false],
+		['ghost tapping', 'ghost-tapping', true],
 		#if (desktop || web)
-		['auto pause', 'auto-pause', #if web false #else true #end]
+		['auto pause', 'auto-pause', #if web false #else true #end],
 		#end
+		#if !mobile
+		['fps counter', 'fps-counter', true], ['memory counter', 'mem-counter', true], ['memory peak counter', 'mem-peak-counter', true]
+		#end
+	];
+
+	// first string: name of the section - the rest: content of the section
+	var sections:Array<Array<String>> = [
+		[
+			'visuals',
+			'censor-naughty',
+			'flashing-menu',
+			'note-splashes',
+			'camera-zoom',
+			'camera-move-on-hit',
+			'sm-clip'
+		],
+		['gameplay', 'downscroll', 'ghost-tapping'],
+		['misc', 'auto-pause', 'fps-counter', 'mem-counter', 'mem-peak-counter']
 	];
 
 	var checkboxes:Array<CheckboxThingie> = [];
@@ -39,9 +52,26 @@ class PreferencesMenu extends Page
 		menuCamera.bgColor = FlxColor.TRANSPARENT;
 		camera = menuCamera;
 		add(items = new TextMenuList());
-		for (pref in defaultPreferences)
+		for (i in 0...sections.length)
 		{
-			createPrefItem(pref[0], pref[1], pref[2]);
+			var length:Int = items.length;
+			if (i > 0)
+				length += i;
+			var sectionText:AtlasText = new AtlasText(0, 120 * length + 30, sections[i][0], AtlasFont.Bold);
+			sectionText.screenCenter(X);
+			add(sectionText);
+			for (j in 1...sections[i].length)
+			{
+				for (pref in defaultPreferences)
+				{
+					if (pref[1] == sections[i][j])
+					{
+						createPrefItem(120 * (length + 1) + 30, pref[0], pref[1], pref[2]);
+						length++;
+						break;
+					}
+				}
+			}
 		}
 		menuCamera.camFollow.x = FlxG.width / 2;
 		if (items != null)
@@ -100,9 +130,9 @@ class PreferencesMenu extends Page
 		// }
 	}
 
-	public function createPrefItem(label:String, identifier:String, value:Dynamic)
+	public function createPrefItem(y:Float, label:String, identifier:String, value:Dynamic)
 	{
-		items.createItem(120, 120 * items.length + 30, label, Bold, function()
+		items.createItem(120, y, label, AtlasFont.Bold, function()
 		{
 			preferenceCheck(identifier, value);
 			if (Type.typeof(value) == TBool)
@@ -116,7 +146,7 @@ class PreferencesMenu extends Page
 		});
 		if (Type.typeof(value) == TBool)
 		{
-			createCheckbox(identifier);
+			createCheckbox(identifier, y);
 		}
 		// else
 		// {
@@ -125,9 +155,9 @@ class PreferencesMenu extends Page
 		// trace(Type.typeof(value));
 	}
 
-	public function createCheckbox(identifier:String)
+	public function createCheckbox(identifier:String, y:Float)
 	{
-		var box:CheckboxThingie = new CheckboxThingie(0, 120 * (items.length - 1), getPref(identifier));
+		var box:CheckboxThingie = new CheckboxThingie(0, y - 30, getPref(identifier));
 		checkboxes.push(box);
 		add(box);
 	}

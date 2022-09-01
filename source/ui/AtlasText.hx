@@ -1,18 +1,18 @@
 package ui;
 
+import haxe.ds.StringMap;
 import flixel.util.FlxStringUtil;
-import haxe.ds.EnumValueMap;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 {
-	public static var fonts:EnumValueMap<AtlasFont, AtlasFontData> = new EnumValueMap<AtlasFont, AtlasFontData>();
+	public static var fonts:StringMap<AtlasFontData> = new StringMap<AtlasFontData>();
 
 	public var text(default, set):String = '';
 	public var font:AtlasFontData;
 
-	override public function new(?x:Float = 0, ?y:Float = 0, text:String, ?fontType:AtlasFont = Default)
+	override public function new(?x:Float = 0, ?y:Float = 0, text:String, fontType:String = AtlasFont.Default)
 	{
 		if (!fonts.exists(fontType))
 		{
@@ -124,9 +124,9 @@ class AtlasFontData
 	public var maxHeight:Float = 0;
 	public var caseAllowed:Case = Both;
 
-	public function new(font:AtlasFont)
+	public function new(font:String)
 	{
-		atlas = Paths.getSparrowAtlas('fonts/' + font.getName().toLowerCase());
+		atlas = Paths.getSparrowAtlas('fonts/' + font.toLowerCase());
 
 		var hasUpper:Bool = false;
 		var hasLower:Bool = false;

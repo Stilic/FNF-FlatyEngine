@@ -6,7 +6,7 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 
 class Page extends FlxGroup
 {
-	public var onSwitch:FlxTypedSignal<PageName->Void> = new FlxTypedSignal<PageName->Void>();
+	public var onSwitch:FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
 	public var onExit:FlxTypedSignal<Void->Void> = new FlxTypedSignal<Void->Void>();
 
 	public var enabled(default, set):Bool = true;

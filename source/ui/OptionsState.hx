@@ -2,12 +2,14 @@ package ui;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import haxe.ds.EnumValueMap;
+import haxe.ds.StringMap;
 
 class OptionsState extends MusicBeatState
 {
-	public var pages:EnumValueMap<PageName, Page> = new EnumValueMap();
-	public var currentName:PageName = Options;
+	static final defaultPage:String = 'options';
+
+	public var pages:StringMap<Page> = new StringMap<Page>();
+	public var currentName:String = defaultPage;
 	public var currentPage(get, never):Page;
 
 	inline function get_currentPage()
@@ -22,39 +24,33 @@ class OptionsState extends MusicBeatState
 		bg.screenCenter();
 		bg.scrollFactor.set(0, 0);
 		add(bg);
-		var optionsmenu:OptionsMenu = addPage(Options, new OptionsMenu());
-		var preferencesmenu:PreferencesMenu = addPage(Preferences, new PreferencesMenu());
-		var controlsmenu:ControlsMenu = addPage(Controls, new ControlsMenu());
+		var optionsmenu:OptionsMenu = addPage(defaultPage, new OptionsMenu());
+		var preferencesmenu:PreferencesMenu = addPage('preferences', new PreferencesMenu());
+		var controlsmenu:ControlsMenu = addPage('controls', new ControlsMenu());
 		if (optionsmenu.hasMultipleOptions())
 		{
 			optionsmenu.onExit.add(exitToMainMenu);
-			controlsmenu.onExit.add(function()
-			{
-				switchPage(Options);
-			});
-			preferencesmenu.onExit.add(function()
-			{
-				switchPage(Options);
-			});
+			controlsmenu.onExit.add(resetPage);
+			preferencesmenu.onExit.add(resetPage);
 		}
 		else
 		{
 			controlsmenu.onExit.add(exitToMainMenu);
-			setPage(Controls);
+			setPage('controls');
 		}
 		super.create();
 	}
 
-	function addPage(name:PageName, page:Page):Dynamic
+	function addPage(name:String, page:Page):Dynamic
 	{
-		page.onSwitch.add(switchPage);
+		page.onSwitch.add(setPage);
 		pages.set(name, page);
 		add(page);
 		page.exists = name == currentName;
 		return page;
 	}
 
-	function setPage(name:PageName)
+	function setPage(name:String)
 	{
 		if (pages.exists(currentName))
 		{
@@ -67,9 +63,9 @@ class OptionsState extends MusicBeatState
 		}
 	}
 
-	function switchPage(name:PageName)
+	function resetPage()
 	{
-		setPage(name);
+		setPage(defaultPage);
 	}
 
 	function exitToMainMenu()
