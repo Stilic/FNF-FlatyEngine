@@ -25,6 +25,7 @@ class GridPlane
 }
 
 // STOLEN FROM https://www.shadertoy.com/view/7t2SWy LOL
+// it doesn't work on html5 for some reasons
 class GridPlaneShader extends FlxShader
 {
 	@:glFragmentSource('
@@ -38,8 +39,8 @@ class GridPlaneShader extends FlxShader
 
 		vec2 fragCoord = openfl_TextureCoordv*openfl_TextureSize;
 
-		uniform float ratio; // grid ratio
-		uniform vec4 color; // grid color
+		uniform float ratio;
+		uniform vec4 color;
 
 		float grid_texture( in vec2 p, in vec2 ddx, in vec2 ddy )
 		{

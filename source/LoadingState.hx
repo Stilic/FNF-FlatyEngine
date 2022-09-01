@@ -76,12 +76,6 @@ class LoadingState extends MusicBeatState
 	{
 		if (!Assets.cache.hasSound(path))
 		{
-			var library = Assets.getLibrary("songs");
-			final symbolPath = path.split(":").pop();
-			// @:privateAccess
-			// library.types.set(symbolPath, SOUND);
-			// @:privateAccess
-			// library.pathGroups.set(symbolPath, [library.__cacheBreak(symbolPath)]);
 			var callback = callbacks.add("song:" + path);
 			Assets.loadSound(path).onComplete(function(_)
 			{
@@ -92,8 +86,7 @@ class LoadingState extends MusicBeatState
 
 	function checkLibrary(library:String)
 	{
-		// trace(Assets.hasLibrary(library));
-		if (Assets.getLibrary(library) == null)
+		if ((library == "shared" || Assets.hasLibrary(library)) && Assets.getLibrary(library) == null)
 		{
 			@:privateAccess
 			if (!LimeAssets.libraryPaths.exists(library))

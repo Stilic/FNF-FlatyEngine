@@ -1,12 +1,15 @@
 package;
 
 #if CRASH_HANDLER
-import Discord.DiscordClient;
+import haxe.CallStack;
 import sys.io.File;
 import sys.FileSystem;
-#end
 import lime.app.Application;
-import haxe.CallStack;
+import openfl.events.UncaughtErrorEvent;
+#end
+#if discord_rpc
+import Discord.DiscordClient;
+#end
 import ui.PreferencesMenu;
 import flixel.FlxG;
 import flixel.FlxGame;
@@ -14,7 +17,6 @@ import flixel.FlxState;
 import openfl.Lib;
 import openfl.display.Sprite;
 import openfl.events.Event;
-import openfl.events.UncaughtErrorEvent;
 
 using StringTools;
 
@@ -88,7 +90,9 @@ class Main extends Sprite
 		addChild(fpsCounter);
 		#end
 
+		#if CRASH_HANDLER
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
+		#end
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 		PreferencesMenu.initPrefs();

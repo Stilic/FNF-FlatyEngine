@@ -78,7 +78,9 @@ class TitleState extends MusicBeatState
 		// bg.antialiasing = true;
 		// bg.setGraphicSize(Std.int(bg.width * 0.6));
 		// bg.updateHitbox();
+		#if !html5
 		bg.shader = new GridPlane(30, FlxColor.BLUE).shader;
+		#end
 		add(bg);
 
 		// UNCOMMENT THE FIRST LINE AND COMMENT THE SECOND LINE IF YOU ARE USING THE OG FNF ASSETS!
