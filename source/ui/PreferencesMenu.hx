@@ -13,7 +13,7 @@ class PreferencesMenu extends Page
 		['flashing menu', 'flashing-menu', true],
 		['note splashes', 'note-splashes', true],
 		['camera zooming on beat', 'camera-zoom', true],
-		['camera follows character', 'camera-follow-char', true],
+		['camera follows char', 'camera-follow-char', true],
 		['stepmania clip style', 'sm-clip', false],
 		['downscroll', 'downscroll', false],
 		['ghost tapping', 'ghost-tapping', true],

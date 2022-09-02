@@ -811,11 +811,118 @@ class PlayState extends MusicBeatState
 		var baseXShit:Int = 15;
 		var baseX:Float = FlxG.width / baseXShit;
 
-		opponentStrumline = new Strumline(baseX, strumLine.y, PreferencesMenu.getPref('downscroll'));
-		opponentStrumline.onNoteUpdate = noteUpdateShit(opponentStrumline);
+		opponentStrumline = new Strumline(baseX, strumLine.y, PreferencesMenu.getPref('downscroll'), true);
+		opponentStrumline.onNoteBotHit = function(daNote:Note)
+		{
+			goodNoteHit(dad, opponentStrumline, daNote);
+		};
 
 		playerStrumline = new Strumline(baseX * (baseXShit / 1.75), strumLine.y, PreferencesMenu.getPref('downscroll'));
-		playerStrumline.onNoteUpdate = noteUpdateShit(playerStrumline);
+		playerStrumline.onNoteUpdate = function(daNote:Note)
+		{
+			if (!inCutscene && !playerStrumline.botplay)
+			{
+				var holdingArray:Array<Bool> = [controls.NOTE_LEFT, controls.NOTE_DOWN, controls.NOTE_UP, controls.NOTE_RIGHT];
+				var controlArray:Array<Bool> = [
+					controls.NOTE_LEFT_P,
+					controls.NOTE_DOWN_P,
+					controls.NOTE_UP_P,
+					controls.NOTE_RIGHT_P
+				];
+
+				if (holdingArray.contains(true) && generatedMusic)
+				{
+					playerStrumline.holdsGroup.forEachAlive(function(daNote:Note)
+					{
+						if (daNote.canBeHit && daNote.mustPress && holdingArray[daNote.noteData])
+							goodNoteHit(boyfriend, playerStrumline, daNote);
+					});
+				}
+				if (controlArray.contains(true) && generatedMusic)
+				{
+					var possibleNotes:Array<Note> = [];
+					var ignoreList:Array<Int> = [];
+					var removeList:Array<Note> = [];
+
+					playerStrumline.allNotes.forEachAlive(function(daNote:Note)
+					{
+						if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
+						{
+							if (ignoreList.contains(daNote.noteData))
+							{
+								for (possibleNote in possibleNotes)
+								{
+									if (possibleNote.noteData == daNote.noteData
+										&& Math.abs(daNote.strumTime - possibleNote.strumTime) < 10)
+										removeList.push(daNote);
+									else if (possibleNote.noteData == daNote.noteData && daNote.strumTime < possibleNote.strumTime)
+									{
+										possibleNotes.remove(possibleNote);
+										possibleNotes.push(daNote);
+									}
+								}
+							}
+							else
+							{
+								possibleNotes.push(daNote);
+								ignoreList.push(daNote.noteData);
+							}
+						}
+					});
+
+					for (badNote in removeList)
+						playerStrumline.removeNote(badNote);
+
+					possibleNotes.sort(function(note1:Note, note2:Note)
+					{
+						return Std.int(note1.strumTime - note2.strumTime);
+					});
+
+					var canMiss:Bool = !PreferencesMenu.getPref('ghost-tapping');
+					if (possibleNotes.length > 0)
+					{
+						if (canMiss)
+						{
+							for (i in 0...controlArray.length)
+							{
+								if (controlArray[i] && !ignoreList.contains(i))
+									noteMiss(i);
+							}
+						}
+						for (possibleNote in possibleNotes)
+						{
+							if (controlArray[possibleNote.noteData])
+								goodNoteHit(boyfriend, playerStrumline, possibleNotes[0]);
+						}
+					}
+					else if (canMiss)
+					{
+						for (i in 0...controlArray.length)
+						{
+							if (controlArray[i])
+								noteMiss(i);
+						}
+					}
+				}
+
+				if (Strumline.isOutsideScreen(daNote.strumTime) && (daNote.tooLate || !daNote.wasGoodHit))
+				{
+					health -= 0.0475;
+					songMisses++;
+
+					vocals.volume = 0;
+
+					totalPlayed++;
+					recalculateRating();
+
+					vocals.volume = 0;
+				}
+			}
+		};
+		playerStrumline.onNoteBotHit = function(daNote:Note)
+		{
+			goodNoteHit(boyfriend, playerStrumline, daNote);
+		};
 
 		strumlines.add(opponentStrumline);
 		strumlines.add(playerStrumline);
@@ -1079,28 +1186,6 @@ class PlayState extends MusicBeatState
 	}
 
 	var startTimer:FlxTimer = new FlxTimer();
-
-	function noteUpdateShit(strumline:Strumline):Note->Void
-	{
-		return function(daNote:Note)
-		{
-			if (!daNote.mustPress && daNote.strumTime <= Conductor.songPosition)
-				goodNoteHit(dad, strumline, daNote);
-
-			if (Strumline.isOutsideScreen(daNote.strumTime) && (daNote.tooLate || !daNote.wasGoodHit))
-			{
-				health -= 0.0475;
-				songMisses++;
-
-				vocals.volume = 0;
-
-				totalPlayed++;
-				recalculateRating();
-
-				vocals.volume = 0;
-			}
-		};
-	}
 
 	function startCountdown():Void
 	{
@@ -1645,7 +1730,7 @@ class PlayState extends MusicBeatState
 				break;
 		}
 
-		if (!inCutscene)
+		if (!inCutscene && !playerStrumline.botplay)
 			keyShit();
 
 		#if debug
@@ -1968,81 +2053,6 @@ class PlayState extends MusicBeatState
 			controls.NOTE_UP_P,
 			controls.NOTE_RIGHT_P
 		];
-
-		// FlxG.watch.addQuick('asdfa', upP);
-		if (holdingArray.contains(true) && generatedMusic)
-		{
-			playerStrumline.holdsGroup.forEachAlive(function(daNote:Note)
-			{
-				if (daNote.canBeHit && daNote.mustPress && holdingArray[daNote.noteData])
-					goodNoteHit(boyfriend, playerStrumline, daNote);
-			});
-		}
-		if (controlArray.contains(true) && generatedMusic)
-		{
-			var possibleNotes:Array<Note> = [];
-			var ignoreList:Array<Int> = [];
-			var removeList:Array<Note> = [];
-
-			playerStrumline.allNotes.forEachAlive(function(daNote:Note)
-			{
-				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
-				{
-					if (ignoreList.contains(daNote.noteData))
-					{
-						for (possibleNote in possibleNotes)
-						{
-							if (possibleNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - possibleNote.strumTime) < 10)
-								removeList.push(daNote);
-							else if (possibleNote.noteData == daNote.noteData && daNote.strumTime < possibleNote.strumTime)
-							{
-								possibleNotes.remove(possibleNote);
-								possibleNotes.push(daNote);
-							}
-						}
-					}
-					else
-					{
-						possibleNotes.push(daNote);
-						ignoreList.push(daNote.noteData);
-					}
-				}
-			});
-
-			for (badNote in removeList)
-				playerStrumline.removeNote(badNote);
-
-			possibleNotes.sort(function(note1:Note, note2:Note)
-			{
-				return Std.int(note1.strumTime - note2.strumTime);
-			});
-
-			var canMiss:Bool = !PreferencesMenu.getPref('ghost-tapping');
-			if (possibleNotes.length > 0)
-			{
-				if (canMiss)
-				{
-					for (i in 0...controlArray.length)
-					{
-						if (controlArray[i] && !ignoreList.contains(i))
-							noteMiss(i);
-					}
-				}
-				for (possibleNote in possibleNotes)
-				{
-					if (controlArray[possibleNote.noteData])
-						goodNoteHit(boyfriend, playerStrumline, possibleNotes[0]);
-				}
-			}
-			else if (canMiss)
-			{
-				for (i in 0...controlArray.length)
-				{
-					if (controlArray[i])
-						noteMiss(i);
-				}
-			}
-		}
 
 		if (boyfriend.holdTimer > 0.004 * Conductor.stepCrochet
 			&& !holdingArray.contains(true)

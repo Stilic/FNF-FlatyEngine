@@ -17,16 +17,21 @@ class Strumline extends FlxGroup
 
 	public var splashesGroup:FlxTypedGroup<NoteSplash>;
 
+	public var botplay:Bool = false;
+
 	public var onNoteUpdate:Note->Void;
+	public var onNoteBotHit:Note->Void;
 
 	inline static public function isOutsideScreen(strumTime:Float)
 	{
 		return Conductor.songPosition > 350 * FlxMath.roundDecimal(PlayState.SONG.speed, 2) + strumTime;
 	}
 
-	public function new(x:Float, y:Float, downscroll:Bool)
+	public function new(x:Float, y:Float, downscroll:Bool, botplay:Bool = false)
 	{
 		super();
+
+		this.botplay = botplay;
 
 		var smClipStyle:Bool = PreferencesMenu.getPref('sm-clip');
 
@@ -72,9 +77,9 @@ class Strumline extends FlxGroup
 		var roundedSpeed:Float = FlxMath.roundDecimal(PlayState.SONG.speed, 2);
 		allNotes.forEachAlive(function(daNote:Note)
 		{
-			var isOutsideScreen:Bool = isOutsideScreen(daNote.strumTime);
-			daNote.active = !isOutsideScreen;
-			daNote.visible = !isOutsideScreen;
+			var shouldRemove:Bool = isOutsideScreen(daNote.strumTime);
+			daNote.active = !shouldRemove;
+			daNote.visible = !shouldRemove;
 
 			var strum:StrumNote = strumsGroup.members[Std.int(Math.abs(daNote.noteData))];
 			daNote.distance = (0.45 * (strum.downscroll ? 1 : -1)) * (Conductor.songPosition - daNote.strumTime) * roundedSpeed;
@@ -138,10 +143,13 @@ class Strumline extends FlxGroup
 				}
 			}
 
+			if (onNoteBotHit != null && botplay && daNote.strumTime <= Conductor.songPosition)
+				onNoteBotHit(daNote);
+
 			if (onNoteUpdate != null)
 				onNoteUpdate(daNote);
 
-			if (isOutsideScreen)
+			if (shouldRemove)
 				removeNote(daNote);
 		});
 	}
