@@ -50,15 +50,10 @@ class CoolUtil
 		return newValue / tempMult;
 	}
 
-	inline public static function boundTo(value:Float, min:Float, max:Float):Float
-	{
-		return Math.max(min, Math.min(max, value));
-	}
-
 	inline public static function camLerpShit(ratio:Float, negative:Bool = false):Float
 	{
 		var cock:Float = FlxG.elapsed * (ratio * 60);
-		return boundTo(negative ? 1 - cock : cock, 0, 1);
+		return FlxMath.bound(negative ? 1 - cock : cock, 0, 1);
 	}
 
 	inline public static function coolLerp(a:Float, b:Float, ratio:Float, negativeRatio:Bool = false):Float

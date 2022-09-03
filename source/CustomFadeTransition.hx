@@ -2,12 +2,13 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSubState;
+import flixel.FlxCamera;
+import flixel.FlxSprite;
+import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
-import flixel.FlxSprite;
-import flixel.FlxCamera;
 
 // thingy from psych holy shit
 class CustomFadeTransition extends FlxSubState
@@ -25,7 +26,7 @@ class CustomFadeTransition extends FlxSubState
 		super();
 
 		this.isTransIn = isTransIn;
-		var zoom:Float = CoolUtil.boundTo(FlxG.camera.zoom, 0.05, 1);
+		var zoom:Float = FlxMath.bound(FlxG.camera.zoom, 0.05, 1);
 		var width:Int = Std.int(FlxG.width / zoom);
 		var height:Int = Std.int(FlxG.height / zoom);
 		transGradient = FlxGradient.createGradientFlxSprite(width, height, (isTransIn ? [0x0, FlxColor.BLACK] : [FlxColor.BLACK, 0x0]));
