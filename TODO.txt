@@ -1,6 +1,3 @@
 - rewrite input system
-- fix bf not doing anims after certain misses
-- unharcode everything
-- add modding support
-- make fancy stuff (like cool menu?)
+- unharcode everything and add modding support
 - add modifiers (like itg lol)
