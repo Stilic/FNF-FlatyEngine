@@ -23,7 +23,7 @@ class DialogueBox extends FlxSpriteGroup
 
 	var swagDialogue:FlxTypeText;
 
-	public var finishThing:Void->Void;
+	public var finishCallback:Void->Void;
 
 	var portraitLeft:FlxSprite;
 	var portraitRight:FlxSprite;
@@ -197,7 +197,7 @@ class DialogueBox extends FlxSpriteGroup
 
 					new FlxTimer().start(1.2, function(tmr:FlxTimer)
 					{
-						finishThing();
+						finishCallback();
 						kill();
 					});
 				}

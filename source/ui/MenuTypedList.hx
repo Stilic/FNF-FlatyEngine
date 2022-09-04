@@ -1,10 +1,10 @@
 package ui;
 
+import haxe.ds.StringMap;
 import flixel.FlxG;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.util.FlxSignal;
-import haxe.ds.StringMap;
+import flixel.util.FlxSignal.FlxTypedSignal;
 
 class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 {

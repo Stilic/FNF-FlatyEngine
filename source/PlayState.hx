@@ -796,7 +796,7 @@ class PlayState extends MusicBeatState
 			// doof.x += 70;
 			// doof.y = FlxG.height * 0.5;
 			doof.scrollFactor.set();
-			doof.finishThing = startCountdown;
+			doof.finishCallback = startCountdown;
 		}
 
 		Conductor.songPosition = -5000;
@@ -812,13 +812,13 @@ class PlayState extends MusicBeatState
 		var baseX:Float = FlxG.width / baseXShit;
 
 		opponentStrumline = new Strumline(baseX, strumLine.y, PreferencesMenu.getPref('downscroll'), true);
-		opponentStrumline.onNoteBotHit = function(daNote:Note)
+		opponentStrumline.onNoteBotHit.add(function(daNote:Note)
 		{
 			goodNoteHit(dad, opponentStrumline, daNote);
-		};
+		});
 
 		playerStrumline = new Strumline(baseX * (baseXShit / 1.75), strumLine.y, PreferencesMenu.getPref('downscroll'));
-		playerStrumline.onNoteUpdate = function(daNote:Note)
+		playerStrumline.onNoteUpdate.add(function(daNote:Note)
 		{
 			if (!inCutscene && !playerStrumline.botplay)
 			{
@@ -918,11 +918,11 @@ class PlayState extends MusicBeatState
 					vocals.volume = 0;
 				}
 			}
-		};
-		playerStrumline.onNoteBotHit = function(daNote:Note)
+		});
+		playerStrumline.onNoteBotHit.add(function(daNote:Note)
 		{
 			goodNoteHit(boyfriend, playerStrumline, daNote);
-		};
+		});
 
 		strumlines.add(opponentStrumline);
 		strumlines.add(playerStrumline);
@@ -1378,21 +1378,15 @@ class PlayState extends MusicBeatState
 				swagNote.scrollFactor.set();
 				unspawnNotes.push(swagNote);
 
-				var floorSus:Int = Math.floor(swagNote.sustainLength / Conductor.stepCrochet);
-				if (floorSus > 0)
+				for (susNote in 0...Math.floor(swagNote.sustainLength / Conductor.stepCrochet))
 				{
-					if (floorSus <= 1)
-						floorSus++;
-					for (susNote in 0...floorSus)
-					{
-						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true);
-						sustainNote.mustPress = gottaHitNote;
-						sustainNote.altNote = songNotes[3];
-						sustainNote.scrollFactor.set();
-						unspawnNotes.push(sustainNote);
-					}
+					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true);
+					sustainNote.mustPress = gottaHitNote;
+					sustainNote.altNote = songNotes[3];
+					sustainNote.scrollFactor.set();
+					unspawnNotes.push(sustainNote);
 				}
 			}
 		}

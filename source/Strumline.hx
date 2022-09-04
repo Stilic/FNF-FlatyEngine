@@ -6,6 +6,7 @@ import flixel.math.FlxRect;
 import flixel.group.FlxGroup;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
+import flixel.util.FlxSignal.FlxTypedSignal;
 
 class Strumline extends FlxGroup
 {
@@ -19,10 +20,10 @@ class Strumline extends FlxGroup
 
 	public var botplay:Bool = false;
 
-	public var onNoteUpdate:Note->Void;
-	public var onNoteBotHit:Note->Void;
+	public var onNoteUpdate:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
+	public var onNoteBotHit:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
 
-	inline static public function isOutsideScreen(strumTime:Float)
+	inline public static function isOutsideScreen(strumTime:Float)
 	{
 		return Conductor.songPosition > 350 * FlxMath.roundDecimal(PlayState.SONG.speed, 2) + strumTime;
 	}
@@ -81,7 +82,7 @@ class Strumline extends FlxGroup
 			daNote.active = !shouldRemove;
 			daNote.visible = !shouldRemove;
 
-			var strum:StrumNote = strumsGroup.members[Std.int(Math.abs(daNote.noteData))];
+			var strum:StrumNote = strumsGroup.members[daNote.noteData % strumsGroup.length];
 			daNote.distance = (0.45 * (strum.downscroll ? 1 : -1)) * (Conductor.songPosition - daNote.strumTime) * roundedSpeed;
 
 			var angleDir:Float = (strum.direction * Math.PI) / 180;
@@ -89,17 +90,17 @@ class Strumline extends FlxGroup
 				daNote.x = (strum.x + daNote.offsetX) + Math.cos(angleDir) * daNote.distance;
 			if (daNote.copyY)
 				daNote.y = (strum.y + daNote.offsetY) + Math.sin(angleDir) * daNote.distance;
-
 			if (daNote.copyAngle)
 				daNote.angle = strum.direction - 90 + strum.angle + daNote.offsetAngle;
-
 			if (daNote.copyAlpha)
 				daNote.alpha = strum.alpha * daNote.multAlpha;
 
 			// i am so fucking sorry for these if conditions
 			if (daNote.isSustainNote)
 			{
-				if (daNote.copyY && strum.downscroll)
+				daNote.flipY = strum.downscroll;
+
+				if (strum.downscroll)
 				{
 					daNote.y += daNote.height / 2;
 					if (daNote.isSustainEnd && daNote.prevNote != null)
@@ -109,6 +110,8 @@ class Strumline extends FlxGroup
 							daNote.sustainEndOffset = daNote.prevNote.y - (daNote.y + daNote.height) + 2;
 						else
 							daNote.y += daNote.sustainEndOffset;
+						if (!daNote.prevNote.isSustainNote)
+							daNote.y += Note.swagWidth / 3;
 					}
 				}
 
@@ -127,27 +130,22 @@ class Strumline extends FlxGroup
 							daNote.clipRect = swagRect;
 						}
 					}
-					else
+					else if (daNote.y + daNote.offset.y * daNote.scale.y <= center
+						&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 					{
-						if (daNote.isSustainNote
-							&& daNote.y + daNote.offset.y * daNote.scale.y <= center
-							&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
-						{
-							var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
-							swagRect.y = (center - daNote.y) / daNote.scale.y;
-							swagRect.height -= swagRect.y;
+						var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
+						swagRect.y = (center - daNote.y) / daNote.scale.y;
+						swagRect.height -= swagRect.y;
 
-							daNote.clipRect = swagRect;
-						}
+						daNote.clipRect = swagRect;
 					}
 				}
 			}
 
 			if (onNoteBotHit != null && botplay && daNote.strumTime <= Conductor.songPosition)
-				onNoteBotHit(daNote);
-
+				onNoteBotHit.dispatch(daNote);
 			if (onNoteUpdate != null)
-				onNoteUpdate(daNote);
+				onNoteUpdate.dispatch(daNote);
 
 			if (shouldRemove)
 				removeNote(daNote);

@@ -8,6 +8,9 @@ using StringTools;
 
 class Note extends FlxSprite
 {
+	public static final swagWidth:Float = 160 * 0.7;
+	public static var arrowColors = [1, 1, 1, 1];
+
 	public var strumTime:Float = 0;
 	public var distance:Float = 2000;
 
@@ -36,13 +39,6 @@ class Note extends FlxSprite
 	public var offsetY:Float = 0;
 	public var offsetAngle:Float = 0;
 	public var multAlpha:Float = 1;
-
-	public static var swagWidth:Float = 160 * 0.7;
-	public static var arrowColors = [1, 1, 1, 1];
-	public static var PURP_NOTE:Int = 0;
-	public static var GREEN_NOTE:Int = 2;
-	public static var BLUE_NOTE:Int = 1;
-	public static var RED_NOTE:Int = 3;
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
@@ -143,9 +139,7 @@ class Note extends FlxSprite
 			copyAngle = false;
 
 			if (PreferencesMenu.getPref('downscroll'))
-			{
 				flipY = true;
-			}
 
 			offsetX = width / 2;
 

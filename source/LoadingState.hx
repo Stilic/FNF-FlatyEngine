@@ -276,8 +276,7 @@ class MultiCallback
 		id = '$length:$id';
 		length++;
 		numRemaining++;
-		var func:Void->Void = null;
-		func = function()
+		var func:Void->Void = function()
 		{
 			if (unfired.exists(id))
 			{
