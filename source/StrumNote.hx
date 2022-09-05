@@ -34,21 +34,21 @@ class StrumNote extends FNFSprite
 			switch (noteData)
 			{
 				case 0:
-					animation.add('static', [0]);
+					animation.add('static', [0], 12);
 					animation.add('pressed', [4, 8], 12, false);
-					animation.add('confirm', [12, 16], 24, false);
+					animation.add('confirm', [12, 16], 12, false);
 				case 1:
-					animation.add('static', [1]);
+					animation.add('static', [1], 12);
 					animation.add('pressed', [5, 9], 12, false);
-					animation.add('confirm', [13, 17], 24, false);
+					animation.add('confirm', [13, 17], 12, false);
 				case 2:
-					animation.add('static', [2]);
+					animation.add('static', [2], 12);
 					animation.add('pressed', [6, 10], 12, false);
 					animation.add('confirm', [14, 18], 12, false);
 				case 3:
-					animation.add('static', [3]);
+					animation.add('static', [3], 12);
 					animation.add('pressed', [7, 11], 12, false);
-					animation.add('confirm', [15, 19], 24, false);
+					animation.add('confirm', [15, 19], 12, false);
 			}
 		}
 		else
@@ -61,25 +61,25 @@ class StrumNote extends FNFSprite
 			switch (Math.abs(noteData) % 4)
 			{
 				case 0:
-					animation.addByPrefix('static', 'arrowLEFT');
+					animation.addByPrefix('static', 'arrowLEFT', 24);
 					animation.addByPrefix('pressed', 'left press', 24, false);
 					animation.addByPrefix('confirm', 'left confirm', 24, false);
 
 					addOffset('confirm', -2, -2);
 				case 1:
-					animation.addByPrefix('static', 'arrowDOWN');
+					animation.addByPrefix('static', 'arrowDOWN', 24);
 					animation.addByPrefix('pressed', 'down press', 24, false);
 					animation.addByPrefix('confirm', 'down confirm', 24, false);
 
 					addOffset('confirm', -3, -1);
 				case 2:
-					animation.addByPrefix('static', 'arrowUP');
+					animation.addByPrefix('static', 'arrowUP', 24);
 					animation.addByPrefix('pressed', 'up press', 24, false);
 					animation.addByPrefix('confirm', 'up confirm', 24, false);
 
 					addOffset('confirm', -1, -1);
 				case 3:
-					animation.addByPrefix('static', 'arrowRIGHT');
+					animation.addByPrefix('static', 'arrowRIGHT', 24);
 					animation.addByPrefix('pressed', 'right press', 24, false);
 					animation.addByPrefix('confirm', 'right confirm', 24, false);
 
