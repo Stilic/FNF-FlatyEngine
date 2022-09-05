@@ -103,9 +103,7 @@ class CoolImage implements IFlxDestroyable
 		texture = null;
 		#end
 
-		graphic.bitmap.dispose();
 		graphic.bitmap.disposeImage();
-
 		graphic = FlxDestroyUtil.destroy(graphic);
 	}
 }
