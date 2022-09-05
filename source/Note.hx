@@ -64,24 +64,24 @@ class Note extends FlxSprite
 				{
 					loadGraphic(Paths.image('pixelUI/arrowEnds'), true, 7, 6);
 
-					animation.add('purpleholdend', [4]);
-					animation.add('greenholdend', [6]);
-					animation.add('redholdend', [7]);
-					animation.add('blueholdend', [5]);
+					animation.add('purpleholdend', [4], 12);
+					animation.add('greenholdend', [6], 12);
+					animation.add('redholdend', [7], 12);
+					animation.add('blueholdend', [5], 12);
 
-					animation.add('purplehold', [0]);
-					animation.add('greenhold', [2]);
-					animation.add('redhold', [3]);
-					animation.add('bluehold', [1]);
+					animation.add('purplehold', [0], 12);
+					animation.add('greenhold', [2], 12);
+					animation.add('redhold', [3], 12);
+					animation.add('bluehold', [1], 12);
 				}
 				else
 				{
 					loadGraphic(Paths.image('pixelUI/arrows-pixels'), true, 17, 17);
 
-					animation.add('greenScroll', [6]);
-					animation.add('redScroll', [7]);
-					animation.add('blueScroll', [5]);
-					animation.add('purpleScroll', [4]);
+					animation.add('greenScroll', [6], 12);
+					animation.add('redScroll', [7], 12);
+					animation.add('blueScroll', [5], 12);
+					animation.add('purpleScroll', [4], 12);
 				}
 
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
@@ -90,22 +90,22 @@ class Note extends FlxSprite
 			default:
 				frames = Paths.getSparrowAtlas('NOTE_assets');
 
-				animation.addByPrefix('greenScroll', 'green0');
-				animation.addByPrefix('redScroll', 'red0');
-				animation.addByPrefix('blueScroll', 'blue0');
-				animation.addByPrefix('purpleScroll', 'purple0');
+				animation.addByPrefix('greenScroll', 'green0', 24);
+				animation.addByPrefix('redScroll', 'red0', 24);
+				animation.addByPrefix('blueScroll', 'blue0', 24);
+				animation.addByPrefix('purpleScroll', 'purple0', 24);
 
 				if (isSustainNote)
 				{
-					animation.addByPrefix('purpleholdend', 'pruple end hold');
-					animation.addByPrefix('greenholdend', 'green hold end');
-					animation.addByPrefix('redholdend', 'red hold end');
-					animation.addByPrefix('blueholdend', 'blue hold end');
+					animation.addByPrefix('purpleholdend', 'pruple end hold', 24);
+					animation.addByPrefix('greenholdend', 'green hold end', 24);
+					animation.addByPrefix('redholdend', 'red hold end', 24);
+					animation.addByPrefix('blueholdend', 'blue hold end', 24);
 
-					animation.addByPrefix('purplehold', 'purple hold piece');
-					animation.addByPrefix('greenhold', 'green hold piece');
-					animation.addByPrefix('redhold', 'red hold piece');
-					animation.addByPrefix('bluehold', 'blue hold piece');
+					animation.addByPrefix('purplehold', 'purple hold piece', 24);
+					animation.addByPrefix('greenhold', 'green hold piece', 24);
+					animation.addByPrefix('redhold', 'red hold piece', 24);
+					animation.addByPrefix('bluehold', 'blue hold piece', 24);
 				}
 
 				setGraphicSize(Std.int(width * 0.7));
