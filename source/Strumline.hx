@@ -102,10 +102,14 @@ class Strumline extends FlxGroup
 				daNote.y += Note.swagWidth / 2;
 				if (!strum.downscroll)
 					daNote.y -= Note.swagWidth / 1.65;
-				if (strum.downscroll && daNote.isSustainEnd)
+				if (strum.downscroll && daNote.isSustainEnd && daNote.prevNote != null)
 				{
 					if (daNote.sustainEndOffset == Math.NEGATIVE_INFINITY)
+					{
 						daNote.sustainEndOffset = (daNote.prevNote.y - (daNote.y + daNote.height)) + 1;
+						if (!daNote.prevNote.isSustainNote)
+							daNote.sustainEndOffset += Note.swagWidth / 2.3;
+					}
 					else
 						daNote.y += daNote.sustainEndOffset;
 				}
