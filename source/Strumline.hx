@@ -83,13 +83,14 @@ class Strumline extends FlxGroup
 			daNote.visible = !shouldRemove;
 
 			var strum:StrumNote = strumsGroup.members[daNote.noteData % strumsGroup.length];
-			daNote.distance = (0.45 * (strum.downscroll ? 1 : -1)) * (Conductor.songPosition - daNote.strumTime) * roundedSpeed;
+			var scrollMult:Int = strum.downscroll ? 1 : -1;
+			var distance:Float = (0.45 * scrollMult) * (Conductor.songPosition - daNote.strumTime) * roundedSpeed;
 
 			var angleDir:Float = (strum.direction * Math.PI) / 180;
 			if (daNote.copyX)
-				daNote.x = (strum.x + daNote.offsetX) + Math.cos(angleDir) * daNote.distance;
+				daNote.x = strum.x + daNote.offsetX + Math.cos(angleDir) * distance;
 			if (daNote.copyY)
-				daNote.y = (strum.y + daNote.offsetY) + Math.sin(angleDir) * daNote.distance;
+				daNote.y = strum.y + daNote.offsetY + Math.sin(angleDir) * distance;
 			if (daNote.copyAngle)
 				daNote.angle = strum.direction - 90 + strum.angle + daNote.offsetAngle;
 			if (daNote.copyAlpha)
@@ -98,30 +99,26 @@ class Strumline extends FlxGroup
 			// i am so fucking sorry for these if conditions
 			if (daNote.isSustainNote)
 			{
-				daNote.flipY = strum.downscroll;
-
-				if (strum.downscroll)
+				daNote.y += Note.swagWidth / 2;
+				if (!strum.downscroll)
+					daNote.y -= Note.swagWidth / 1.65;
+				if (strum.downscroll && daNote.isSustainEnd)
 				{
-					daNote.y += daNote.height / 2;
-					if (daNote.isSustainEnd && daNote.prevNote != null)
-					{
-						daNote.y += daNote.prevNote.height / 2 + daNote.height * 2;
-						if (daNote.sustainEndOffset == Math.NEGATIVE_INFINITY)
-							daNote.sustainEndOffset = daNote.prevNote.y - (daNote.y + daNote.height) + 2;
-						else
-							daNote.y += daNote.sustainEndOffset;
-						if (!daNote.prevNote.isSustainNote)
-							daNote.y += Note.swagWidth / 3;
-					}
+					if (daNote.sustainEndOffset == Math.NEGATIVE_INFINITY)
+						daNote.sustainEndOffset = (daNote.prevNote.y - (daNote.y + daNote.height)) + 1;
+					else
+						daNote.y += daNote.sustainEndOffset;
 				}
+				daNote.flipY = strum.downscroll;
 
 				if (strum.sustainReduce)
 				{
-					var center:Float = strum.y + (Note.swagWidth / 2);
+					var center:Float = strum.y + Note.swagWidth / 2;
 					if (strum.downscroll)
 					{
 						if (daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= center
-							&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+							&& (!daNote.mustPress
+								|| (daNote.wasGoodHit || (daNote.prevNote != null && daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 						{
 							var swagRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
 							swagRect.height = (center - daNote.y) / daNote.scale.y;
@@ -131,7 +128,8 @@ class Strumline extends FlxGroup
 						}
 					}
 					else if (daNote.y + daNote.offset.y * daNote.scale.y <= center
-						&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+						&& (!daNote.mustPress
+							|| (daNote.wasGoodHit || (daNote.prevNote != null && daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 					{
 						var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
 						swagRect.y = (center - daNote.y) / daNote.scale.y;

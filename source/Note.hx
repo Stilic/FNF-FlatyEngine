@@ -12,21 +12,18 @@ class Note extends FlxSprite
 	public static var arrowColors = [1, 1, 1, 1];
 
 	public var strumTime:Float = 0;
-	public var distance:Float = 2000;
-
-	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
+	public var mustPress:Bool = false;
+	public var isSustainNote:Bool = false;
+	public var isSustainEnd:Bool = false;
+	public var sustainLength:Float = 0;
+	public var sustainEndOffset:Float = Math.NEGATIVE_INFINITY;
 	public var canBeHit:Bool = false;
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var willMiss:Bool = false;
 	public var altNote:Bool = false;
 	public var prevNote:Note;
-
-	public var sustainLength:Float = 0;
-	public var isSustainNote:Bool = false;
-	public var isSustainEnd:Bool = false;
-	public var sustainEndOffset:Float = Math.NEGATIVE_INFINITY;
 
 	var colorSwap:ColorSwap;
 
@@ -40,22 +37,18 @@ class Note extends FlxSprite
 	public var offsetAngle:Float = 0;
 	public var multAlpha:Float = 1;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, sustainNote:Bool = false)
 	{
 		super();
 
-		if (prevNote == null)
-			prevNote = this;
-
+		this.strumTime = strumTime;
+		this.noteData = noteData;
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
-		this.strumTime = strumTime;
-
-		this.noteData = noteData;
 
 		switch (PlayState.curStage)
 		{
@@ -129,7 +122,7 @@ class Note extends FlxSprite
 				animation.play('redScroll');
 		}
 
-		// trace(prevNote);
+		alpha = 0.5;
 
 		if (isSustainNote && prevNote != null)
 		{
