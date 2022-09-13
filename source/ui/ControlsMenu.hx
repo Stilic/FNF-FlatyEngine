@@ -4,9 +4,7 @@ import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.gamepad.FlxGamepad;
 import Controls.Control;
 import Controls.Device;
-import flixel.FlxCamera;
 import flixel.FlxG;
-import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxColor;
@@ -19,7 +17,7 @@ class ControlsMenu extends Page
 		[UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK]
 	];
 
-	var currentDevice:Device = Device.Keys;
+	var currentDevice:Device = Keys;
 	var deviceList:TextMenuList;
 	var deviceListSelected:Bool = false;
 	var controlGrid:MenuTypedList<InputItem>;
@@ -55,13 +53,13 @@ class ControlsMenu extends Page
 			deviceListSelected = true;
 			var kbItem:TextMenuItem = deviceList.createItem(null, null, 'Keyboard', AtlasFont.Bold, function()
 			{
-				selectDevice(Device.Keys);
+				selectDevice(Keys);
 			});
 			kbItem.x = FlxG.width / 2 - kbItem.width - 30;
 			kbItem.y = (spr.height - kbItem.height) / 2;
 			var gpItem:TextMenuItem = deviceList.createItem(null, null, 'Gamepad', AtlasFont.Bold, function()
 			{
-				selectDevice(Device.Gamepad(FlxG.gamepads.firstActive.id));
+				selectDevice(Gamepad(FlxG.gamepads.firstActive.id));
 			});
 			gpItem.x = FlxG.width / 2 + 30;
 			gpItem.y = (spr.height - gpItem.height) / 2;
@@ -165,8 +163,8 @@ class ControlsMenu extends Page
 		{
 			item.updateDevice(currentDevice);
 		}
-		var cancelBtn:String = dev == Device.Keys ? 'Escape' : 'Back';
-		if (dev == Device.Keys)
+		var cancelBtn:String = dev == Keys ? 'Escape' : 'Back';
+		if (dev == Keys)
 		{
 			prompt.setText('\nPress any key to rebind\n\n\n\n    ' + cancelBtn + ' to cancel');
 		}

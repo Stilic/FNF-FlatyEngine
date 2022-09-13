@@ -1,6 +1,7 @@
 package;
 
 import ui.PreferencesMenu;
+import flixel.FlxBasic;
 import flixel.math.FlxMath;
 import flixel.math.FlxRect;
 import flixel.group.FlxGroup;
@@ -20,8 +21,8 @@ class Strumline extends FlxGroup
 
 	public var botplay:Bool = false;
 
-	public var onNoteUpdate:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
 	public var onNoteBotHit:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
+	public var onNoteUpdate:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
 
 	inline public static function isOutsideScreen(strumTime:Float)
 	{
@@ -106,7 +107,7 @@ class Strumline extends FlxGroup
 				{
 					if (daNote.sustainEndOffset == Math.NEGATIVE_INFINITY)
 					{
-						daNote.sustainEndOffset = (daNote.prevNote.y - (daNote.y + daNote.height)) + 2;
+						daNote.sustainEndOffset = (daNote.prevNote.y - (daNote.y + daNote.height)) + 1;
 						if (!daNote.prevNote.isSustainNote)
 							daNote.sustainEndOffset += Note.swagWidth / 2.4;
 					}

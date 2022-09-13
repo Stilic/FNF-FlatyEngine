@@ -110,6 +110,7 @@ class Main extends Sprite
 		FlxG.game.focusLostFramerate = 60;
 		FlxG.fixedTimestep = false;
 		FlxG.sound.muteKeys = [ZERO];
+		FlxG.keys.preventDefaultKeys = [TAB];
 
 		FlxG.signals.preStateCreate.add(function(state:FlxState)
 		{

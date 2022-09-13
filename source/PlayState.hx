@@ -1,7 +1,6 @@
 package;
 
-import shaderslmfao.BuildingShaders;
-import ui.PreferencesMenu;
+import flixel.input.gamepad.FlxGamepad;
 #if hxCodec
 import vlc.MP4Handler;
 #end
@@ -11,6 +10,8 @@ import Discord.DiscordClient;
 import Conductor.Rating;
 import Section.SwagSection;
 import Song.SwagSong;
+import Controls.Control;
+import openfl.events.KeyboardEvent;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -29,6 +30,8 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
+import shaderslmfao.BuildingShaders;
+import ui.PreferencesMenu;
 
 using StringTools;
 
@@ -750,110 +753,24 @@ class PlayState extends MusicBeatState
 		});
 
 		playerStrumline = new Strumline(baseX * (baseXShit / 1.75), strumLine.y, PreferencesMenu.getPref('downscroll'));
-		playerStrumline.onNoteUpdate.add(function(daNote:Note)
-		{
-			if (!inCutscene && !playerStrumline.botplay)
-			{
-				var holdingArray:Array<Bool> = [controls.NOTE_LEFT, controls.NOTE_DOWN, controls.NOTE_UP, controls.NOTE_RIGHT];
-				var controlArray:Array<Bool> = [
-					controls.NOTE_LEFT_P,
-					controls.NOTE_DOWN_P,
-					controls.NOTE_UP_P,
-					controls.NOTE_RIGHT_P
-				];
-
-				if (holdingArray.contains(true) && generatedMusic)
-				{
-					playerStrumline.holdsGroup.forEachAlive(function(daNote:Note)
-					{
-						if (daNote.canBeHit && daNote.mustPress && holdingArray[daNote.noteData])
-							goodNoteHit(boyfriend, playerStrumline, daNote);
-					});
-				}
-				if (controlArray.contains(true) && generatedMusic)
-				{
-					var possibleNotes:Array<Note> = [];
-					var ignoreList:Array<Int> = [];
-					var removeList:Array<Note> = [];
-
-					playerStrumline.allNotes.forEachAlive(function(daNote:Note)
-					{
-						if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
-						{
-							if (ignoreList.contains(daNote.noteData))
-							{
-								for (possibleNote in possibleNotes)
-								{
-									if (possibleNote.noteData == daNote.noteData
-										&& Math.abs(daNote.strumTime - possibleNote.strumTime) < 10)
-										removeList.push(daNote);
-									else if (possibleNote.noteData == daNote.noteData && daNote.strumTime < possibleNote.strumTime)
-									{
-										possibleNotes.remove(possibleNote);
-										possibleNotes.push(daNote);
-									}
-								}
-							}
-							else
-							{
-								possibleNotes.push(daNote);
-								ignoreList.push(daNote.noteData);
-							}
-						}
-					});
-
-					for (badNote in removeList)
-						playerStrumline.removeNote(badNote);
-
-					possibleNotes.sort(function(note1:Note, note2:Note)
-					{
-						return Std.int(note1.strumTime - note2.strumTime);
-					});
-
-					var canMiss:Bool = !PreferencesMenu.getPref('ghost-tapping');
-					if (possibleNotes.length > 0)
-					{
-						if (canMiss)
-						{
-							for (i in 0...controlArray.length)
-							{
-								if (controlArray[i] && !ignoreList.contains(i))
-									noteMiss(i);
-							}
-						}
-						for (possibleNote in possibleNotes)
-						{
-							if (controlArray[possibleNote.noteData])
-								goodNoteHit(boyfriend, playerStrumline, possibleNotes[0]);
-						}
-					}
-					else if (canMiss)
-					{
-						for (i in 0...controlArray.length)
-						{
-							if (controlArray[i])
-								noteMiss(i);
-						}
-					}
-				}
-
-				if (Strumline.isOutsideScreen(daNote.strumTime) && (daNote.tooLate || !daNote.wasGoodHit))
-				{
-					health -= 0.0475;
-					songMisses++;
-
-					vocals.volume = 0;
-
-					totalPlayed++;
-					recalculateRating();
-
-					vocals.volume = 0;
-				}
-			}
-		});
 		playerStrumline.onNoteBotHit.add(function(daNote:Note)
 		{
 			goodNoteHit(boyfriend, playerStrumline, daNote);
+		});
+		playerStrumline.onNoteUpdate.add(function(daNote:Note)
+		{
+			if (Strumline.isOutsideScreen(daNote.strumTime) && (daNote.tooLate || !daNote.wasGoodHit))
+			{
+				health -= 0.0475;
+				songMisses++;
+
+				vocals.volume = 0;
+
+				totalPlayed++;
+				recalculateRating();
+
+				vocals.volume = 0;
+			}
 		});
 
 		strumlines.add(opponentStrumline);
@@ -989,6 +906,9 @@ class PlayState extends MusicBeatState
 			startCountdown();
 
 		recalculateRating();
+
+		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 
 		super.create();
 	}
@@ -1242,7 +1162,6 @@ class PlayState extends MusicBeatState
 			}
 
 			swagCounter += 1;
-			// generateSong('fresh');
 		}, 4);
 	}
 
@@ -1297,11 +1216,9 @@ class PlayState extends MusicBeatState
 				if (songNotes[1] > 3)
 					gottaHitNote = !section.mustHitSection;
 
-				var oldNote:Note;
+				var oldNote:Note = null;
 				if (unspawnNotes.length > 0)
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
-				else
-					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
 				swagNote.mustPress = gottaHitNote;
@@ -1323,12 +1240,12 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		unspawnNotes.sort(sortByShit);
+		unspawnNotes.sort(sortByTime);
 
 		generatedMusic = true;
 	}
 
-	function sortByShit(Obj1:Note, Obj2:Note)
+	function sortByTime(Obj1:Note, Obj2:Note)
 	{
 		return CoolUtil.sortNotes(FlxSort.ASCENDING, Obj1, Obj2);
 	}
@@ -1664,6 +1581,13 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
+	override public function destroy()
+	{
+		FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+		FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+		super.destroy();
+	}
+
 	static inline var scoreSeparator:String = ' / ';
 
 	var rank:String = '?';
@@ -1969,15 +1893,126 @@ class PlayState extends MusicBeatState
 			cameraMovement(!leSection.mustHitSection, true);
 	}
 
+	final inputDirections:Array<Control> = [NOTE_LEFT, NOTE_DOWN, NOTE_UP, NOTE_RIGHT];
+
+	private var holdingArray:Array<Bool> = [];
+
+	private function getKeyFromCode(keyCode:Int):Int
+	{
+		for (i in 0...inputDirections.length)
+		{
+			for (key in controls.getInputsFor(inputDirections[i], Keys))
+			{
+				if (key == keyCode)
+					return i;
+			}
+		}
+		return -1;
+	}
+
+	private function onKeyDown(evt:KeyboardEvent):Void
+	{
+		if (subState != null || inCutscene || playerStrumline.botplay)
+			return;
+
+		var key:Int = getKeyFromCode(evt.keyCode);
+		if (key > -1)
+		{
+			if (generatedMusic)
+			{
+				// accurate hit moment part one
+				var lastTime:Float = Conductor.songPosition;
+				Conductor.songPosition = FlxG.sound.music.time;
+
+				holdingArray[key] = true;
+
+				var noteList:Array<Note> = [];
+				var pressedNotes:Array<Note> = [];
+				var blockHit:Bool = false;
+
+				playerStrumline.notesGroup.forEachAlive(function(daNote:Note)
+				{
+					if (!daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && daNote.noteData == key)
+					{
+						noteList.push(daNote);
+					}
+				});
+
+				noteList.sort(sortByTime);
+
+				if (noteList.length > 0)
+				{
+					for (note in noteList)
+					{
+						for (pressedNote in pressedNotes)
+						{
+							if (Math.abs(pressedNote.strumTime - note.strumTime) < 1)
+								playerStrumline.removeNote(pressedNote);
+							else
+								blockHit = true;
+						}
+						if (!blockHit)
+						{
+							goodNoteHit(boyfriend, playerStrumline, note);
+							pressedNotes.push(note);
+						}
+					}
+				}
+				else if (!PreferencesMenu.getPref('ghost-tapping'))
+					noteMiss(key);
+
+				// accurate hit moment part two (the old times)
+				Conductor.songPosition = lastTime;
+			}
+
+			var strum:StrumNote = playerStrumline.strumsGroup.members[key];
+			if (strum != null && strum.animation.curAnim.name != 'confirm')
+				strum.playAnim('pressed');
+		}
+	}
+
+	private function onKeyUp(evt:KeyboardEvent):Void
+	{
+		if (subState != null || inCutscene || playerStrumline.botplay)
+			return;
+
+		var key:Int = getKeyFromCode(evt.keyCode);
+		if (key > -1)
+		{
+			holdingArray[key] = false;
+
+			var strum:StrumNote = playerStrumline.strumsGroup.members[key];
+			if (strum != null)
+				strum.playAnim('static');
+		}
+	}
+
 	private function keyShit():Void
 	{
-		var holdingArray:Array<Bool> = [controls.NOTE_LEFT, controls.NOTE_DOWN, controls.NOTE_UP, controls.NOTE_RIGHT];
-		var controlArray:Array<Bool> = [
-			controls.NOTE_LEFT_P,
-			controls.NOTE_DOWN_P,
-			controls.NOTE_UP_P,
-			controls.NOTE_RIGHT_P
-		];
+		var gamepad:FlxGamepad = null;
+		if (controls.gamepadsAdded.length > 0)
+			gamepad = FlxG.gamepads.getByID(controls.gamepadsAdded[0]);
+
+		if (gamepad != null)
+		{
+			for (direction in inputDirections)
+			{
+				if (gamepad.anyJustPressed(controls.getInputsFor(direction, Gamepad(gamepad.id))))
+					onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, controls.getInputsFor(direction, Keys)[0]));
+			}
+		}
+
+		if (generatedMusic)
+		{
+			playerStrumline.holdsGroup.forEachAlive(function(daNote:Note)
+			{
+				var bool:Null<Bool> = holdingArray[daNote.noteData];
+				if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && bool != null && bool)
+				{
+					goodNoteHit(boyfriend, playerStrumline, daNote);
+				}
+			});
+		}
 
 		if (boyfriend.holdTimer > 0.004 * Conductor.stepCrochet
 			&& !holdingArray.contains(true)
@@ -1987,13 +2022,14 @@ class PlayState extends MusicBeatState
 			boyfriend.playAnim('idle');
 		}
 
-		playerStrumline.strumsGroup.forEachAlive(function(strum:StrumNote)
+		if (gamepad != null)
 		{
-			if (controlArray[strum.noteData] && strum.animation.curAnim.name != 'confirm')
-				strum.playAnim('pressed');
-			if (!holdingArray[strum.noteData])
-				strum.playAnim('static');
-		});
+			for (direction in inputDirections)
+			{
+				if (gamepad.anyJustReleased(controls.getInputsFor(direction, Gamepad(gamepad.id))))
+					onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, controls.getInputsFor(direction, Keys)[0]));
+			}
+		}
 	}
 
 	function noteMiss(direction:Int):Void
