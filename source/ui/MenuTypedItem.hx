@@ -6,7 +6,7 @@ class MenuTypedItem extends MenuItem
 {
 	public var label(default, set):AtlasText;
 
-	override public function new(?x:Float = 0, ?y:Float = 0, atlasText:AtlasText, text:String, ?callback:Dynamic)
+	override public function new(?x:Float = 0, ?y:Float = 0, atlasText:AtlasText, text:String, ?callback:Void->Void)
 	{
 		super(x, y, text, callback);
 		label = atlasText;

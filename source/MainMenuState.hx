@@ -91,8 +91,17 @@ class MainMenuState extends MusicBeatState
 		{
 			startExitState(new FreeplayState());
 		});
+		#if polymod
+		menuItems.createItem(null, null, "mods", function()
+		{
+			startExitState(new ModsMenuState());
+		});
+		#end
 		#if !switch
-		menuItems.createItem(null, null, "donate", selectDonate, true);
+		menuItems.createItem(null, null, "donate", function()
+		{
+			CoolUtil.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game');
+		}, true);
 		#end
 		menuItems.createItem(0, 0, "options", function()
 		{
@@ -119,13 +128,6 @@ class MainMenuState extends MusicBeatState
 	{
 		menuCamera.camFollow.copyFrom(item.getGraphicMidpoint());
 	}
-
-	#if !switch
-	function selectDonate()
-	{
-		CoolUtil.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game');
-	}
-	#end
 
 	function startExitState(nextState:FlxState)
 	{
@@ -170,7 +172,7 @@ class MainMenuState extends MusicBeatState
 
 class MainMenuItem extends AtlasMenuItem
 {
-	public function new(?x:Float = 0, ?y:Float = 0, name:String, atlas:FlxAtlasFrames, callback:Dynamic)
+	public function new(?x:Float = 0, ?y:Float = 0, name:String, atlas:FlxAtlasFrames, ?callback:Void->Void)
 	{
 		super(x, y, name, atlas, callback);
 		this.scrollFactor.set();
@@ -194,11 +196,20 @@ class MainMenuList extends MenuTypedList<MainMenuItem>
 		super(Vertical);
 	}
 
-	public function createItem(?x:Float = 0, ?y:Float = 0, name:String, callback:Dynamic = null, fireInstantly:Bool = false)
+	public function createItem(?x:Float = 0, ?y:Float = 0, name:String, ?callback:Void->Void, fireInstantly:Bool = false)
 	{
 		var item:MainMenuItem = new MainMenuItem(x, y, name, atlas, callback);
 		item.fireInstantly = fireInstantly;
 		item.ID = length;
-		return addItem(name, item);
+		addItem(name, item);
+		if (length > 4)
+		{
+			var scr:Float = (length - 4) * 0.135;
+			forEachAlive(function(item:MainMenuItem)
+			{
+				item.scrollFactor.set(0, scr);
+			});
+		}
+		return item;
 	}
 }

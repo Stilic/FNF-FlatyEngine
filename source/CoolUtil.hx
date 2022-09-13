@@ -3,7 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.math.FlxMath;
 import flixel.util.FlxSort;
-import lime.utils.Assets;
+import openfl.utils.Assets;
 
 using StringTools;
 

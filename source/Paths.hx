@@ -8,7 +8,7 @@ import openfl.media.Sound;
 
 class Paths
 {
-	inline public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
+	public static final SOUND_EXT:String = #if web "mp3" #else "ogg" #end;
 
 	static var currentLevel:String;
 

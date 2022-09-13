@@ -2,7 +2,7 @@ package ui;
 
 class TextTypedMenuItem extends MenuTypedItem
 {
-	override public function setItem(text:String, ?callback:Dynamic)
+	override public function setItem(text:String, ?callback:Void->Void)
 	{
 		if (label != null)
 		{

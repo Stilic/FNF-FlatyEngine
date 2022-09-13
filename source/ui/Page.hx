@@ -40,7 +40,7 @@ class Page extends FlxGroup
 		return enabled = state;
 	}
 
-	public function openPrompt(prompt:Prompt, callback:Dynamic)
+	public function openPrompt(prompt:Prompt, ?callback:Void->Void)
 	{
 		enabled = false;
 		prompt.closeCallback = function()

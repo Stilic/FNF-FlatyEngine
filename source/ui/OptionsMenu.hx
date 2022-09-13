@@ -16,18 +16,10 @@ class OptionsMenu extends Page
 		{
 			onSwitch.dispatch('controls');
 		});
-		// if (NG.core != null && NG.core.loggedIn)
-		// {
-		// 	createItem('logout', selectLogout);
-		// }
-		// else
-		// {
-		// 	createItem('login', selectLogin);
-		// }
 		createItem('exit', exit);
 	}
 
-	public function createItem(label:String, callback:Dynamic, ?fireInstantly:Bool = false)
+	public function createItem(label:String, ?callback:Void->Void, ?fireInstantly:Bool = false)
 	{
 		var item:TextMenuItem = items.createItem(0, 100 + 100 * items.length, label, AtlasFont.Bold, callback);
 		item.fireInstantly = fireInstantly;
@@ -45,45 +37,4 @@ class OptionsMenu extends Page
 	{
 		return items.length > 2;
 	}
-
-	// function selectLogin()
-	// {
-	// 	openNgPrompt(NgPrompt.showLogin());
-	// }
-	// function selectLogout()
-	// {
-	// 	openNgPrompt(NgPrompt.showLogout());
-	// }
-	// function openNgPrompt(prompt:Prompt, ?callback:Dynamic)
-	// {
-	// 	var func:Dynamic = checkLoginStatus();
-	// 	if (callback != null)
-	// 	{
-	// 		func = function()
-	// 		{
-	// 			checkLoginStatus();
-	// 			callback();
-	// 		};
-	// 	}
-	// 	openPrompt(prompt, func);
-	// }
-	// function checkLoginStatus()
-	// {
-	// 	var hasLogout:Bool = items.has('logout');
-	// 	if (hasLogout)
-	// 	{
-	// 		if (NG.core != null)
-	// 		{
-	// 			if (NG.core.loggedIn)
-	// 			{
-	// 				if (!hasLogout && NG.core != null && NG.core.loggedIn)
-	// 					items.resetItem('logout', 'login', selectLogin);
-	// 			}
-	// 			else
-	// 			{
-	// 				items.resetItem('login', 'logout', selectLogout);
-	// 			}
-	// 		}
-	// 	}
-	// }
 }

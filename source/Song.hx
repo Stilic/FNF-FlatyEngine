@@ -2,7 +2,7 @@ package;
 
 import Section.SwagSection;
 import haxe.Json;
-import lime.utils.Assets;
+import openfl.utils.Assets;
 
 using StringTools;
 

@@ -3,15 +3,11 @@ package;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
-import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import lime.utils.Assets;
 
 using StringTools;
 
@@ -29,7 +25,7 @@ class FreeplayState extends MusicBeatState
 	var lerpScore:Float = 0;
 	var intendedScore:Int = 0;
 
-	private var grpSongs:FlxTypedGroup<Alphabet>;
+	private var grpText:FlxTypedGroup<Alphabet>;
 	private var coolColors = [
 		0xFF9271FD,
 		0xFF9271FD,
@@ -98,15 +94,15 @@ class FreeplayState extends MusicBeatState
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		add(bg);
 
-		grpSongs = new FlxTypedGroup<Alphabet>();
-		add(grpSongs);
+		grpText = new FlxTypedGroup<Alphabet>();
+		add(grpText);
 
 		for (i in 0...songs.length)
 		{
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
-			grpSongs.add(songText);
+			grpText.add(songText);
 
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
 			icon.sprTracker = songText;
@@ -141,25 +137,6 @@ class FreeplayState extends MusicBeatState
 
 		// FlxG.sound.playMusic(Paths.music('title'), 0);
 		// FlxG.sound.music.fadeIn(2, 0, 0.8);
-
-		var swag:Alphabet = new Alphabet(1, 0, "swag");
-
-		// JUST DOIN THIS SHIT FOR TESTING!!!
-		/* 
-			var md:String = Markdown.markdownToHtml(Assets.getText('CHANGELOG.md'));
-
-			var texFel:TextField = new TextField();
-			texFel.width = FlxG.width;
-			texFel.height = FlxG.height;
-			// texFel.
-			texFel.htmlText = md;
-
-			FlxG.stage.addChild(texFel);
-
-			// scoreText.textField.htmlText = md;
-
-			trace(md);
-		 */
 
 		super.create();
 	}
@@ -211,8 +188,6 @@ class FreeplayState extends MusicBeatState
 		{
 			changeSelection(1);
 		}
-		if (FlxG.mouse.wheel != 0)
-			changeSelection(-Math.round(FlxG.mouse.wheel / 4));
 
 		if (controls.UI_LEFT_P)
 			changeDiff(-1);
@@ -273,12 +248,6 @@ class FreeplayState extends MusicBeatState
 		// lerpScore = 0;
 		#end
 
-		// #if PRELOAD_ALL
-		// No clue if this was removed or not, but I wanted to keep this as close as possible to the web version, and this is not in there.
-		// Yes, I know it's because the web version doesn't preload everything. If this being gone bothers you so much, then do it yourself lol.
-		// FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
-		// #end
-
 		var bullShit:Int = 0;
 
 		for (i in 0...iconArray.length)
@@ -286,9 +255,10 @@ class FreeplayState extends MusicBeatState
 			iconArray[i].alpha = 0.6;
 		}
 
-		iconArray[curSelected].alpha = 1;
+		if (iconArray[curSelected] != null)
+			iconArray[curSelected].alpha = 1;
 
-		for (item in grpSongs.members)
+		for (item in grpText.members)
 		{
 			item.targetY = bullShit - curSelected;
 			bullShit++;

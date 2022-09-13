@@ -6,13 +6,13 @@ class AtlasMenuItem extends MenuItem
 {
 	var atlas:FlxAtlasFrames;
 
-	public function new(?x:Float = 0, ?y:Float = 0, name:String, atlas:FlxAtlasFrames, ?callback:Dynamic)
+	public function new(?x:Float = 0, ?y:Float = 0, name:String, atlas:FlxAtlasFrames, ?callback:Void->Void)
 	{
 		this.atlas = atlas;
 		super(x, y, name, callback);
 	}
 
-	override public function setData(name:String, ?callback:Dynamic)
+	override public function setData(name:String, ?callback:Void->Void)
 	{
 		frames = atlas;
 		animation.addByPrefix('idle', '$name idle', 24);

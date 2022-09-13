@@ -85,7 +85,7 @@
 	<assets path="assets/week7" library="week7" exclude="*.ogg" if="web" />
 	<assets path="assets/week7" library="week7" exclude="*.mp3|*.mp4" unless="web" />
 
-	<assets path="example_mods" rename="mods" embed="false" />
+	<assets path="example_mods" rename="mods" embed="false" if="polymod" />
 	<assets path="art/readme.txt" rename="do NOT readme.txt" />
 
 	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY 
@@ -97,21 +97,16 @@
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
+	<haxedev set="webgl" />
+
 	<haxelib name="flixel" />
 	<haxelib name="flixel-addons" />
 	<haxelib name="flixel-ui" />
-	<haxedev set="webgl" />
 
-	<!-- <haxelib name="polymod" /> -->
+	<haxelib name="polymod" if="desktop" />
 	<haxelib name="discord_rpc" if="desktop" />
 	<haxelib name="hxCodec" if="web || windows" unless="32bits" />
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
-
-	<!-- <haxelib name="markdown" /> -->
-	<!-- <haxelib name="HtmlParser" /> -->
-
-	<!--In case you want to use nape with flixel-->
-	<!--<haxelib name="nape-haxe4" />-->
 
 	<!-- ________________________________ Defines _______________________________ -->
 
@@ -121,27 +116,6 @@
 
 	<!--Enable a new and optimized OpenFL game loop (boosts performance, and takes less memory)-->
 	<haxedef name="queue_experimental_optimization" />
-
-	<!--Enable the Flixel core recording system-->
-	<!--<haxedef name="FLX_RECORD" />-->
-
-	<!--Disable the right and middle mouse buttons-->
-	<!-- <haxedef name="FLX_NO_MOUSE_ADVANCED" /> -->
-
-	<!--Disable the native cursor API on Flash-->
-	<!--<haxedef name="FLX_NO_NATIVE_CURSOR" />-->
-
-	<!--Optimise inputs, be careful you will get null errors if you don't use conditionals in your game-->
-	<!-- <haxedef name="FLX_NO_MOUSE" if="mobile" /> -->
-	<!-- <haxedef name="FLX_NO_KEYBOARD" if="mobile" /> -->
-	<!-- <haxedef name="FLX_NO_TOUCH" if="desktop" /> -->
-	<!--<haxedef name="FLX_NO_GAMEPAD" />-->
-
-	<!--Disable the Flixel core sound tray-->
-	<!--<haxedef name="FLX_NO_SOUND_TRAY" />-->
-
-	<!--Disable the Flixel sound management code-->
-	<!--<haxedef name="FLX_NO_SOUND_SYSTEM" />-->
 
 	<!--Disable the Flixel core focus lost screen-->
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
@@ -155,6 +129,9 @@
 	<!--For the crash handler-->
 	<haxedef name="HXCPP_CHECK_POINTER" if="CRASH_HANDLER" />
 	<haxedef name="HXCPP_STACK_LINE" if="CRASH_HANDLER" />
+
+	<!-- Enable HScript fine error reporting at parsing time -->
+	<haxedef name="hscriptPos" if="hscript" />
 
 	<!-- _________________________________ Custom _______________________________ -->
 

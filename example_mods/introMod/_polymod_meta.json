@@ -1,0 +1,13 @@
+{
+    "title": "Intro Mod",
+    "description": "Example for a mod that changes the intro",
+    "contributors": [
+        {
+            "name": "Stilic",
+            "role": "Creator"
+        }
+    ],
+    "api_version": "0.1.0",
+    "mod_version": "1.0.0",
+    "license": "CC BY 4.0,MIT"
+}

@@ -6,13 +6,13 @@ class MenuItem extends FlxSprite
 {
 	public var fireInstantly:Bool = false;
 	public var name:String;
-	public var callback:Dynamic;
+	public var callback:Void->Void;
 	public var selected(get, never):Bool;
 
 	function get_selected()
 		return alpha == 1;
 
-	public function new(?x:Float = 0, ?y:Float = 0, name:String, ?callback:Dynamic)
+	public function new(?x:Float = 0, ?y:Float = 0, name:String, ?callback:Void->Void)
 	{
 		super(x, y);
 		antialiasing = true;
@@ -20,7 +20,7 @@ class MenuItem extends FlxSprite
 		idle();
 	}
 
-	public function setData(name:String, ?callback:Dynamic)
+	public function setData(name:String, ?callback:Void->Void)
 	{
 		this.name = name;
 		if (callback != null)
@@ -29,7 +29,7 @@ class MenuItem extends FlxSprite
 		}
 	}
 
-	public function setItem(name:String, ?callback:Dynamic)
+	public function setItem(name:String, ?callback:Void->Void)
 	{
 		setData(name, callback);
 		if (selected)

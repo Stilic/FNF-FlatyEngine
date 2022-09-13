@@ -7,7 +7,7 @@ import flixel.FlxG;
 import flixel.FlxState;
 import flixel.FlxSprite;
 import flixel.util.FlxTimer;
-import openfl.utils.Assets;
+import openfl.utils.Assets as OpenFlAssets;
 import lime.utils.Assets as LimeAssets;
 import lime.utils.AssetLibrary;
 import lime.utils.AssetManifest;
@@ -62,10 +62,8 @@ class LoadingState extends MusicBeatState
 			if (PlayState.SONG.needsVoices)
 				checkLoadSong(getVocalPath());
 			checkLibrary("shared");
-			if (PlayState.storyWeek > 0)
+			if (PlayState.storyWeek > 1)
 				checkLibrary("week" + PlayState.storyWeek);
-			else
-				checkLibrary("tutorial");
 
 			FlxG.camera.fade(FlxG.camera.bgColor, 0.5, true);
 			new FlxTimer().start(1.5, function(_) introComplete());
@@ -74,10 +72,10 @@ class LoadingState extends MusicBeatState
 
 	function checkLoadSong(path:String)
 	{
-		if (!Assets.cache.hasSound(path))
+		if (!OpenFlAssets.cache.hasSound(path))
 		{
 			var callback = callbacks.add("song:" + path);
-			Assets.loadSound(path).onComplete(function(_)
+			OpenFlAssets.loadSound(path).onComplete(function(_)
 			{
 				callback();
 			});
@@ -86,14 +84,14 @@ class LoadingState extends MusicBeatState
 
 	function checkLibrary(library:String)
 	{
-		if ((library == "shared" || Assets.hasLibrary(library)) && Assets.getLibrary(library) == null)
+		if ((library == "shared" || OpenFlAssets.hasLibrary(library)) && OpenFlAssets.getLibrary(library) == null)
 		{
 			@:privateAccess
 			if (!LimeAssets.libraryPaths.exists(library))
 				throw "Missing library: " + library;
 
 			var callback = callbacks.add("library:" + library);
-			Assets.loadLibrary(library).onComplete(function(_)
+			OpenFlAssets.loadLibrary(library).onComplete(function(_)
 			{
 				callback();
 			});
@@ -172,12 +170,12 @@ class LoadingState extends MusicBeatState
 	#if NO_PRELOAD_ALL
 	static function isSoundLoaded(path:String):Bool
 	{
-		return Assets.cache.hasSound(path);
+		return OpenFlAssets.cache.hasSound(path);
 	}
 
 	static function isLibraryLoaded(library:String):Bool
 	{
-		return Assets.getLibrary(library) != null;
+		return OpenFlAssets.getLibrary(library) != null;
 	}
 	#end
 
@@ -193,7 +191,7 @@ class LoadingState extends MusicBeatState
 		var id = "songs";
 		var promise = new Promise<AssetLibrary>();
 
-		var library = LimeAssets.getLibrary(id);
+		var library = OpenFlAssets.getLibrary(id);
 
 		if (library != null)
 		{
@@ -265,7 +263,7 @@ class MultiCallback
 	var unfired = new Map<String, Void->Void>();
 	var fired = new Array<String>();
 
-	public function new(callback:Void->Void, logId:String = null)
+	public function new(?callback:Void->Void, logId:String = null)
 	{
 		this.callback = callback;
 		this.logId = logId;

@@ -83,6 +83,10 @@ class Main extends Sprite
 		initialState = TitleState;
 		#end
 
+		#if polymod
+		ModHandler.init();
+		#end
+
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
 		#if !mobile
@@ -94,7 +98,11 @@ class Main extends Sprite
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		#end
 
+		// init base game stuff
+		FlxG.mouse.visible = false;
+
 		FlxG.save.bind('funkin', 'ninjamuffin99');
+
 		PreferencesMenu.initPrefs();
 		PlayerSettings.init();
 		Highscore.load();
@@ -134,30 +142,32 @@ class Main extends Sprite
 	}
 
 	#if CRASH_HANDLER
+	static final crashHandlerDirectory:String = './crash';
+
 	// crash handler made by sqirra-rng
 	function onCrash(e:UncaughtErrorEvent):Void
 	{
-		var errMsg:String = "";
+		var errMsg:String = '';
 
 		for (stackItem in CallStack.exceptionStack(true))
 		{
 			switch (stackItem)
 			{
 				case FilePos(s, file, line, column):
-					errMsg += file + " (line " + line + ")\n";
+					errMsg += file + ' (line ' + line + ')\n';
 				default:
 					Sys.println(stackItem);
 			}
 		}
 
-		errMsg += "\nUncaught Error: " + e.error + "\nPlease report this error to the GitHub page: https://github.com/Stilic/FNF-SoftieEngine";
+		errMsg += '\nUncaught Error: ' + e.error + '\nPlease report this error to the GitHub page: https://github.com/Stilic/FNF-SoftieEngine';
 
-		if (!FileSystem.exists("./crash/"))
-			FileSystem.createDirectory("./crash/");
-		File.saveContent("./crash/" + Date.now().toString().replace(" ", "_").replace(":", "'") + ".txt", errMsg + "\n");
+		if (!FileSystem.exists(crashHandlerDirectory))
+			FileSystem.createDirectory(crashHandlerDirectory);
+		File.saveContent(crashHandlerDirectory + '/' + Date.now().toString().replace(' ', '_').replace(':', "'") + '.txt', errMsg + '\n');
 
 		Sys.println(errMsg);
-		Application.current.window.alert(errMsg, "Error!");
+		Application.current.window.alert(errMsg, 'Error!');
 
 		DiscordClient.shutdown();
 		Sys.exit(1);

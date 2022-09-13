@@ -51,7 +51,7 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 		return add(item);
 	}
 
-	public function resetItem(name:String, newName:String, callback:Dynamic = null)
+	public function resetItem(name:String, newName:String, ?callback:Void->Void)
 	{
 		if (!byName.exists(name))
 		{
@@ -158,7 +158,8 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 		onAcceptPress.dispatch(selected);
 		if (selected.fireInstantly)
 		{
-			selected.callback();
+			if (selected.callback != null)
+				selected.callback();
 		}
 		else
 		{
@@ -167,7 +168,8 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 			FlxFlicker.flicker(selected, 1, 0.06, true, false, function(flicker)
 			{
 				busy = false;
-				selected.callback();
+				if (selected.callback != null)
+					selected.callback();
 			});
 		}
 	}

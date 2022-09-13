@@ -1,6 +1,7 @@
 package ui;
 
 import flixel.FlxG;
+import flixel.util.FlxSave;
 import flixel.util.FlxColor;
 import haxe.ds.StringMap;
 
@@ -24,6 +25,8 @@ class PreferencesMenu extends Page
 		['fps counter', 'fps-counter', true], ['memory counter', 'mem-counter', true], ['memory peak counter', 'mem-peak-counter', true]
 		#end
 	];
+
+	static var save:FlxSave;
 
 	// first string: name of the section - the rest: content of the section
 	var sections:Array<Array<String>> = [
@@ -99,9 +102,11 @@ class PreferencesMenu extends Page
 
 	public static function initPrefs()
 	{
-		if (FlxG.save.data.preferences != null)
+		save = new FlxSave();
+		save.bind('preferences', 'ninjamuffin99');
+		if (save.data.preferences != null)
 		{
-			preferences = FlxG.save.data.preferences;
+			preferences = cast save.data.preferences;
 		}
 		for (pref in defaultPreferences)
 		{
@@ -113,8 +118,8 @@ class PreferencesMenu extends Page
 
 	public static function savePrefs()
 	{
-		FlxG.save.data.preferences = preferences;
-		FlxG.save.flush();
+		save.data.preferences = preferences;
+		save.flush();
 	}
 
 	public static function preferenceCheck(identifier:String, defaultValue:Dynamic)

@@ -10,7 +10,7 @@ class InputItem extends TextMenuItem
 	public var control:Control;
 	public var device:Device;
 
-	override public function new(?x:Float = 0, ?y:Float = 0, dev:Device, ctrl:Control, index:Int, ?callback:Dynamic)
+	override public function new(?x:Float = 0, ?y:Float = 0, dev:Device, ctrl:Control, index:Int, ?callback:Void->Void)
 	{
 		device = dev;
 		control = ctrl;

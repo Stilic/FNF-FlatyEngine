@@ -1,16 +1,9 @@
 package;
 
-import flixel.FlxSprite;
-
 using StringTools;
 
-class HealthIcon extends FlxSprite
+class HealthIcon extends AttachedSprite
 {
-	/**
-	 * Used for FreeplayState! If you use it elsewhere, prob gonna annoying
-	 */
-	public var sprTracker:FlxSprite;
-
 	public var char:String;
 	public var isPlayer:Bool = false;
 	public var isOldIcon:Bool = false;
@@ -19,9 +12,9 @@ class HealthIcon extends FlxSprite
 	{
 		super();
 		this.isPlayer = isPlayer;
+		offsetY = -30;
 		changeIcon(char);
 		antialiasing = true;
-		scrollFactor.set();
 	}
 
 	public function swapOldIcon()
@@ -53,13 +46,5 @@ class HealthIcon extends FlxSprite
 			animation.play(char);
 			this.char = char;
 		}
-	}
-
-	override function update(elapsed:Float)
-	{
-		super.update(elapsed);
-
-		if (sprTracker != null)
-			setPosition(sprTracker.x + sprTracker.width + 10, sprTracker.y - 30);
 	}
 }
