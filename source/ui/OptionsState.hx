@@ -2,13 +2,12 @@ package ui;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import haxe.ds.StringMap;
 
 class OptionsState extends MusicBeatState
 {
 	static final defaultPage:String = 'options';
 
-	public var pages:StringMap<Page> = new StringMap<Page>();
+	public var pages:Map<String, Page> = new Map<String, Page>();
 	public var currentName:String = defaultPage;
 	public var currentPage(get, never):Page;
 

@@ -1,13 +1,12 @@
 package ui;
 
-import haxe.ds.StringMap;
 import flixel.util.FlxStringUtil;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 {
-	public static var fonts:StringMap<AtlasFontData> = new StringMap<AtlasFontData>();
+	public static var fonts:Map<String, AtlasFontData> = new Map<String, AtlasFontData>();
 
 	public var text(default, set):String = '';
 	public var font:AtlasFontData;

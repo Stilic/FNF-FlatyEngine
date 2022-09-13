@@ -4,9 +4,9 @@ import flixel.FlxSprite;
 
 class BGSprite extends FlxSprite
 {
-	public var idleAnim:String = null;
+	public var idleAnim:String;
 
-	override public function new(image:String, x:Float = 0, y:Float = 0, scrollX:Float = 1, scrollY:Float = 1, animations:Array<String> = null,
+	override public function new(image:String, x:Float = 0, y:Float = 0, scrollX:Float = 1, scrollY:Float = 1, ?animations:Array<String>,
 			loopAnims:Bool = false)
 	{
 		super(x, y);
@@ -17,10 +17,10 @@ class BGSprite extends FlxSprite
 			for (anim in animations)
 			{
 				animation.addByPrefix(anim, anim, 24, loopAnims);
-				animation.play(anim);
 				if (idleAnim == null)
 					idleAnim = anim;
 			}
+			dance();
 		}
 		else
 		{

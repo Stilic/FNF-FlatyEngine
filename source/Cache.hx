@@ -9,7 +9,6 @@ import java.vm.Gc;
 #elseif neko
 import neko.vm.Gc;
 #end
-import haxe.ds.StringMap;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.util.FlxDestroyUtil;
@@ -17,6 +16,7 @@ import openfl.utils.Assets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.display3D.textures.Texture;
+import ui.PreferencesMenu;
 import ui.AtlasText;
 
 using StringTools;
@@ -24,7 +24,7 @@ using StringTools;
 class Cache
 {
 	static var images:Array<CoolImage> = [];
-	static var sounds:StringMap<Sound> = new StringMap<Sound>();
+	static var sounds:Map<String, Sound> = new Map<String, Sound>();
 
 	public static function getGraphic(path:String)
 	{
@@ -32,7 +32,7 @@ class Cache
 			if (bitmap.path == path)
 				return bitmap.graphic;
 
-		var image:CoolImage = new CoolImage(path);
+		var image:CoolImage = new CoolImage(path, #if sys PreferencesMenu.getPref('gpu-rendering') #else false #end);
 		images.push(image);
 		return image.graphic;
 	}
@@ -74,34 +74,34 @@ class CoolImage implements IFlxDestroyable
 	public var path(default, null):String;
 	public var graphic(default, null):FlxGraphic;
 
-	#if sys
 	var texture:Texture;
-	#end
 
-	public function new(path:String)
+	public function new(path:String, storeInGPU:Bool = false)
 	{
 		this.path = path;
 
-		#if sys
-		var data:BitmapData = Assets.getBitmapData(path);
-		texture = FlxG.stage.context3D.createTexture(data.width, data.height, BGRA, true);
-		texture.uploadFromBitmapData(data);
-		Assets.cache.clear(path);
-		data.dispose();
-		data.disposeImage();
-		#end
+		if (storeInGPU)
+		{
+			var data:BitmapData = Assets.getBitmapData(path);
+			texture = FlxG.stage.context3D.createTexture(data.width, data.height, BGRA, true);
+			texture.uploadFromBitmapData(data);
+			Assets.cache.clear(path);
+			data.dispose();
+			data.disposeImage();
+		}
 
-		graphic = FlxGraphic.fromBitmapData(#if sys BitmapData.fromTexture(texture) #else Assets.getBitmapData(path) #end, false, null, false);
+		graphic = FlxGraphic.fromBitmapData(storeInGPU ? BitmapData.fromTexture(texture) : Assets.getBitmapData(path), false, null, false);
 		graphic.persist = true;
 		graphic.destroyOnNoUse = false;
 	}
 
 	public function destroy()
 	{
-		#if sys
-		texture.dispose();
-		texture = null;
-		#end
+		if (texture != null)
+		{
+			texture.dispose();
+			texture = null;
+		}
 
 		graphic.bitmap.disposeImage();
 		graphic = FlxDestroyUtil.destroy(graphic);

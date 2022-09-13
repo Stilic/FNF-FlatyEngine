@@ -1,6 +1,5 @@
 package;
 
-import haxe.ds.StringMap;
 import flixel.util.FlxSave;
 import polymod.Polymod;
 
@@ -14,9 +13,9 @@ class ModHandler
 {
 	static final MOD_DIRECTORY:String = './mods';
 
-	static var save:FlxSave;
+	public static var modList(default, null):Array<Mod> = [];
 
-	public static var loadedMods(default, null):Array<Mod> = [];
+	static var save:FlxSave;
 
 	public static function init()
 	{
@@ -25,22 +24,34 @@ class ModHandler
 			save = new FlxSave();
 			save.bind('mod_list', 'ninjamuffin99');
 			if (save.data.modList == null)
-				save.data.modList = new StringMap<Bool>();
+				save.data.modList = new Map<String, Bool>();
 		}
-		reloadMods();
-		applyChanges();
+		reloadModList();
+		saveModList();
+		reloadPolymod();
 	}
 
-	public static function applyChanges()
+	public static function reloadModList()
 	{
-		var modList:StringMap<Bool> = new StringMap<Bool>();
-		for (mod in loadedMods)
-			modList.set(mod.metadata.id, mod.enabled);
+		modList = [];
+		var savedModList:Map<String, Bool> = cast save.data.modList;
+		for (modMetadata in Polymod.scan(MOD_DIRECTORY))
+			modList.push({metadata: modMetadata, enabled: savedModList.exists(modMetadata.id) ? savedModList.get(modMetadata.id) : true});
+	}
+
+	public static function saveModList()
+	{
+		var savedModList:Map<String, Bool> = new Map<String, Bool>();
+		for (mod in modList)
+			savedModList.set(mod.metadata.id, mod.enabled);
 		save.data.modList = modList;
 		save.flush();
+	}
 
+	public static function reloadPolymod()
+	{
 		var dirs:Array<String> = [];
-		for (mod in loadedMods)
+		for (mod in modList)
 		{
 			// trace(mod.metadata.id, mod.enabled);
 			if (mod.enabled)
@@ -64,17 +75,5 @@ class ModHandler
 				]
 			}
 		});
-	}
-
-	public static function reloadMods()
-	{
-		var modList:StringMap<Bool> = cast save.data.modList;
-		loadedMods = [];
-		for (modMetadata in Polymod.scan(MOD_DIRECTORY))
-		{
-			if (!modList.exists(modMetadata.id))
-				modList.set(modMetadata.id, true);
-			loadedMods.push({metadata: modMetadata, enabled: modList.get(modMetadata.id)});
-		}
 	}
 }

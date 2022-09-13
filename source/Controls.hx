@@ -1,7 +1,6 @@
 package;
 
 import haxe.DynamicAccess;
-import haxe.ds.EnumValueMap;
 import flixel.input.FlxInput;
 import flixel.input.actions.FlxAction;
 import flixel.input.actions.FlxActionSet;
@@ -627,7 +626,7 @@ class Controls extends FlxActionSet
 
 	public function addDefaultGamepad(id):Void
 	{
-		var map = new EnumValueMap<Control, Array<FlxGamepadInputID>>();
+		var map = new Map<Control, Array<FlxGamepadInputID>>();
 		#if !switch
 		map.set(Control.ACCEPT, [A]);
 		map.set(Control.BACK, [B]);

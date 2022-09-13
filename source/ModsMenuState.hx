@@ -39,19 +39,19 @@ class ModsMenuState extends MusicBeatState
 		grpText = new FlxTypedGroup<Alphabet>();
 		add(grpText);
 
-		ModHandler.reloadMods();
+		ModHandler.reloadModList();
 
-		for (i in 0...ModHandler.loadedMods.length)
+		for (i in 0...ModHandler.modList.length)
 		{
-			var text:Alphabet = new Alphabet(0, (70 * i) + 30, ModHandler.loadedMods[i].metadata.title, true, false);
+			var text:Alphabet = new Alphabet(0, (70 * i) + 30, ModHandler.modList[i].metadata.title, true, false);
 			text.isMenuItem = true;
 			text.targetY = i;
 			grpText.add(text);
 
-			if (ModHandler.loadedMods[i].metadata.icon != null)
+			if (ModHandler.modList[i].metadata.icon != null)
 			{
 				var icon:AttachedSprite = new AttachedSprite(text);
-				icon.loadGraphic(BitmapData.fromBytes(ModHandler.loadedMods[i].metadata.icon));
+				icon.loadGraphic(BitmapData.fromBytes(ModHandler.modList[i].metadata.icon));
 
 				// using a FlxGroup is too much fuss!
 				iconArray.push(icon);
@@ -100,7 +100,7 @@ class ModsMenuState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		scoreText.text = ModHandler.loadedMods[curSelected].enabled ? "ENABLED" : "DISABLED";
+		scoreText.text = ModHandler.modList[curSelected].enabled ? "ENABLED" : "DISABLED";
 		positionHighscore();
 
 		var upP = controls.UI_UP_P;
@@ -125,13 +125,14 @@ class ModsMenuState extends MusicBeatState
 		if (accepted)
 		{
 			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-			ModHandler.loadedMods[curSelected].enabled = !ModHandler.loadedMods[curSelected].enabled;
+			ModHandler.modList[curSelected].enabled = !ModHandler.modList[curSelected].enabled;
+			ModHandler.saveModList();
 		}
 	}
 
 	override function destroy()
 	{
-		ModHandler.applyChanges();
+		ModHandler.reloadPolymod();
 		super.destroy();
 	}
 
@@ -142,8 +143,8 @@ class ModsMenuState extends MusicBeatState
 		curSelected += change;
 
 		if (curSelected < 0)
-			curSelected = ModHandler.loadedMods.length - 1;
-		if (curSelected >= ModHandler.loadedMods.length)
+			curSelected = ModHandler.modList.length - 1;
+		if (curSelected >= ModHandler.modList.length)
 			curSelected = 0;
 
 		var bullShit:Int = 0;

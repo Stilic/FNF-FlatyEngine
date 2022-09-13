@@ -1,6 +1,5 @@
 package ui;
 
-import haxe.ds.StringMap;
 import flixel.FlxG;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -16,7 +15,7 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 	public var enabled:Bool = true;
 	public var navControls:NavControls;
 	public var wrapMode:WrapMode = Both;
-	public var byName:StringMap<T> = new StringMap<T>();
+	public var byName:Map<String, T> = new Map<String, T>();
 	public var busy:Bool = false;
 
 	public function new(dir:NavControls = Vertical, ?wrapDir:WrapMode)

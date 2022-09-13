@@ -3,12 +3,10 @@ package ui;
 import flixel.FlxG;
 import flixel.util.FlxSave;
 import flixel.util.FlxColor;
-import haxe.ds.StringMap;
 
 class PreferencesMenu extends Page
 {
-	public static var preferences:StringMap<Dynamic> = new StringMap<Dynamic>();
-
+	public static var preferences:Map<String, Dynamic> = new Map<String, Dynamic>();
 	static final defaultPreferences:Array<Array<Dynamic>> = [
 		['naughtyness', 'censor-naughty', true],
 		['flashing menu', 'flashing-menu', true],
@@ -21,6 +19,9 @@ class PreferencesMenu extends Page
 		#if (desktop || web)
 		['auto pause', 'auto-pause', #if web false #else true #end],
 		#end
+		#if sys
+		['gpu rendering', 'gpu-rendering', false],
+		#end
 		#if !mobile
 		['fps counter', 'fps-counter', true], ['memory counter', 'mem-counter', true], ['memory peak counter', 'mem-peak-counter', true]
 		#end
@@ -29,7 +30,7 @@ class PreferencesMenu extends Page
 	static var save:FlxSave;
 
 	// first string: name of the section - the rest: content of the section
-	var sections:Array<Array<String>> = [
+	final sections:Array<Array<String>> = [
 		[
 			'visuals',
 			'censor-naughty',
@@ -40,7 +41,16 @@ class PreferencesMenu extends Page
 			'sm-clip'
 		],
 		['gameplay', 'downscroll', 'ghost-tapping'],
-		['misc', 'auto-pause', 'fps-counter', 'mem-counter', 'mem-peak-counter']
+		[
+			'misc',
+			#if (desktop || web)
+			'auto-pause',
+			#end
+			#if sys
+			'gpu-rendering',
+			#end
+			#if !mobile 'fps-counter', 'mem-counter', 'mem-peak-counter' #end
+		]
 	];
 
 	var checkboxes:Array<CheckboxThingie> = [];
@@ -78,9 +88,7 @@ class PreferencesMenu extends Page
 		}
 		menuCamera.camFollow.x = FlxG.width / 2;
 		if (items != null)
-		{
 			menuCamera.camFollow.y = items.members[items.selectedIndex].y;
-		}
 		menuCamera.target.setSize(140, 70);
 		menuCamera.deadzone.set(0, 160, menuCamera.width, 40);
 		menuCamera.minScrollY = 0;
@@ -105,9 +113,7 @@ class PreferencesMenu extends Page
 		save = new FlxSave();
 		save.bind('preferences', 'ninjamuffin99');
 		if (save.data.preferences != null)
-		{
 			preferences = cast save.data.preferences;
-		}
 		for (pref in defaultPreferences)
 		{
 			preferenceCheck(pref[1], pref[2]);
@@ -122,17 +128,10 @@ class PreferencesMenu extends Page
 		save.flush();
 	}
 
-	public static function preferenceCheck(identifier:String, defaultValue:Dynamic)
+	inline public static function preferenceCheck(identifier:String, defaultValue:Dynamic)
 	{
 		if (getPref(identifier) == null)
-		{
 			setPref(identifier, defaultValue);
-			// trace('set preference!');
-		}
-		// else
-		// {
-		// 	trace('found preference: ' + Std.string(getPref(identifier)));
-		// }
 	}
 
 	public function createPrefItem(y:Float, label:String, identifier:String, value:Dynamic)
