@@ -168,8 +168,6 @@ class PlayState extends MusicBeatState
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
 
-		GameOverSubstate.resetAssets();
-
 		foregroundSprites = new FlxTypedGroup<BGSprite>();
 
 		switch (SONG.song.toLowerCase())
@@ -568,6 +566,8 @@ class PlayState extends MusicBeatState
 				}
 		}
 
+		GameOverSubstate.resetVariables();
+
 		var gfVersion:String = 'gf';
 
 		switch (curStage)
@@ -718,10 +718,6 @@ class PlayState extends MusicBeatState
 		add(dad);
 		add(boyfriend);
 
-		gf.dance();
-		dad.dance();
-		boyfriend.dance();
-
 		add(foregroundSprites);
 
 		var doof:DialogueBox = null;
@@ -786,8 +782,6 @@ class PlayState extends MusicBeatState
 				});
 			});
 		}
-
-		// startCountdown();
 
 		generateSong();
 
@@ -1068,24 +1062,23 @@ class PlayState extends MusicBeatState
 
 		startTimer.start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
-			if (swagCounter % gfSpeed == 0)
-			{
+			if (swagCounter % gfSpeed == 0 && !gf.animation.curAnim.name.startsWith('sing') && !gf.stunned)
 				gf.dance();
-			}
 			if (swagCounter % 2 == 0)
 			{
-				if (!boyfriend.animation.curAnim.name.startsWith('sing'))
-					boyfriend.playAnim('idle');
-				if (!dad.animation.curAnim.name.startsWith('sing'))
+				if (!boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.stunned)
+					boyfriend.dance();
+				if (!dad.animation.curAnim.name.startsWith('sing') && !dad.stunned)
 					dad.dance();
 			}
-			else if (dad.curCharacter == 'spooky' && !dad.animation.curAnim.name.startsWith('sing'))
+			else if (dad.curCharacter == 'spooky' && !dad.animation.curAnim.name.startsWith('sing') && !dad.stunned)
 				dad.dance();
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
+			var pixelArray:Array<String> = ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel'];
 			introAssets.set('default', ['ready', "set", "go"]);
-			introAssets.set('school', ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel']);
-			introAssets.set('schoolEvil', ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel']);
+			introAssets.set('school', pixelArray);
+			introAssets.set('schoolEvil', pixelArray);
 
 			var introAlts:Array<String> = introAssets.get('default');
 			var altSuffix:String = "";
@@ -1100,7 +1093,6 @@ class PlayState extends MusicBeatState
 			}
 
 			switch (swagCounter)
-
 			{
 				case 0:
 					FlxG.sound.play(Paths.sound('intro3' + altSuffix), 0.6);
@@ -1158,7 +1150,6 @@ class PlayState extends MusicBeatState
 						}
 					});
 					FlxG.sound.play(Paths.sound('introGo' + altSuffix), 0.6);
-				case 4:
 			}
 
 			swagCounter += 1;
@@ -1367,7 +1358,6 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			// Conductor.songPosition = FlxG.sound.music.time + Conductor.offset;
 			Conductor.songPosition += FlxG.elapsed * 1000;
 
 			if (!paused)
@@ -1572,7 +1562,7 @@ class PlayState extends MusicBeatState
 				break;
 		}
 
-		if (!inCutscene && !playerStrumline.botplay)
+		if (!playerStrumline.botplay && !inCutscene && startedCountdown)
 			keyShit();
 
 		#if debug
@@ -1912,46 +1902,47 @@ class PlayState extends MusicBeatState
 
 	private function onKeyDown(evt:KeyboardEvent):Void
 	{
-		if (subState != null || inCutscene || playerStrumline.botplay)
+		if ((!persistentUpdate && subState != null) || (playerStrumline.botplay || inCutscene || !startedCountdown))
 			return;
 
 		var key:Int = getKeyFromCode(evt.keyCode);
 		if (key > -1)
 		{
-			if (generatedMusic)
+			holdingArray[key] = true;
+
+			if (generatedMusic && !endingSong && !boyfriend.stunned)
 			{
 				// accurate hit moment part one
 				var lastTime:Float = Conductor.songPosition;
 				Conductor.songPosition = FlxG.sound.music.time;
 
-				holdingArray[key] = true;
-
-				var noteList:Array<Note> = [];
+				var possibleNotes:Array<Note> = [];
 				var pressedNotes:Array<Note> = [];
-				var blockHit:Bool = false;
+				var notesToRemove:Array<Note> = [];
+				var blockPress:Bool = false;
 
 				playerStrumline.notesGroup.forEachAlive(function(daNote:Note)
 				{
 					if (!daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && daNote.noteData == key)
 					{
-						noteList.push(daNote);
+						possibleNotes.push(daNote);
 					}
 				});
 
-				noteList.sort(sortByTime);
+				possibleNotes.sort(sortByTime);
 
-				if (noteList.length > 0)
+				if (possibleNotes.length > 0)
 				{
-					for (note in noteList)
+					for (note in possibleNotes)
 					{
 						for (pressedNote in pressedNotes)
 						{
-							if (Math.abs(pressedNote.strumTime - note.strumTime) < 1)
-								playerStrumline.removeNote(pressedNote);
+							if (Math.abs(pressedNote.strumTime - note.strumTime) < 1.5)
+								notesToRemove.push(pressedNote);
 							else
-								blockHit = true;
+								blockPress = true;
 						}
-						if (!blockHit)
+						if (!blockPress)
 						{
 							goodNoteHit(boyfriend, playerStrumline, note);
 							pressedNotes.push(note);
@@ -1960,6 +1951,9 @@ class PlayState extends MusicBeatState
 				}
 				else if (!PreferencesMenu.getPref('ghost-tapping'))
 					noteMiss(key);
+
+				for (note in notesToRemove)
+					playerStrumline.removeNote(note);
 
 				// accurate hit moment part two (the old times)
 				Conductor.songPosition = lastTime;
@@ -1973,7 +1967,7 @@ class PlayState extends MusicBeatState
 
 	private function onKeyUp(evt:KeyboardEvent):Void
 	{
-		if (subState != null || inCutscene || playerStrumline.botplay)
+		if ((!persistentUpdate && subState != null) || (playerStrumline.botplay || inCutscene || !startedCountdown))
 			return;
 
 		var key:Int = getKeyFromCode(evt.keyCode);
@@ -2014,12 +2008,12 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		if (boyfriend.holdTimer > 0.004 * Conductor.stepCrochet
+		if (boyfriend.holdTimer > 0.0041 * Conductor.stepCrochet
 			&& !holdingArray.contains(true)
 			&& boyfriend.animation.curAnim.name.startsWith('sing')
 			&& !boyfriend.animation.curAnim.name.endsWith('miss'))
 		{
-			boyfriend.playAnim('idle');
+			boyfriend.dance();
 		}
 
 		if (gamepad != null)
@@ -2053,12 +2047,6 @@ class PlayState extends MusicBeatState
 			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
 			// FlxG.log.add('played imss note');
-
-			boyfriend.stunned = true;
-			new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
-			{
-				boyfriend.stunned = false;
-			});
 
 			switch (direction)
 			{
@@ -2247,21 +2235,13 @@ class PlayState extends MusicBeatState
 	{
 		super.beatHit();
 
-		if (SONG.notes[Math.floor(curStep / 16)] != null)
+		var section:SwagSection = SONG.notes[Math.floor(curStep / 16)];
+		if (section != null && section.changeBPM)
 		{
-			if (SONG.notes[Math.floor(curStep / 16)].changeBPM)
-			{
-				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
-				FlxG.log.add('CHANGED BPM!');
-			}
-			// else
-			// Conductor.changeBPM(SONG.bpm);
-
-			// Dad doesnt interupt his own notes
-			// if (SONG.notes[Math.floor(curStep / 16)].mustHitSection)
-			// 	dad.dance();
+			Conductor.changeBPM(section.bpm);
+			FlxG.log.add('CHANGED BPM!');
 		}
-		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
+
 		wiggleShit.update(Conductor.crochet);
 
 		if (PreferencesMenu.getPref('camera-zoom'))
@@ -2286,35 +2266,21 @@ class PlayState extends MusicBeatState
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
 
-		if (curBeat % gfSpeed == 0)
-		{
+		if (curBeat % gfSpeed == 0 && !gf.stunned)
 			gf.dance();
-		}
 
 		if (curBeat % 2 == 0)
 		{
-			if (!boyfriend.animation.curAnim.name.startsWith("sing"))
-			{
-				boyfriend.playAnim('idle');
-			}
-
-			if (!dad.animation.curAnim.name.startsWith("sing"))
-			{
+			if (!boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.stunned)
+				boyfriend.dance();
+			if (!dad.animation.curAnim.name.startsWith('sing') && !dad.stunned)
 				dad.dance();
-			}
 		}
-		else if (dad.curCharacter == 'spooky')
-		{
-			if (!dad.animation.curAnim.name.startsWith("sing"))
-			{
-				dad.dance();
-			}
-		}
+		else if (dad.curCharacter == 'spooky' && !dad.animation.curAnim.name.startsWith('sing') && !dad.stunned)
+			dad.dance();
 
 		if (curBeat % 8 == 7 && curSong == 'Bopeebo')
-		{
 			boyfriend.playAnim('hey', true);
-		}
 
 		if (curBeat % 16 == 15 && SONG.song == 'Tutorial' && dad.curCharacter == 'gf' && curBeat > 16 && curBeat < 48)
 		{

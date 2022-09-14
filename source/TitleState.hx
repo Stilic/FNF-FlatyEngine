@@ -60,12 +60,7 @@ class TitleState extends MusicBeatState
 	{
 		if (!initialized)
 		{
-			// var music:FlxSound = new FlxSound();
-			// music.loadStream(Paths.music('freakyMenu'));
-			// FlxG.sound.list.add(music);
-			// music.play();
 			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
-
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
 
@@ -83,9 +78,7 @@ class TitleState extends MusicBeatState
 		#end
 		add(bg);
 
-		// UNCOMMENT THE FIRST LINE AND COMMENT THE SECOND LINE IF YOU ARE USING THE OG FNF ASSETS!
-		// logoBl = new FlxSprite(-150, -100);
-		logoBl = new FlxSprite(-27, 10);
+		logoBl = new FlxSprite(-150, -100);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		logoBl.antialiasing = true;
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);

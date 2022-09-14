@@ -22,7 +22,6 @@ class LoadingState extends MusicBeatState
 
 	var logo:FlxSprite;
 	var gfDance:FlxSprite;
-	var danceLeft = false;
 
 	var funkay:FlxSprite;
 	var loadBar:FlxSprite;
@@ -96,13 +95,6 @@ class LoadingState extends MusicBeatState
 				callback();
 			});
 		}
-	}
-
-	override function beatHit()
-	{
-		super.beatHit();
-
-		danceLeft = !danceLeft;
 	}
 
 	override function update(elapsed:Float)

@@ -50,6 +50,7 @@ class Cache
 	public static function clear()
 	{
 		FlxDestroyUtil.destroyArray(images);
+
 		for (key in sounds.keys())
 		{
 			Assets.cache.clear(key);

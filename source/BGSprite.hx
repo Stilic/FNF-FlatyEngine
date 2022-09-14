@@ -21,6 +21,7 @@ class BGSprite extends FlxSprite
 					idleAnim = anim;
 			}
 			dance();
+			animation.finish();
 		}
 		else
 		{

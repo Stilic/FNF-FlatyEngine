@@ -11,7 +11,7 @@ class CoolUtil
 {
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
-	public static function difficultyString():String
+	inline public static function difficultyString():String
 	{
 		return difficultyArray[PlayState.storyDifficulty];
 	}
@@ -50,23 +50,23 @@ class CoolUtil
 		return newValue / tempMult;
 	}
 
-	public static function sortNotes(Order:Int, Obj1:Note, Obj2:Note):Int
+	inline public static function sortNotes(Order:Int, Obj1:Note, Obj2:Note):Int
 	{
 		return FlxSort.byValues(Order, Obj1.strumTime, Obj2.strumTime);
 	}
 
-	public static function camLerpShit(ratio:Float, negative:Bool = false):Float
+	inline public static function camLerpShit(ratio:Float, negative:Bool = false):Float
 	{
 		var cock:Float = FlxG.elapsed * (ratio * 60);
 		return FlxMath.bound(negative ? 1 - cock : cock, 0, 1);
 	}
 
-	public static function coolLerp(a:Float, b:Float, ratio:Float, negativeRatio:Bool = false):Float
+	inline public static function coolLerp(a:Float, b:Float, ratio:Float, negativeRatio:Bool = false):Float
 	{
 		return FlxMath.lerp(a, b, camLerpShit(ratio, negativeRatio));
 	}
 
-	public static function openURL(url:String)
+	inline public static function openURL(url:String)
 	{
 		#if linux
 		Sys.command('/usr/bin/xdg-open', [url]);

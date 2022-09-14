@@ -18,7 +18,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	var randomGameover:Int = 1;
 	var playingDeathSound:Bool = false;
 
-	public static function resetAssets()
+	public static function resetVariables()
 	{
 		switch (PlayState.curStage)
 		{
@@ -34,9 +34,7 @@ class GameOverSubstate extends MusicBeatSubstate
 				endMusic = 'gameOverEnd';
 		}
 		if (PlayState.SONG.song.toLowerCase() == 'stress')
-		{
 			character = 'bf-holding-gf-dead';
-		}
 	}
 
 	public function new(x:Float, y:Float)

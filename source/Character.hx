@@ -18,6 +18,8 @@ class Character extends FNFSprite
 
 	public var holdTimer:Float = 0;
 
+	public var stunned:Bool = false;
+
 	public var animationNotes:Array<Dynamic> = [];
 
 	public var cameraMove:Bool;
@@ -636,18 +638,12 @@ class Character extends FNFSprite
 		if (curCharacter == 'gf')
 		{
 			if (AnimName == singAnimations[0])
-			{
 				danced = true;
-			}
 			else if (AnimName == singAnimations[3])
-			{
 				danced = false;
-			}
 
 			if (AnimName == singAnimations[1] || AnimName == singAnimations[2])
-			{
 				danced = !danced;
-			}
 		}
 
 		if (cameraMove)
