@@ -71,7 +71,7 @@ class LoadingState extends MusicBeatState
 
 	function checkLoadSong(path:String)
 	{
-		if (!OpenFlAssets.cache.hasSound(path))
+		if (!isSoundLoaded(path))
 		{
 			var callback = callbacks.add("song:" + path);
 			OpenFlAssets.loadSound(path).onComplete(function(_)
@@ -83,12 +83,9 @@ class LoadingState extends MusicBeatState
 
 	function checkLibrary(library:String)
 	{
-		if ((library == "shared" || OpenFlAssets.hasLibrary(library)) && OpenFlAssets.getLibrary(library) == null)
+		@:privateAccess
+		if (LimeAssets.libraryPaths.exists(library) && !isLibraryLoaded(library))
 		{
-			@:privateAccess
-			if (!LimeAssets.libraryPaths.exists(library))
-				throw "Missing library: " + library;
-
 			var callback = callbacks.add("library:" + library);
 			OpenFlAssets.loadLibrary(library).onComplete(function(_)
 			{
@@ -159,17 +156,15 @@ class LoadingState extends MusicBeatState
 		return target;
 	}
 
-	#if NO_PRELOAD_ALL
-	static function isSoundLoaded(path:String):Bool
+	inline static function isSoundLoaded(path:String):Bool
 	{
 		return OpenFlAssets.cache.hasSound(path);
 	}
 
-	static function isLibraryLoaded(library:String):Bool
+	inline static function isLibraryLoaded(library:String):Bool
 	{
 		return OpenFlAssets.getLibrary(library) != null;
 	}
-	#end
 
 	override function destroy()
 	{
@@ -183,7 +178,7 @@ class LoadingState extends MusicBeatState
 		var id = "songs";
 		var promise = new Promise<AssetLibrary>();
 
-		var library = OpenFlAssets.getLibrary(id);
+		var library = LimeAssets.getLibrary(id);
 
 		if (library != null)
 		{

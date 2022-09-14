@@ -11,6 +11,8 @@ class StartState extends FlxState
 {
 	override function create()
 	{
+		FlxG.save.bind('funkin', 'ninjamuffin99');
+
 		PlayerSettings.init();
 		Highscore.load();
 

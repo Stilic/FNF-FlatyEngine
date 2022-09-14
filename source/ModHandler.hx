@@ -1,5 +1,8 @@
 package;
 
+#if sys
+import sys.FileSystem;
+#end
 import flixel.util.FlxSave;
 import polymod.Polymod;
 
@@ -11,7 +14,7 @@ typedef Mod =
 
 class ModHandler
 {
-	static final MOD_DIRECTORY:String = './mods';
+	public static final MOD_DIRECTORY:String = './mods';
 
 	public static var modList(default, null):Array<Mod> = [];
 
@@ -19,24 +22,41 @@ class ModHandler
 
 	public static function init()
 	{
-		if (save == null)
-		{
-			save = new FlxSave();
-			save.bind('mod_list', 'ninjamuffin99');
-			if (save.data.modList == null)
-				save.data.modList = new Map<String, Bool>();
-		}
+		save = new FlxSave();
+		save.bind('mod_list', 'ninjamuffin99');
+		if (save.data.modList == null)
+			save.data.modList = new Map<String, Bool>();
+
+		#if sys
+		if (!FileSystem.exists(MOD_DIRECTORY))
+			FileSystem.createDirectory(MOD_DIRECTORY);
+		#end
+
 		reloadModList();
-		saveModList();
 		reloadPolymod();
 	}
 
 	public static function reloadModList()
 	{
 		modList = [];
+
 		var savedModList:Map<String, Bool> = cast save.data.modList;
+		var doSave:Bool = false;
 		for (modMetadata in Polymod.scan(MOD_DIRECTORY))
-			modList.push({metadata: modMetadata, enabled: savedModList.exists(modMetadata.id) ? savedModList.get(modMetadata.id) : true});
+		{
+			if (!savedModList.exists(modMetadata.id))
+			{
+				doSave = true;
+				savedModList.set(modMetadata.id, true);
+			}
+			modList.push({metadata: modMetadata, enabled: savedModList.get(modMetadata.id)});
+		}
+
+		if (doSave)
+		{
+			save.data.modList = savedModList;
+			save.flush();
+		}
 	}
 
 	public static function saveModList()
@@ -44,7 +64,7 @@ class ModHandler
 		var savedModList:Map<String, Bool> = new Map<String, Bool>();
 		for (mod in modList)
 			savedModList.set(mod.metadata.id, mod.enabled);
-		save.data.modList = modList;
+		save.data.modList = savedModList;
 		save.flush();
 	}
 

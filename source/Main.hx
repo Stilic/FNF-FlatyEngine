@@ -93,7 +93,6 @@ class Main extends Sprite
 		FlxG.mouse.visible = false;
 
 		// we load the preferences here in order to make the counter stuff working
-		FlxG.save.bind('funkin', 'ninjamuffin99');
 		PreferencesMenu.initPrefs();
 
 		#if CRASH_HANDLER
