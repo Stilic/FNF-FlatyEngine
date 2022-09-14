@@ -1926,26 +1926,30 @@ class PlayState extends MusicBeatState
 					Conductor.songPosition = FlxG.sound.music.time;
 
 					var possibleNotes:Array<Note> = [];
-					var pressedNotes:Array<Note> = [];
-					var notesToRemove:Array<Note> = [];
-					var blockPress:Bool = false;
+					var allowMiss:Bool = !PreferencesMenu.getPref('ghost-tapping');
 
 					playerStrumline.notesGroup.forEachAlive(function(daNote:Note)
 					{
-						if (!daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && daNote.noteData == key)
-							possibleNotes.push(daNote);
+						if (!daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
+						{
+							if (daNote.noteData == key)
+								possibleNotes.push(daNote);
+							allowMiss = true;
+						}
 					});
 
 					possibleNotes.sort(sortByTime);
 
 					if (possibleNotes.length > 0)
 					{
+						var pressedNotes:Array<Note> = [];
+						var blockPress:Bool = false;
 						for (note in possibleNotes)
 						{
 							for (pressedNote in pressedNotes)
 							{
 								if (Math.abs(pressedNote.strumTime - note.strumTime) < 1.5)
-									notesToRemove.push(pressedNote);
+									playerStrumline.removeNote(pressedNote);
 								else
 									blockPress = true;
 							}
@@ -1956,11 +1960,8 @@ class PlayState extends MusicBeatState
 							}
 						}
 					}
-					else if (!PreferencesMenu.getPref('ghost-tapping'))
+					else if (allowMiss)
 						noteMiss(key);
-
-					for (note in notesToRemove)
-						playerStrumline.removeNote(note);
 
 					// accurate hit moment part two (the old times)
 					Conductor.songPosition = lastTime;
