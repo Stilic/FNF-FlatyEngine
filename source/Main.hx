@@ -83,14 +83,14 @@ class Main extends Sprite
 		ModHandler.init();
 		#end
 
+		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
+
+		FlxG.mouse.visible = false;
+
 		#if !mobile
 		fpsCounter = new CoolCounter(8, 3, 0xFFFFFF);
 		addChild(fpsCounter);
 		#end
-
-		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
-
-		FlxG.mouse.visible = false;
 
 		// we load the preferences here in order to make the counter stuff working
 		PreferencesMenu.initPrefs();
