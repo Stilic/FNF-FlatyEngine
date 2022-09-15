@@ -58,14 +58,14 @@ class StrumNote extends FNFSprite
 			antialiasing = true;
 			setGraphicSize(Std.int(width * 0.7));
 
-			switch (Math.abs(noteData) % 4)
+			switch (noteData)
 			{
 				case 0:
 					animation.addByPrefix('static', 'arrowLEFT', 24);
 					animation.addByPrefix('pressed', 'left press', 24, false);
 					animation.addByPrefix('confirm', 'left confirm', 24, false);
 
-					addOffset('confirm', -2, -2);
+					addOffset('confirm', -0.5, -1);
 				case 1:
 					animation.addByPrefix('static', 'arrowDOWN', 24);
 					animation.addByPrefix('pressed', 'down press', 24, false);

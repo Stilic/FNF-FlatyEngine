@@ -6,8 +6,6 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import openfl.Assets;
@@ -24,9 +22,8 @@ class TitleState extends MusicBeatState
 
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
-	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
-	var ngSpr:FlxSprite;
+	var engineLogo:FlxSprite;
 
 	var wackyImage:FlxSprite;
 
@@ -81,7 +78,7 @@ class TitleState extends MusicBeatState
 		logoBl = new FlxSprite(-150, -100);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		logoBl.antialiasing = true;
-		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
+		logoBl.animation.addByPrefix('bump', 'engineLogo bumpin', 24);
 		logoBl.animation.play('bump');
 		logoBl.updateHitbox();
 		// logoBl.screenCenter();
@@ -107,14 +104,6 @@ class TitleState extends MusicBeatState
 		// titleText.screenCenter(X);
 		add(titleText);
 
-		var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logo'));
-		logo.screenCenter();
-		logo.antialiasing = true;
-		// add(logo);
-
-		// FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
-		// FlxTween.tween(logo, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
-
 		credGroup = new FlxGroup();
 		add(credGroup);
 		textGroup = new FlxGroup();
@@ -122,22 +111,11 @@ class TitleState extends MusicBeatState
 		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		credGroup.add(blackScreen);
 
-		credTextShit = new Alphabet(0, 0, "ninjamuffin99\nPhantomArcade\nkawaisprite\nevilsk8er", true);
-		credTextShit.screenCenter();
-
-		// credTextShit.alignment = CENTER;
-
-		credTextShit.visible = false;
-
-		ngSpr = new FlxSprite(0, FlxG.height * 0.54).loadGraphic(Paths.image('newgrounds_logo'));
-		add(ngSpr);
-		ngSpr.visible = false;
-		ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
-		ngSpr.updateHitbox();
-		ngSpr.screenCenter(X);
-		ngSpr.antialiasing = true;
-
-		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
+		engineLogo = new FlxSprite(0, 140).loadGraphic(Paths.image('engine_logo'));
+		engineLogo.screenCenter(X);
+		engineLogo.visible = false;
+		engineLogo.antialiasing = true;
+		add(engineLogo);
 
 		FlxG.mouse.visible = false;
 
@@ -145,8 +123,6 @@ class TitleState extends MusicBeatState
 			skipIntro();
 		else
 			initialized = true;
-
-		// credGroup.add(credTextShit);
 	}
 
 	function getIntroTextShit():Array<Array<String>>
@@ -252,23 +228,21 @@ class TitleState extends MusicBeatState
 		super.update(elapsed);
 	}
 
-	function createCoolText(textArray:Array<String>)
+	function createCoolText(textArray:Array<String>, yAdd:Float = 0)
 	{
 		for (i in 0...textArray.length)
 		{
-			var money:Alphabet = new Alphabet(0, 0, textArray[i], true, false);
+			var money:Alphabet = new Alphabet(0, (i * 60) + 200 + yAdd, textArray[i], true, false);
 			money.screenCenter(X);
-			money.y += (i * 60) + 200;
 			credGroup.add(money);
 			textGroup.add(money);
 		}
 	}
 
-	function addMoreText(text:String)
+	function addMoreText(text:String, yAdd:Float = 0)
 	{
-		var coolText:Alphabet = new Alphabet(0, 0, text, true, false);
+		var coolText:Alphabet = new Alphabet(0, (textGroup.length * 60) + 200 + yAdd, text, true, false);
 		coolText.screenCenter(X);
-		coolText.y += (textGroup.length * 60) + 200;
 		credGroup.add(coolText);
 		textGroup.add(coolText);
 	}
@@ -309,49 +283,31 @@ class TitleState extends MusicBeatState
 					{
 						case 1:
 							createCoolText(['ninjamuffin99', 'phantomarcade', 'kawaisprite', 'evilsk8r']);
-						// credTextShit.visible = true;
 						case 3:
 							addMoreText('present');
-						// credTextShit.text += '\npresent...';
-						// credTextShit.addText();
 						case 4:
 							deleteCoolText();
-						// credTextShit.visible = false;
-						// credTextShit.text = 'In association \nwith';
-						// credTextShit.screenCenter();
 						case 5:
-							createCoolText(['In association', 'with']);
+							engineLogo.visible = true;
+						case 6:
+							createCoolText(['by stilic'], 180);
 						case 7:
-							addMoreText('newgrounds');
-							ngSpr.visible = true;
-						// credTextShit.text += '\nNewgrounds';
+							addMoreText('and many others', 180);
 						case 8:
 							deleteCoolText();
-							ngSpr.visible = false;
-						// credTextShit.visible = false;
-
-						// credTextShit.text = 'Shoutouts Tom Fulp';
-						// credTextShit.screenCenter();
+							engineLogo.visible = false;
 						case 9:
 							createCoolText([curWacky[0]]);
-						// credTextShit.visible = true;
 						case 11:
 							addMoreText(curWacky[1]);
-						// credTextShit.text += '\nlmao';
 						case 12:
 							deleteCoolText();
-						// credTextShit.visible = false;
-						// credTextShit.text = "Friday";
-						// credTextShit.screenCenter();
 						case 13:
-							addMoreText('Friday');
-						// credTextShit.visible = true;
+							addMoreText('friday');
 						case 14:
-							addMoreText('Night');
-						// credTextShit.text += '\nNight';
+							addMoreText('night');
 						case 15:
-							addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
-
+							addMoreText('funkin');
 						case 16:
 							skipIntro();
 					}
@@ -367,7 +323,7 @@ class TitleState extends MusicBeatState
 	{
 		if (!skippedIntro)
 		{
-			remove(ngSpr);
+			remove(engineLogo);
 
 			FlxG.camera.flash(FlxColor.WHITE, 4);
 			remove(credGroup);

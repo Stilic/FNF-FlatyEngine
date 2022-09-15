@@ -59,17 +59,15 @@ class Main extends Sprite
 
 	private function setupGame():Void
 	{
-		var stageWidth:Int = Lib.current.stage.stageWidth;
-		var stageHeight:Int = Lib.current.stage.stageHeight;
-		var zoom = Math.min(stageWidth / gameWidth, stageHeight / gameHeight);
-		gameWidth = Math.ceil(stageWidth / zoom);
-		gameHeight = Math.ceil(stageHeight / zoom);
-
 		#if polymod
 		ModHandler.init();
 		#end
 
-		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
+		var stageWidth:Int = Lib.current.stage.stageWidth;
+		var stageHeight:Int = Lib.current.stage.stageHeight;
+		var zoom = Math.min(stageWidth / gameWidth, stageHeight / gameHeight);
+		addChild(new FlxGame(Math.ceil(stageWidth / zoom), Math.ceil(stageHeight / zoom), initialState, zoom, framerate, framerate, skipSplash,
+			startFullscreen));
 
 		FlxG.mouse.visible = false;
 
