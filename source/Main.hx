@@ -22,13 +22,12 @@ using StringTools;
 
 class Main extends Sprite
 {
-	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var initialState:Class<FlxState> = StartState; // The FlxState the game starts with.
-	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
-	var framerate:Int = 120; // How many frames per second the game should run at.
-	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
-	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
+	static final gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
+	static final gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
+	static final initialState:Class<FlxState> = StartState; // The FlxState the game starts with.
+	static final framerate:Int = 120; // How many frames per second the game should run at.
+	static final skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
+	static final startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
 	#if !mobile
 	public static var fpsCounter:CoolCounter;
@@ -46,22 +45,15 @@ class Main extends Sprite
 		super();
 
 		if (stage != null)
-		{
 			init();
-		}
 		else
-		{
 			addEventListener(Event.ADDED_TO_STAGE, init);
-		}
 	}
 
 	private function init(?E:Event):Void
 	{
 		if (hasEventListener(Event.ADDED_TO_STAGE))
-		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-		}
-
 		setupGame();
 	}
 
@@ -69,15 +61,9 @@ class Main extends Sprite
 	{
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
-
-		if (zoom == -1)
-		{
-			var ratioX:Float = stageWidth / gameWidth;
-			var ratioY:Float = stageHeight / gameHeight;
-			zoom = Math.min(ratioX, ratioY);
-			gameWidth = Math.ceil(stageWidth / zoom);
-			gameHeight = Math.ceil(stageHeight / zoom);
-		}
+		var zoom = Math.min(stageWidth / gameWidth, stageHeight / gameHeight);
+		gameWidth = Math.ceil(stageWidth / zoom);
+		gameHeight = Math.ceil(stageHeight / zoom);
 
 		#if polymod
 		ModHandler.init();
@@ -104,7 +90,7 @@ class Main extends Sprite
 	static final crashHandlerDirectory:String = './crash';
 
 	// crash handler made by sqirra-rng
-	function onCrash(e:UncaughtErrorEvent):Void
+	static function onCrash(e:UncaughtErrorEvent):Void
 	{
 		var errMsg:String = '';
 
