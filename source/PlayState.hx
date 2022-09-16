@@ -117,6 +117,11 @@ class PlayState extends MusicBeatState
 	var songMisses:Int = 0;
 	var scoreTxt:FlxText;
 
+	var sicks:Int = 0;
+	var goods:Int = 0;
+	var bads:Int = 0;
+	var shits:Int = 0;
+
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
@@ -1558,6 +1563,7 @@ class PlayState extends MusicBeatState
 	}
 
 	static inline var scoreSeparator:String = ' / ';
+	static inline var rankSeparator:String = ' | ';
 
 	var rank:String = '?';
 	var accuracy:Float = 0;
@@ -1572,7 +1578,17 @@ class PlayState extends MusicBeatState
 		{
 			accuracy = Math.min(1, Math.max(0, totalNotesHit / totalPlayed));
 			floorAccuracy = CoolUtil.floorDecimal(accuracy * 100, 2);
+
 			rank = Conductor.getRank(floorAccuracy);
+			// 'stolen' from ke lol
+			if (songMisses == 0 && bads == 0 && shits == 0 && goods == 0) // Marvelous (SICK) Full Combo
+				rank += rankSeparator + 'MFC';
+			else if (songMisses == 0 && bads == 0 && shits == 0 && goods >= 1) // Good Full Combo (Nothing but Goods & Sicks)
+				rank += rankSeparator + 'GFC';
+			else if (songMisses == 0) // Regular FC
+				rank += rankSeparator + 'FC';
+			else if (songMisses < 10) // Single Digit Combo Breaks
+				rank += rankSeparator + 'SDCB';
 		}
 
 		scoreTxt.text = 'Score: ' + songScore + scoreSeparator + 'Combo Breaks: ' + songMisses + scoreSeparator + 'Accuracy: '
@@ -1685,6 +1701,11 @@ class PlayState extends MusicBeatState
 		if (daRating.splash && PreferencesMenu.getPref('note-splashes'))
 			playerStrumline.spawnSplash(daNote.noteData);
 
+		var fieldName:String = daRating.name + 's';
+		var fieldContent:Null<Int> = cast Reflect.field(this, fieldName);
+		if (fieldContent != null)
+			Reflect.setField(this, fieldName, fieldContent + 1);
+
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
 
@@ -1753,9 +1774,7 @@ class PlayState extends MusicBeatState
 				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
 			}
 			else
-			{
 				numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
-			}
 			numScore.updateHitbox();
 
 			numScore.acceleration.y = FlxG.random.int(200, 300);
