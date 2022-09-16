@@ -65,7 +65,7 @@ class StrumNote extends FNFSprite
 					animation.addByPrefix('pressed', 'left press', 24, false);
 					animation.addByPrefix('confirm', 'left confirm', 24, false);
 
-					addOffset('confirm', -0.5, -1);
+					addOffset('confirm', -0.5, -3);
 				case 1:
 					animation.addByPrefix('static', 'arrowDOWN', 24);
 					animation.addByPrefix('pressed', 'down press', 24, false);
@@ -119,6 +119,7 @@ class StrumNote extends FNFSprite
 		centerOrigin();
 
 		offset.addPoint(leOffset);
+		origin.addPoint(leOffset);
 	}
 
 	public function autoConfirm(time:Float)

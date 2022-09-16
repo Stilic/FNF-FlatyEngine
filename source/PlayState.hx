@@ -1552,7 +1552,7 @@ class PlayState extends MusicBeatState
 				break;
 		}
 
-		if (!playerStrumline.botplay && !inCutscene && startedCountdown)
+		if (!inCutscene && startedCountdown)
 			keyShit();
 
 		#if debug
@@ -1608,7 +1608,7 @@ class PlayState extends MusicBeatState
 		{
 			campaignScore += songScore;
 
-			storyPlaylist.remove(storyPlaylist[0]);
+			storyPlaylist.shift();
 
 			if (storyPlaylist.length <= 0)
 			{
@@ -1616,7 +1616,6 @@ class PlayState extends MusicBeatState
 
 				MusicBeatState.switchState(new StoryMenuState());
 
-				// if ()
 				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
 
 				if (SONG.validScore)
@@ -1967,38 +1966,43 @@ class PlayState extends MusicBeatState
 
 	private function keyShit():Void
 	{
-		var gamepad:FlxGamepad = null;
-		if (controls.gamepadsAdded.length > 0)
-			gamepad = FlxG.gamepads.getByID(controls.gamepadsAdded[0]);
-
-		if (gamepad != null)
+		if (!playerStrumline.botplay)
 		{
-			for (direction in inputDirections)
+			var gamepad:FlxGamepad = null;
+			if (controls.gamepadsAdded.length > 0)
+				gamepad = FlxG.gamepads.getByID(controls.gamepadsAdded[0]);
+
+			if (gamepad != null)
 			{
-				if (gamepad.anyJustPressed(controls.getInputsFor(direction, Gamepad(gamepad.id))))
-					onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, controls.getInputsFor(direction, Keys)[0]));
+				for (direction in inputDirections)
+				{
+					if (gamepad.anyJustPressed(controls.getInputsFor(direction, Gamepad(gamepad.id))))
+						onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, controls.getInputsFor(direction, Keys)[0]));
+				}
+			}
+
+			if (generatedMusic)
+			{
+				playerStrumline.holdsGroup.forEachAlive(function(daNote:Note)
+				{
+					if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdingArray[daNote.noteData])
+						goodNoteHit(boyfriend, playerStrumline, daNote);
+				});
+			}
+
+			boyfriend.noHoldIdle = holdingArray.contains(true) || boyfriend.animation.curAnim.name.endsWith('miss');
+
+			if (gamepad != null)
+			{
+				for (direction in inputDirections)
+				{
+					if (gamepad.anyJustReleased(controls.getInputsFor(direction, Gamepad(gamepad.id))))
+						onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, controls.getInputsFor(direction, Keys)[0]));
+				}
 			}
 		}
-
-		if (generatedMusic)
-		{
-			playerStrumline.holdsGroup.forEachAlive(function(daNote:Note)
-			{
-				if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdingArray[daNote.noteData])
-					goodNoteHit(boyfriend, playerStrumline, daNote);
-			});
-		}
-
-		boyfriend.noHoldIdle = holdingArray.contains(true) && !boyfriend.animation.curAnim.name.endsWith('miss');
-
-		if (gamepad != null)
-		{
-			for (direction in inputDirections)
-			{
-				if (gamepad.anyJustReleased(controls.getInputsFor(direction, Gamepad(gamepad.id))))
-					onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, controls.getInputsFor(direction, Keys)[0]));
-			}
-		}
+		else
+			boyfriend.noHoldIdle = false;
 	}
 
 	// for when you don't hit a note and let it go instead
@@ -2009,28 +2013,11 @@ class PlayState extends MusicBeatState
 		health -= 0.0475;
 		combo = 0;
 		if (!practiceMode)
-		{
 			songScore -= 10;
-			songMisses++;
-			totalPlayed++;
-			recalculateRating();
-		}
 
-		FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
-		// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
-		// FlxG.log.add('played imss note');
-
-		switch (daNote.noteData)
-		{
-			case 0:
-				boyfriend.playAnim('singLEFTmiss', true);
-			case 1:
-				boyfriend.playAnim('singDOWNmiss', true);
-			case 2:
-				boyfriend.playAnim('singUPmiss', true);
-			case 3:
-				boyfriend.playAnim('singRIGHTmiss', true);
-		}
+		songMisses++;
+		totalPlayed++;
+		recalculateRating();
 	}
 
 	// for when you press where there is not any note
@@ -2046,16 +2033,20 @@ class PlayState extends MusicBeatState
 			health -= 0.04;
 			combo = 0;
 			if (!practiceMode)
-			{
 				songScore -= 10;
-				songMisses++;
-				totalPlayed++;
-				recalculateRating();
-			}
+
+			songMisses++;
+			totalPlayed++;
+			recalculateRating();
 
 			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
-			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
-			// FlxG.log.add('played imss note');
+
+			boyfriend.stunned = true;
+			// get stunned for 5 seconds
+			new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
+			{
+				boyfriend.stunned = false;
+			});
 
 			switch (direction)
 			{
