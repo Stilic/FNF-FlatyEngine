@@ -17,6 +17,7 @@ class Character extends FNFSprite
 	public var curCharacter:String;
 
 	public var holdTimer:Float = 0;
+	public var noHoldIdle:Bool = false;
 
 	public var stunned:Bool = false;
 
@@ -541,13 +542,13 @@ class Character extends FNFSprite
 
 	override function update(elapsed:Float)
 	{
-		if (!isPlayer)
-		{
-			if (animation.curAnim.name.startsWith('sing'))
-			{
-				holdTimer += elapsed;
-			}
+		if (animation.curAnim.name.startsWith('sing'))
+			holdTimer += elapsed;
+		else
+			holdTimer = 0;
 
+		if (!noHoldIdle && holdTimer > 0)
+		{
 			var dadVar:Float = 4;
 
 			if (curCharacter == 'dad')
@@ -560,9 +561,7 @@ class Character extends FNFSprite
 		}
 
 		if (curCharacter.endsWith('-car') && !animation.curAnim.name.startsWith('sing') && animation.curAnim.finished)
-		{
 			playAnim('idleHair');
-		}
 
 		switch (curCharacter)
 		{
@@ -575,18 +574,14 @@ class Character extends FNFSprite
 					// trace("played shoot anim" + animationNotes[0][1]);
 					var shotDirection:Int = 1;
 					if (animationNotes[0][1] >= 2)
-					{
 						shotDirection = 3;
-					}
 					shotDirection += FlxG.random.int(0, 1);
 
 					playAnim('shoot' + shotDirection, true);
 					animationNotes.shift();
 				}
 				if (animation.curAnim.finished)
-				{
 					playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
-				}
 		}
 
 		super.update(elapsed);

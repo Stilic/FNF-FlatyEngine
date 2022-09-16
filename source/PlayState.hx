@@ -1989,13 +1989,10 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		if (boyfriend.holdTimer > 0.0041 * Conductor.stepCrochet
+		boyfriend.noHoldIdle = boyfriend.holdTimer > 0
 			&& !holdingArray.contains(true)
 			&& boyfriend.animation.curAnim.name.startsWith('sing')
-			&& !boyfriend.animation.curAnim.name.endsWith('miss'))
-		{
-			boyfriend.dance();
-		}
+			&& !boyfriend.animation.curAnim.name.endsWith('miss');
 
 		if (gamepad != null)
 		{
