@@ -544,8 +544,6 @@ class Character extends FNFSprite
 	{
 		if (animation.curAnim.name.startsWith('sing'))
 			holdTimer += elapsed;
-		else
-			holdTimer = 0;
 
 		if (!noHoldIdle && holdTimer > 0)
 		{
