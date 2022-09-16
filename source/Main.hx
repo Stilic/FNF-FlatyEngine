@@ -1,5 +1,8 @@
 package;
 
+#if cpp
+import cpp.NativeGc;
+#end
 #if CRASH_HANDLER
 import haxe.CallStack;
 import sys.io.File;
@@ -81,6 +84,11 @@ class Main extends Sprite
 
 		#if CRASH_HANDLER
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
+		#end
+
+		#if cpp
+		NativeGc.enable(true);
+		NativeGc.run(true);
 		#end
 	}
 

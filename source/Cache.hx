@@ -1,7 +1,7 @@
 package;
 
 #if cpp
-import cpp.vm.Gc;
+import cpp.NativeGc;
 #elseif hl
 import hl.Gc;
 #elseif java
@@ -14,8 +14,8 @@ import flixel.graphics.FlxGraphic;
 import flixel.util.FlxDestroyUtil;
 import openfl.utils.Assets;
 import openfl.display.BitmapData;
+import openfl.display3D.textures.RectangleTexture;
 import openfl.media.Sound;
-import openfl.display3D.textures.Texture;
 import ui.PreferencesMenu;
 import ui.AtlasText;
 
@@ -60,8 +60,8 @@ class Cache
 		AtlasText.fonts.clear();
 
 		#if cpp
-		Gc.compact();
-		Gc.run(true);
+		NativeGc.compact();
+		NativeGc.run(true);
 		#elseif hl
 		Gc.major();
 		#elseif (java || neko)
@@ -75,7 +75,7 @@ class CoolImage implements IFlxDestroyable
 	public var path(default, null):String;
 	public var graphic(default, null):FlxGraphic;
 
-	var texture:Texture;
+	var texture:RectangleTexture;
 
 	public function new(path:String, storeInGPU:Bool = false)
 	{
@@ -84,11 +84,11 @@ class CoolImage implements IFlxDestroyable
 		if (storeInGPU)
 		{
 			var data:BitmapData = Assets.getBitmapData(path);
-			texture = FlxG.stage.context3D.createTexture(data.width, data.height, BGRA, true);
+			texture = FlxG.stage.context3D.createRectangleTexture(data.width, data.height, BGRA, true);
 			texture.uploadFromBitmapData(data);
 			Assets.cache.clear(path);
-			data.dispose();
 			data.disposeImage();
+			data = FlxDestroyUtil.dispose(data);
 		}
 
 		graphic = FlxGraphic.fromBitmapData(storeInGPU ? BitmapData.fromTexture(texture) : Assets.getBitmapData(path), false, null, false);

@@ -807,11 +807,11 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		iconP1 = new HealthIcon(SONG.player1, true);
+		iconP1 = new HealthIcon(SONG.player1, true, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
 
-		iconP2 = new HealthIcon(SONG.player2, false);
+		iconP2 = new HealthIcon(SONG.player2, false, true);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
 
@@ -1174,10 +1174,9 @@ class PlayState extends MusicBeatState
 		curSong = SONG.song;
 		Conductor.changeBPM(SONG.bpm);
 
+		vocals = new FlxSound();
 		if (SONG.needsVoices)
-			vocals = new FlxSound().loadEmbedded(Paths.voices(SONG.song));
-		else
-			vocals = new FlxSound();
+			vocals.loadEmbedded(Paths.voices(SONG.song));
 
 		vocals.onComplete = function()
 		{
@@ -1212,7 +1211,7 @@ class PlayState extends MusicBeatState
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true);
+					var sustainNote:Note = new Note(daStrumTime + Conductor.stepCrochet * (susNote + 1), daNoteData, oldNote, true);
 					sustainNote.mustPress = gottaHitNote;
 					sustainNote.altNote = songNotes[3];
 					sustainNote.scrollFactor.set();
@@ -1420,16 +1419,6 @@ class PlayState extends MusicBeatState
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
-
-		var lerpVal:Float = 0.2;
-
-		var mult:Float = CoolUtil.coolLerp(1, iconP1.scale.x, lerpVal, true);
-		iconP1.scale.set(mult, mult);
-		iconP1.updateHitbox();
-
-		mult = CoolUtil.coolLerp(1, iconP2.scale.x, lerpVal, true);
-		iconP2.scale.set(mult, mult);
-		iconP2.updateHitbox();
 
 		var iconOffset:Int = 26;
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
@@ -2018,6 +2007,8 @@ class PlayState extends MusicBeatState
 		songMisses++;
 		totalPlayed++;
 		recalculateRating();
+
+		boyfriend.playAnim(Character.singAnimations[daNote.noteData] + 'miss', true);
 	}
 
 	// for when you press where there is not any note
@@ -2041,24 +2032,7 @@ class PlayState extends MusicBeatState
 
 			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 
-			boyfriend.stunned = true;
-			// get stunned for 5 seconds
-			new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
-			{
-				boyfriend.stunned = false;
-			});
-
-			switch (direction)
-			{
-				case 0:
-					boyfriend.playAnim('singLEFTmiss', true);
-				case 1:
-					boyfriend.playAnim('singDOWNmiss', true);
-				case 2:
-					boyfriend.playAnim('singUPmiss', true);
-				case 3:
-					boyfriend.playAnim('singRIGHTmiss', true);
-			}
+			boyfriend.playAnim(Character.singAnimations[direction] + 'miss', true);
 		}
 	}
 
@@ -2260,11 +2234,8 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		iconP1.setGraphicSize(Std.int(iconP1.width + 30));
-		iconP2.setGraphicSize(Std.int(iconP2.width + 30));
-
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+		iconP1.bounce();
+		iconP2.bounce();
 
 		if (curBeat % gfSpeed == 0 && !gf.stunned)
 			gf.dance();

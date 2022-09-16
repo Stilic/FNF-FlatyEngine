@@ -20,7 +20,7 @@ class PreferencesMenu extends Page
 		['auto pause', 'auto-pause', #if web false #else true #end],
 		#end
 		#if sys
-		['gpu rendering', 'gpu-rendering', false],
+		['gpu rendering', 'gpu-rendering', true],
 		#end
 		#if !mobile
 		['fps counter', 'fps-counter', true], ['memory counter', 'mem-counter', true], ['memory peak counter', 'mem-peak-counter', true]

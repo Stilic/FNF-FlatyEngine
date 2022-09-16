@@ -1,7 +1,6 @@
 package;
 
 import ui.PreferencesMenu;
-import flixel.FlxBasic;
 import flixel.math.FlxMath;
 import flixel.math.FlxRect;
 import flixel.group.FlxGroup;
@@ -26,7 +25,7 @@ class Strumline extends FlxGroup
 
 	inline public static function isOutsideScreen(strumTime:Float)
 	{
-		return Conductor.songPosition > 350 * FlxMath.roundDecimal(PlayState.SONG.speed, 2) + strumTime;
+		return Conductor.songPosition > 350 / PlayState.SONG.speed + strumTime;
 	}
 
 	public function new(x:Float, y:Float, downscroll:Bool, botplay:Bool = false)
