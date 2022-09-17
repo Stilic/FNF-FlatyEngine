@@ -21,12 +21,6 @@ class StartState extends FlxState
 		FlxG.sound.muteKeys = [ZERO];
 		FlxG.keys.preventDefaultKeys = [TAB];
 
-		FlxG.signals.preStateCreate.add(function(state:FlxState)
-		{
-			if (!Std.isOfType(state, PlayState) && !Std.isOfType(state, ChartingState) && !Std.isOfType(state, AnimationDebug))
-				Cache.clear();
-		});
-
 		// WEEK UNLOCK PROGRESSION!!
 		if (FlxG.save.data.weekUnlocked != null)
 		{
@@ -48,6 +42,17 @@ class StartState extends FlxState
 
 		super.create();
 
-		FlxG.switchState(new TitleState());
+		// FlxG.switchState(new TitleState());
+		FlxG.switchState(new editors.CharacterEditorState());
+
+		FlxG.signals.preStateCreate.add(function(state:FlxState)
+		{
+			if (!Std.isOfType(state, PlayState)
+				&& !Std.isOfType(state, ChartingState)
+				&& !Std.isOfType(state, editors.CharacterEditorState))
+			{
+				Cache.clear();
+			}
+		});
 	}
 }

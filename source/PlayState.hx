@@ -1446,7 +1446,7 @@ class PlayState extends MusicBeatState
 			MusicBeatState.switchState(new Charting()); */
 
 		if (FlxG.keys.justPressed.EIGHT)
-			MusicBeatState.switchState(new AnimationDebug(SONG.player2));
+			MusicBeatState.switchState(new editors.CharacterEditorState());
 
 		if (generatedMusic && !endingSong)
 			cameraSection(Std.int(curStep / 16));

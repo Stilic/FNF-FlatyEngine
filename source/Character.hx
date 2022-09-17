@@ -39,6 +39,8 @@ class Character extends FNFSprite
 {
 	public static final singAnimations:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
 
+	public var data:CharacterData;
+
 	public var debugMode:Bool = false;
 
 	public var isPlayer:Bool;
@@ -514,7 +516,6 @@ class Character extends FNFSprite
 				flipX = true;
 
 			default:
-				var data:CharacterData = null;
 				var path:String = Paths.getPath('characters/$curCharacter.json', TEXT);
 				if (Assets.exists(path, TEXT))
 					data = cast Json.parse(Assets.getText(path));
