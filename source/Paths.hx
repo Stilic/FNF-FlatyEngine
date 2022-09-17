@@ -17,7 +17,7 @@ class Paths
 		currentLevel = name.toLowerCase();
 	}
 
-	static public function getPath(file:String, type:AssetType, ?library:String)
+	static public function getPath(file:String, ?type:AssetType, ?library:String)
 	{
 		if (library != null)
 			return getLibraryPath(file, library);
@@ -51,11 +51,6 @@ class Paths
 		return 'assets/$file';
 	}
 
-	inline static public function file(file:String, type:AssetType = TEXT, ?library:String)
-	{
-		return getPath(file, type, library);
-	}
-
 	inline static public function txt(key:String, ?library:String)
 	{
 		return getPath('data/$key.txt', TEXT, library);
@@ -86,14 +81,14 @@ class Paths
 		return returnSound('music/$key', library);
 	}
 
-	inline static public function voicesPath(song:String)
-	{
-		return 'songs:assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
-	}
-
 	inline static public function instPath(song:String)
 	{
 		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
+	}
+
+	inline static public function voicesPath(song:String)
+	{
+		return 'songs:assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
 	}
 
 	inline static public function voices(song:String)
@@ -123,12 +118,12 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
-		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
+		return FlxAtlasFrames.fromSparrow(image(key, library), getPath('images/$key.xml', library));
 	}
 
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
+		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), getPath('images/$key.txt', library));
 	}
 
 	public static function returnGraphic(key:String, ?library:String)

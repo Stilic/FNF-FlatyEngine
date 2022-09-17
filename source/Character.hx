@@ -1,11 +1,39 @@
 package;
 
+import haxe.Json;
 import ui.PreferencesMenu;
 import Section.SwagSection;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.util.FlxColor;
+import openfl.utils.Assets;
 
 using StringTools;
+
+typedef CharacterAnimation =
+{
+	var name:String;
+	var prefix:String;
+	var ?fps:Int;
+	var ?loop:Bool;
+	var ?flipX:Bool;
+	var ?flipY:Bool;
+	var ?indices:Array<Int>;
+	var ?offsets:Array<Float>;
+}
+
+typedef CharacterData =
+{
+	var imagePath:String;
+	var ?scale:Float;
+	var ?antialiasing:Bool;
+	var ?flipX:Bool;
+	var ?flipY:Bool;
+	var ?singDuration:Int;
+	var ?iconPath:String;
+	var ?iconColor:Array<Int>;
+	var animations:Array<CharacterAnimation>;
+}
 
 class Character extends FNFSprite
 {
@@ -16,6 +44,7 @@ class Character extends FNFSprite
 	public var isPlayer:Bool;
 	public var curCharacter:String;
 
+	public var singDuration:Float = 4;
 	public var holdTimer:Float = 0;
 	public var noHoldIdle:Bool = false;
 
@@ -23,17 +52,21 @@ class Character extends FNFSprite
 
 	public var animationNotes:Array<Dynamic> = [];
 
+	public var iconPath:String = 'face';
+	public var iconColor:FlxColor = FlxColor.fromRGB(161, 161, 161);
+
 	public var cameraMove:Bool;
 	public var cameraMoveAdd:Float = 15;
 	public var cameraMoveArray:Array<Float>;
 
-	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
+	public function new(x:Float, y:Float, character:String = "bf", isPlayer:Bool = false)
 	{
 		super(x, y);
 
-		cameraMove = PreferencesMenu.getPref('camera-follow-char');
 		curCharacter = character;
 		this.isPlayer = isPlayer;
+
+		cameraMove = PreferencesMenu.getPref('camera-follow-char');
 
 		var tex:FlxAtlasFrames;
 		antialiasing = true;
@@ -126,6 +159,8 @@ class Character extends FNFSprite
 				quickAnimAdd('singRIGHT', 'Dad Sing Note RIGHT');
 				quickAnimAdd('singDOWN', 'Dad Sing Note DOWN');
 				quickAnimAdd('singLEFT', 'Dad Sing Note LEFT');
+
+				singDuration = 6.1;
 
 				loadOffsetFile(curCharacter);
 
@@ -322,7 +357,7 @@ class Character extends FNFSprite
 
 				loadOffsetFile(curCharacter);
 
-				setGraphicSize(Std.int(width * 6));
+				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
 
 				playAnim('idle');
@@ -344,7 +379,7 @@ class Character extends FNFSprite
 				loadOffsetFile(curCharacter);
 				playAnim('firstDeath');
 				// pixel bullshit
-				setGraphicSize(Std.int(width * 6));
+				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
 				antialiasing = false;
 				flipX = true;
@@ -392,7 +427,7 @@ class Character extends FNFSprite
 
 				playAnim('idle');
 
-				setGraphicSize(Std.int(width * 6));
+				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
 
 				antialiasing = false;
@@ -407,7 +442,7 @@ class Character extends FNFSprite
 				loadOffsetFile(curCharacter);
 				playAnim('idle');
 
-				setGraphicSize(Std.int(width * 6));
+				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
 
 				antialiasing = false;
@@ -422,7 +457,7 @@ class Character extends FNFSprite
 
 				loadOffsetFile(curCharacter);
 
-				setGraphicSize(Std.int(width * 6));
+				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
 
 				playAnim('idle');
@@ -477,6 +512,62 @@ class Character extends FNFSprite
 				playAnim('idle');
 
 				flipX = true;
+
+			default:
+				var data:CharacterData = null;
+				var path:String = Paths.getPath('characters/$curCharacter.json', TEXT);
+				if (Assets.exists(path, TEXT))
+					data = cast Json.parse(Assets.getText(path));
+
+				if (data != null)
+				{
+					if (Assets.exists(Paths.getPath('images/${data.imagePath}.xml')))
+						frames = Paths.getSparrowAtlas(data.imagePath);
+					else if (Assets.exists(Paths.getPath('images/${data.imagePath}.txt')))
+						frames = Paths.getPackerAtlas(data.imagePath);
+
+					if (data.antialiasing != null)
+						antialiasing = data.antialiasing;
+
+					if (data.flipX != null)
+						flipX = data.flipX;
+					if (data.flipY != null)
+						flipY = data.flipY;
+
+					if (data.singDuration != null)
+						singDuration = data.singDuration;
+
+					if (data.iconPath != null)
+						iconPath = data.iconPath;
+					if (data.iconColor != null)
+						iconColor = FlxColor.fromRGB(data.iconColor[0], data.iconColor[1], data.iconColor[2]);
+
+					for (anim in data.animations)
+					{
+						var fps:Int = 24;
+						if (anim.fps != null)
+							fps = anim.fps;
+
+						var loop:Bool = false;
+						if (anim.loop != null)
+							loop = anim.loop;
+
+						var shitX:Bool = false;
+						if (anim.flipX != null)
+							shitX = anim.flipX;
+						var shitY:Bool = false;
+						if (anim.flipY != null)
+							shitY = anim.flipY;
+
+						if (anim.indices == null)
+							animation.addByPrefix(anim.name, anim.prefix, fps, loop, shitX, shitY);
+						else
+							animation.addByIndices(anim.name, anim.prefix, anim.indices, '', fps, loop, shitX, shitY);
+
+						if (anim.offsets != null)
+							addOffset(anim.name, anim.offsets[0], anim.offsets[1]);
+					}
+				}
 		}
 
 		dance();
@@ -545,17 +636,10 @@ class Character extends FNFSprite
 		if (animation.curAnim.name.startsWith('sing'))
 			holdTimer += elapsed;
 
-		if (!noHoldIdle && holdTimer > 0)
+		if (!noHoldIdle && holdTimer >= Conductor.stepCrochet * singDuration * 0.0011)
 		{
-			var dadVar:Float = 4;
-
-			if (curCharacter == 'dad')
-				dadVar = 6.1;
-			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.0011)
-			{
-				dance();
-				holdTimer = 0;
-			}
+			dance();
+			holdTimer = 0;
 		}
 
 		if (curCharacter.endsWith('-car') && !animation.curAnim.name.startsWith('sing') && animation.curAnim.finished)

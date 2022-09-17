@@ -1,6 +1,5 @@
 package;
 
-import flixel.input.gamepad.FlxGamepad;
 #if hxCodec
 import vlc.MP4Handler;
 #end
@@ -30,6 +29,7 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
+import flixel.input.gamepad.FlxGamepad;
 import shaderslmfao.BuildingShaders;
 import ui.PreferencesMenu;
 
@@ -1602,12 +1602,9 @@ class PlayState extends MusicBeatState
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
-		if (SONG.validScore)
-		{
-			#if !switch
-			Highscore.saveScore(SONG.song, songScore, storyDifficulty);
-			#end
-		}
+		#if !switch
+		Highscore.saveScore(SONG.song, songScore, storyDifficulty);
+		#end
 
 		if (isStoryMode)
 		{
@@ -1623,8 +1620,7 @@ class PlayState extends MusicBeatState
 
 				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
 
-				if (SONG.validScore)
-					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 				FlxG.save.flush();
