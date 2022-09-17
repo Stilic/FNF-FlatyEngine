@@ -19,7 +19,7 @@ typedef CharacterAnimation =
 	var ?flipX:Bool;
 	var ?flipY:Bool;
 	var ?indices:Array<Int>;
-	var ?offsets:Array<Float>;
+	var ?offset:Array<Float>;
 }
 
 typedef CharacterData =
@@ -276,33 +276,33 @@ class Character extends FNFSprite
 
 				loadMappedAnims();
 
-			case 'bf':
-				tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
-				frames = tex;
-				quickAnimAdd('idle', 'BF idle dance');
-				quickAnimAdd('singUP', 'BF NOTE UP0');
-				quickAnimAdd('singLEFT', 'BF NOTE LEFT0');
-				quickAnimAdd('singRIGHT', 'BF NOTE RIGHT0');
-				quickAnimAdd('singDOWN', 'BF NOTE DOWN0');
-				quickAnimAdd('singUPmiss', 'BF NOTE UP MISS');
-				quickAnimAdd('singLEFTmiss', 'BF NOTE LEFT MISS');
-				quickAnimAdd('singRIGHTmiss', 'BF NOTE RIGHT MISS');
-				quickAnimAdd('singDOWNmiss', 'BF NOTE DOWN MISS');
-				quickAnimAdd('hey', 'BF HEY');
+			// case 'bf':
+			// 	tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
+			// 	frames = tex;
+			// 	quickAnimAdd('idle', 'BF idle dance');
+			// 	quickAnimAdd('singUP', 'BF NOTE UP0');
+			// 	quickAnimAdd('singLEFT', 'BF NOTE LEFT0');
+			// 	quickAnimAdd('singRIGHT', 'BF NOTE RIGHT0');
+			// 	quickAnimAdd('singDOWN', 'BF NOTE DOWN0');
+			// 	quickAnimAdd('singUPmiss', 'BF NOTE UP MISS');
+			// 	quickAnimAdd('singLEFTmiss', 'BF NOTE LEFT MISS');
+			// 	quickAnimAdd('singRIGHTmiss', 'BF NOTE RIGHT MISS');
+			// 	quickAnimAdd('singDOWNmiss', 'BF NOTE DOWN MISS');
+			// 	quickAnimAdd('hey', 'BF HEY');
 
-				quickAnimAdd('firstDeath', "BF dies");
-				animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
-				quickAnimAdd('deathConfirm', "BF Dead confirm");
+			// 	quickAnimAdd('firstDeath', "BF dies");
+			// 	animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
+			// 	quickAnimAdd('deathConfirm', "BF Dead confirm");
 
-				animation.addByPrefix('scared', 'BF idle shaking', 24, true);
+			// 	animation.addByPrefix('scared', 'BF idle shaking', 24, true);
 
-				loadOffsetFile(curCharacter);
+			// 	loadOffsetFile(curCharacter);
 
-				playAnim('idle');
+			// 	playAnim('idle');
 
-				flipX = true;
+			// 	flipX = true;
 
-				loadOffsetFile(curCharacter);
+			// 	loadOffsetFile(curCharacter);
 
 			case 'bf-christmas':
 				tex = Paths.getSparrowAtlas('characters/bfChristmas');
@@ -564,8 +564,8 @@ class Character extends FNFSprite
 						else
 							animation.addByIndices(anim.name, anim.prefix, anim.indices, '', fps, loop, shitX, shitY);
 
-						if (anim.offsets != null)
-							addOffset(anim.name, anim.offsets[0], anim.offsets[1]);
+						if (anim.offset != null)
+							addOffset(anim.name, anim.offset[0], anim.offset[1]);
 					}
 				}
 		}
@@ -574,26 +574,7 @@ class Character extends FNFSprite
 		animation.finish();
 
 		if (isPlayer)
-		{
 			flipX = !flipX;
-
-			// Doesn't flip for BF, since his are already in the right place???
-			if (!isPlayer)
-			{
-				// var animArray
-				var oldRight = animation.getByName(singAnimations[3]).frames;
-				animation.getByName(singAnimations[3]).frames = animation.getByName(singAnimations[0]).frames;
-				animation.getByName(singAnimations[0]).frames = oldRight;
-
-				// IF THEY HAVE MISS ANIMATIONS??
-				if (animation.getByName('singRIGHTmiss') != null)
-				{
-					var oldMiss = animation.getByName('singRIGHTmiss').frames;
-					animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
-					animation.getByName('singLEFTmiss').frames = oldMiss;
-				}
-			}
-		}
 	}
 
 	function loadMappedAnims()
