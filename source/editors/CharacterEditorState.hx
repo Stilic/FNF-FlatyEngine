@@ -71,6 +71,8 @@ class CharacterEditorState extends MusicBeatState
 		var animList:String = '';
 		for (i in 0...char.data.animations.length)
 		{
+			var anim = char.data.animations[i];
+
 			animList += anim.name + ' [';
 
 			var anim = char.data.animations[i];
