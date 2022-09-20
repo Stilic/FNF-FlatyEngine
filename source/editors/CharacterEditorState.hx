@@ -49,10 +49,11 @@ class CharacterEditorState extends MusicBeatState
 		if (daAnim == null)
 		{
 			if (PlayState.SONG != null)
-				curCharacter = PlayState.SONG.player2;
+				daAnim = PlayState.SONG.player2;
 			else
-				curCharacter = 'bf';
+				daAnim = 'bf';
 		}
+                curCharacter = daAnim;
 
 		var index:Int = -1;
 		if (char != null)
