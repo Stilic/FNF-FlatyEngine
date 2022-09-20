@@ -42,8 +42,8 @@ class StartState extends FlxState
 
 		super.create();
 
-		// FlxG.switchState(new TitleState());
-		FlxG.switchState(new editors.CharacterEditorState());
+		FlxG.switchState(new TitleState());
+		// FlxG.switchState(new editors.CharacterEditorState());
 
 		FlxG.signals.preStateCreate.add(function(state:FlxState)
 		{
