@@ -128,7 +128,7 @@ jobs:
           haxelib install hscript
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
       - name: Compile
-        run: haxelib run lime build html5
+        run: haxelib run lime build html5 -debug
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
