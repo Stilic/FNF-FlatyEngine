@@ -123,6 +123,9 @@
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
+	<!--Allow working memory greater than 1 gigabyte-->
+	<haxedef name="HXCPP_GC_BIG_BLOCKS" if="cpp" />
+
 	<!--For the crash handler-->
 	<haxedef name="HXCPP_CHECK_POINTER" if="CRASH_HANDLER" />
 	<haxedef name="HXCPP_STACK_LINE" if="CRASH_HANDLER" />
