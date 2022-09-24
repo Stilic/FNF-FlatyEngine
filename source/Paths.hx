@@ -43,7 +43,7 @@ class Paths
 
 	inline static function getLibraryPathForce(file:String, library:String)
 	{
-		return '$library:assets/$library/$file';
+		return '$library:' + getPreloadPath('$library/$file');
 	}
 
 	inline static function getPreloadPath(file:String)
@@ -78,17 +78,17 @@ class Paths
 
 	inline static public function music(key:String, ?library:String)
 	{
-		return returnSound('music/$key', library);
-	}
-
-	inline static public function instPath(song:String)
-	{
-		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
+		return returnSound('music/$key', library, true);
 	}
 
 	inline static public function voicesPath(song:String)
 	{
-		return 'songs:assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
+		return getLibraryPathForce('${song.toLowerCase()}/Voices.$SOUND_EXT', 'songs');
+	}
+
+	inline static public function instPath(song:String)
+	{
+		return getLibraryPathForce('${song.toLowerCase()}/Inst.$SOUND_EXT', 'songs');
 	}
 
 	inline static public function voices(song:String)
