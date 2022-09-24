@@ -93,12 +93,12 @@ class Paths
 
 	inline static public function voices(song:String)
 	{
-		return returnSound('${song.toLowerCase()}/Voices', 'songs');
+		return returnSound('${song.toLowerCase()}/Voices', 'songs', true);
 	}
 
 	inline static public function inst(song:String)
 	{
-		return returnSound('${song.toLowerCase()}/Inst', 'songs');
+		return returnSound('${song.toLowerCase()}/Inst', 'songs', true);
 	}
 
 	inline static public function image(key:String, ?library:String)
@@ -136,9 +136,17 @@ class Paths
 		return null;
 	}
 
-	public static function returnSound(key:String, ?library:String)
+	public static function returnSound(key:String, ?library:String, stream:Bool = false)
 	{
-		var sound:Sound = Cache.getSound(getPath('$key.$SOUND_EXT', SOUND, library));
+		var path:String = getPath('$key.$SOUND_EXT', SOUND, library);
+		var sound:Sound;
+		#if lime_vorbis
+		if (stream)
+			sound = Cache.getMusic(path);
+		else
+		#end
+			sound = Cache.getSound(path);
+
 		if (sound != null)
 			return sound;
 
