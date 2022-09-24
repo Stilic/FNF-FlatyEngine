@@ -41,6 +41,8 @@ class Cache
 	// music streamen!!!!!
 	public static function getMusic(id:String)
 	{
+		id = id.substring(id.indexOf(':') + 1, id.length);
+
 		if (sounds.exists(id))
 			return sounds.get(id);
 
