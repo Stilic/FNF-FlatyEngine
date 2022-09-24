@@ -56,21 +56,17 @@ class Cache
 			return sounds.get(id);
 
 		var sound:Sound = Assets.getSound(id);
+		Assets.cache.removeSound(id);
 		sounds.set(id, sound);
 		return sound;
 	}
 
 	public static function clear()
 	{
-		FlxDestroyUtil.destroyArray(images);
-
-		for (key in sounds.keys())
-		{
-			Assets.cache.clear(key);
-			sounds.remove(key);
-		}
-
 		AtlasText.fonts.clear();
+
+		FlxDestroyUtil.destroyArray(images);
+		sounds.clear();
 
 		#if cpp
 		NativeGc.compact();
@@ -104,10 +100,9 @@ class CoolImage implements IFlxDestroyable
 		}
 
 		graphic = FlxGraphic.fromBitmapData(storeInGPU ? BitmapData.fromTexture(texture) : Assets.getBitmapData(path), false, null, false);
+		Assets.cache.removeBitmapData(path);
 		graphic.persist = true;
 		graphic.destroyOnNoUse = false;
-
-		Assets.cache.clear(path);
 	}
 
 	public function destroy()
