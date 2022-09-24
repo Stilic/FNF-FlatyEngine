@@ -99,7 +99,6 @@ class CoolImage implements IFlxDestroyable
 			var data:BitmapData = Assets.getBitmapData(path);
 			texture = FlxG.stage.context3D.createRectangleTexture(data.width, data.height, BGRA, true);
 			texture.uploadFromBitmapData(data);
-			Assets.cache.clear(path);
 			data.disposeImage();
 			data = FlxDestroyUtil.dispose(data);
 		}
@@ -107,6 +106,8 @@ class CoolImage implements IFlxDestroyable
 		graphic = FlxGraphic.fromBitmapData(storeInGPU ? BitmapData.fromTexture(texture) : Assets.getBitmapData(path), false, null, false);
 		graphic.persist = true;
 		graphic.destroyOnNoUse = false;
+
+		Assets.cache.clear(path);
 	}
 
 	public function destroy()
