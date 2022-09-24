@@ -899,6 +899,9 @@ class PlayState extends MusicBeatState
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 
+		for (dir in inputDirections)
+			keyBinds.push(controls.getInputsFor(inputDirections[i], Keys));
+
 		super.create();
 	}
 
@@ -1875,17 +1878,18 @@ class PlayState extends MusicBeatState
 			cameraMovement(!leSection.mustHitSection, true);
 	}
 
-	final inputDirections:Array<Control> = [NOTE_LEFT, NOTE_DOWN, NOTE_UP, NOTE_RIGHT];
+	public static final inputDirections:Array<Control> = [NOTE_LEFT, NOTE_DOWN, NOTE_UP, NOTE_RIGHT];
 
-	private var holdingArray:Array<Bool> = [];
+        var keyBinds:Array<Array<Int>> = [];
+	var holdingArray:Array<Bool> = [];
 
 	private function getKeyFromCode(keyCode:Int):Int
 	{
-		for (i in 0...inputDirections.length)
+		for (i in 0...keyBinds.length)
 		{
-			for (key in controls.getInputsFor(inputDirections[i], Keys))
+			for (bind in keyBinds[i])
 			{
-				if (key == keyCode)
+				if (bind == keyCode)
 					return i;
 			}
 		}
