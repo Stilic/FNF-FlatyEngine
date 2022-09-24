@@ -26,24 +26,37 @@ class Cache
 	static var images:Array<CoolImage> = [];
 	static var sounds:Map<String, Sound> = new Map<String, Sound>();
 
-	public static function getGraphic(path:String)
+	public static function getGraphic(id:String)
 	{
 		for (bitmap in images)
-			if (bitmap.path == path)
+			if (bitmap.path == id)
 				return bitmap.graphic;
 
-		var image:CoolImage = new CoolImage(path, #if sys PreferencesMenu.getPref('gpu-rendering') #else false #end);
+		var image:CoolImage = new CoolImage(id, #if sys PreferencesMenu.getPref('gpu-rendering') #else false #end);
 		images.push(image);
 		return image.graphic;
 	}
 
-	public static function getSound(path:String)
+	#if lime_vorbis
+	// music streamen!!!!!
+	public static function getMusic(id:String)
 	{
-		if (sounds.exists(path))
-			return sounds.get(path);
+		if (sounds.exists(id))
+			return sounds.get(id);
 
-		var sound:Sound = Assets.getSound(path);
-		sounds.set(path, sound);
+		var music:Sound = Assets.getMusic(id, false);
+		sounds.set(id, music);
+		return music;
+	}
+	#end
+
+	public static function getSound(id:String)
+	{
+		if (sounds.exists(id))
+			return sounds.get(id);
+
+		var sound:Sound = Assets.getSound(id);
+		sounds.set(id, sound);
 		return sound;
 	}
 
