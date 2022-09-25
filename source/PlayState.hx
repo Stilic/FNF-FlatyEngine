@@ -900,7 +900,7 @@ class PlayState extends MusicBeatState
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 
 		for (dir in inputDirections)
-			keyBinds.push(controls.getInputsFor(inputDirections[i], Keys));
+			keyBinds.push(controls.getInputsFor(dir, Keys));
 
 		super.create();
 	}
@@ -1418,7 +1418,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
-			MusicBeatState.switchState(new ChartingState());
+			MusicBeatState.switchState(new editors.ChartingState());
 
 			#if discord_rpc
 			DiscordClient.changePresence("Chart Editor", null, null, true);
@@ -1880,7 +1880,7 @@ class PlayState extends MusicBeatState
 
 	public static final inputDirections:Array<Control> = [NOTE_LEFT, NOTE_DOWN, NOTE_UP, NOTE_RIGHT];
 
-        var keyBinds:Array<Array<Int>> = [];
+	var keyBinds:Array<Array<Int>> = [];
 	var holdingArray:Array<Bool> = [];
 
 	private function getKeyFromCode(keyCode:Int):Int

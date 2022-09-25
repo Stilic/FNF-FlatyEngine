@@ -139,13 +139,15 @@ class Paths
 	public static function returnSound(key:String, ?library:String, stream:Bool = false)
 	{
 		var path:String = getPath('$key.$SOUND_EXT', SOUND, library);
-		var sound:Sound;
 		#if lime_vorbis
+		var sound:Sound;
 		if (stream)
 			sound = Cache.getMusic(path);
 		else
-		#end
 			sound = Cache.getSound(path);
+		#else
+		var sound:Sound = Cache.getSound(path);
+		#end
 
 		if (sound != null)
 			return sound;

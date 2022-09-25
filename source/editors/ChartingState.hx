@@ -1,4 +1,4 @@
-package;
+package editors;
 
 import Conductor.BPMChangeEvent;
 import Section.SwagSection;

@@ -48,7 +48,7 @@ class StartState extends FlxState
 		FlxG.signals.preStateCreate.add(function(state:FlxState)
 		{
 			if (!Std.isOfType(state, PlayState)
-				&& !Std.isOfType(state, ChartingState)
+				&& !Std.isOfType(state, editors.ChartingState)
 				&& !Std.isOfType(state, editors.CharacterEditorState))
 			{
 				Cache.clear();

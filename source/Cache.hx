@@ -14,7 +14,6 @@ import flixel.graphics.FlxGraphic;
 import flixel.util.FlxDestroyUtil;
 import openfl.utils.Assets;
 import openfl.display.BitmapData;
-import openfl.display3D.textures.RectangleTexture;
 import openfl.media.Sound;
 import ui.PreferencesMenu;
 import ui.AtlasText;
@@ -23,14 +22,28 @@ using StringTools;
 
 class Cache
 {
+	static final dumpExclusions:Array<String> = ['music/freakyMenu.${Paths.SOUND_EXT}', 'music/breakfast.${Paths.SOUND_EXT}'];
+
+	public static function isExcludedFromDump(suffix:String)
+	{
+		for (path in dumpExclusions)
+		{
+			if (path.endsWith(suffix))
+				return true;
+		}
+		return false;
+	}
+
 	static var images:Array<CoolImage> = [];
 	static var sounds:Map<String, Sound> = new Map<String, Sound>();
 
 	public static function getGraphic(id:String)
 	{
 		for (bitmap in images)
+		{
 			if (bitmap.path == id)
 				return bitmap.graphic;
+		}
 
 		var image:CoolImage = new CoolImage(id, #if sys PreferencesMenu.getPref('gpu-rendering') #else false #end);
 		images.push(image);
@@ -38,11 +51,9 @@ class Cache
 	}
 
 	#if lime_vorbis
-	// music streamen!!!!!
+	// we call this "music streaming, without loading the full music in the memory"
 	public static function getMusic(id:String)
 	{
-		id = id.substring(id.indexOf(':') + 1, id.length);
-
 		if (sounds.exists(id))
 			return sounds.get(id);
 
@@ -57,18 +68,48 @@ class Cache
 		if (sounds.exists(id))
 			return sounds.get(id);
 
-		var sound:Sound = Assets.getSound(id);
-		Assets.cache.removeSound(id);
+		var sound:Sound = Assets.getSound(id, false);
 		sounds.set(id, sound);
 		return sound;
 	}
 
+	// it clears EVERYTHING!!!! (even the aggresive flixel cache)
 	public static function clear()
 	{
 		AtlasText.fonts.clear();
+		// clearCache function is not that good, let's do the pussy stuff "manually"
+		@:privateAccess
+		for (key => graphic in FlxG.bitmap._cache)
+		{
+			Assets.cache.removeBitmapData(key);
+			FlxG.bitmap._cache.remove(key);
 
-		FlxDestroyUtil.destroyArray(images);
-		sounds.clear();
+			graphic.bitmap.lock();
+			@:privateAccess
+			if (graphic.bitmap.__texture != null)
+			{
+				graphic.bitmap.__texture.dispose();
+				graphic.bitmap.__texture = null;
+			}
+			graphic.bitmap.disposeImage();
+
+			graphic = FlxDestroyUtil.destroy(graphic);
+		}
+
+		for (image in images)
+		{
+			if (!isExcludedFromDump(image.path))
+			{
+				images.remove(image);
+				image = FlxDestroyUtil.destroy(image);
+			}
+		}
+
+		for (key in sounds.keys())
+		{
+			if (!isExcludedFromDump(key))
+				sounds.remove(key);
+		}
 
 		#if cpp
 		NativeGc.compact();
@@ -86,36 +127,37 @@ class CoolImage implements IFlxDestroyable
 	public var path(default, null):String;
 	public var graphic(default, null):FlxGraphic;
 
-	var texture:RectangleTexture;
-
 	public function new(path:String, storeInGPU:Bool = false)
 	{
 		this.path = path;
 
+		var bitmap = Assets.getBitmapData(path, false);
 		if (storeInGPU)
 		{
-			var data:BitmapData = Assets.getBitmapData(path);
-			texture = FlxG.stage.context3D.createRectangleTexture(data.width, data.height, BGRA, true);
-			texture.uploadFromBitmapData(data);
-			data.disposeImage();
-			data = FlxDestroyUtil.dispose(data);
+			bitmap.lock();
+			var texture = FlxG.stage.context3D.createRectangleTexture(bitmap.width, bitmap.height, BGRA, true);
+			texture.uploadFromBitmapData(bitmap);
+			bitmap.dispose();
+			bitmap.disposeImage();
+			bitmap = BitmapData.fromTexture(texture);
 		}
 
-		graphic = FlxGraphic.fromBitmapData(storeInGPU ? BitmapData.fromTexture(texture) : Assets.getBitmapData(path), false, null, false);
-		Assets.cache.removeBitmapData(path);
+		graphic = FlxGraphic.fromBitmapData(bitmap, false, null, false);
 		graphic.persist = true;
 		graphic.destroyOnNoUse = false;
 	}
 
 	public function destroy()
 	{
-		if (texture != null)
+		graphic.bitmap.lock();
+		@:privateAccess
+		if (graphic.bitmap.__texture != null)
 		{
-			texture.dispose();
-			texture = null;
+			graphic.bitmap.__texture.dispose();
+			graphic.bitmap.__texture = null;
 		}
-
 		graphic.bitmap.disposeImage();
+
 		graphic = FlxDestroyUtil.destroy(graphic);
 	}
 }
