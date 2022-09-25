@@ -68,7 +68,7 @@ class Cache
 		if (sounds.exists(id))
 			return sounds.get(id);
 
-		var sound:Sound = Assets.getSound(id, false);
+		var sound:Sound = Assets.getSound(id);
 		sounds.set(id, sound);
 		return sound;
 	}
@@ -76,26 +76,6 @@ class Cache
 	// it clears EVERYTHING!!!! (even the aggresive flixel cache)
 	public static function clear()
 	{
-		AtlasText.fonts.clear();
-		// clearCache function is not that good, let's do the pussy stuff "manually"
-		@:privateAccess
-		for (key => graphic in FlxG.bitmap._cache)
-		{
-			Assets.cache.removeBitmapData(key);
-			FlxG.bitmap._cache.remove(key);
-
-			graphic.bitmap.lock();
-			@:privateAccess
-			if (graphic.bitmap.__texture != null)
-			{
-				graphic.bitmap.__texture.dispose();
-				graphic.bitmap.__texture = null;
-			}
-			graphic.bitmap.disposeImage();
-
-			graphic = FlxDestroyUtil.destroy(graphic);
-		}
-
 		for (image in images)
 		{
 			if (!isExcludedFromDump(image.path))
@@ -108,7 +88,30 @@ class Cache
 		for (key in sounds.keys())
 		{
 			if (!isExcludedFromDump(key))
+			{
+				Assets.cache.removeSound(key);
 				sounds.remove(key);
+			}
+		}
+
+		AtlasText.fonts.clear();
+
+		// clearCache function is not that good, let's do the pussy stuff "manually"
+		@:privateAccess
+		for (key => graphic in FlxG.bitmap._cache)
+		{
+			Assets.cache.removeBitmapData(key);
+			FlxG.bitmap._cache.remove(key);
+
+			graphic.bitmap.lock();
+			if (graphic.bitmap.__texture != null)
+			{
+				graphic.bitmap.__texture.dispose();
+				graphic.bitmap.__texture = null;
+			}
+			graphic.bitmap.disposeImage();
+
+			graphic = FlxDestroyUtil.destroy(graphic);
 		}
 
 		#if cpp
@@ -156,8 +159,8 @@ class CoolImage implements IFlxDestroyable
 			graphic.bitmap.__texture.dispose();
 			graphic.bitmap.__texture = null;
 		}
-		graphic.bitmap.disposeImage();
 
+		graphic.bitmap.disposeImage();
 		graphic = FlxDestroyUtil.destroy(graphic);
 	}
 }
