@@ -2075,12 +2075,15 @@ class PlayState extends MusicBeatState
 			else if (SONG.song != 'Tutorial')
 				camZooming = true;
 
-			var altAnim:String = '';
-			var curSection:SwagSection = SONG.notes[Math.floor(curStep / 16)];
-			if ((curSection != null && curSection.altAnim) || note.altNote)
-				altAnim = '-alt';
+			var animSuffix:String = '';
+			if (!note.mustPress)
+			{
+				var curSection:SwagSection = SONG.notes[Math.floor(curStep / 16)];
+				if ((curSection != null && curSection.altAnim) || note.altNote)
+					animSuffix = '-alt';
+			}
 
-			char.playAnim(Character.singAnimations[note.noteData] + altAnim, true);
+			char.playAnim(Character.singAnimations[note.noteData] + animSuffix, true);
 			char.holdTimer = 0;
 
 			strumline.strumsGroup.forEach(function(strum:StrumNote)
