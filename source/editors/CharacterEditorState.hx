@@ -12,27 +12,34 @@ using StringTools;
 class CharacterEditorState extends MusicBeatState
 {
 	var char:Character;
-	var curAnim:Int = 0;
-	var curCharacter:String;
 	var camFollow:FlxObject;
 
+	var dumbText:FlxText;
 	var textAnim:FlxText;
+	var curAnim:Int = 0;
 
 	override function create()
 	{
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		var gridBG:FlxSprite = FlxGridOverlay.create(10, 10);
-		gridBG.scrollFactor.set(0.5, 0.5);
+		var gridBG:FlxSprite = FlxGridOverlay.create(10, 10, -1, -1, true, FlxColor.fromRGB(48, 48, 48), FlxColor.fromRGB(78, 78, 78));
+		gridBG.scrollFactor.set();
 		add(gridBG);
 
-		textAnim = new FlxText(5, 10, 0, "", 14);
+		dumbText = new FlxText(5, 10, 0, "", 14);
+		dumbText.scrollFactor.set();
+		dumbText.setFormat("VCR OSD Mono", 18, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+
+		textAnim = new FlxText(300, 16);
 		textAnim.scrollFactor.set();
 		textAnim.setFormat("VCR OSD Mono", 18, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		textAnim.borderSize = 1;
+		textAnim.size = 30;
 
 		loadChar();
 
+		add(dumbText);
 		add(textAnim);
 
 		camFollow = new FlxObject(0, 0, 1, 1);
@@ -53,7 +60,6 @@ class CharacterEditorState extends MusicBeatState
 			// else
 			daAnim = 'bf';
 		}
-		curCharacter = daAnim;
 
 		var index:Int = -1;
 		if (char != null)
@@ -64,11 +70,19 @@ class CharacterEditorState extends MusicBeatState
 		char = new Character(0, 0, daAnim, daAnim.startsWith('bf'));
 		char.screenCenter();
 		char.debugMode = true;
-		if (index > -1)
+		if (index < 0)
 			add(char);
 		else
 			insert(index, char);
 
+		curAnim = 0;
+
+		regenList();
+		playCurAnim();
+	}
+
+	function regenList()
+	{
 		var animList:String = '';
 		for (i in 0...char.data.animations.length)
 		{
@@ -88,6 +102,101 @@ class CharacterEditorState extends MusicBeatState
 			if (i < char.data.animations.length)
 				animList += '\n';
 		}
-		textAnim.text = animList;
+		dumbText.text = animList;
+	}
+
+	function playCurAnim(updateTextAnim:Bool = true)
+	{
+		var name:String = char.data.animations[curAnim].name;
+		char.playAnim(name, true);
+
+		if (updateTextAnim)
+		{
+			var anim = char.animation.getByName(name);
+			if (anim == null || anim.frames.length < 1)
+				name += ' (ERROR!)';
+			textAnim.text = name;
+		}
+	}
+
+	override function update(elapsed:Float)
+	{
+		var holdShift:Bool = FlxG.keys.pressed.SHIFT;
+
+		if (FlxG.keys.justPressed.R)
+			FlxG.camera.zoom = 1;
+
+		if (FlxG.keys.pressed.E && FlxG.camera.zoom < 3)
+		{
+			FlxG.camera.zoom += elapsed * FlxG.camera.zoom;
+			if (FlxG.camera.zoom > 3)
+				FlxG.camera.zoom = 3;
+		}
+		if (FlxG.keys.pressed.Q && FlxG.camera.zoom > 0.1)
+		{
+			FlxG.camera.zoom -= elapsed * FlxG.camera.zoom;
+			if (FlxG.camera.zoom < 0.1)
+				FlxG.camera.zoom = 0.1;
+		}
+
+		if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
+		{
+			var addToCam:Float = 500 * elapsed;
+			if (holdShift)
+				addToCam *= 4;
+
+			if (FlxG.keys.pressed.I)
+				camFollow.y -= addToCam;
+			else if (FlxG.keys.pressed.K)
+				camFollow.y += addToCam;
+
+			if (FlxG.keys.pressed.J)
+				camFollow.x -= addToCam;
+			else if (FlxG.keys.pressed.L)
+				camFollow.x += addToCam;
+		}
+
+		if (char.data.animations.length > 0)
+		{
+			if (FlxG.keys.justPressed.SPACE || FlxG.keys.justPressed.W || FlxG.keys.justPressed.S)
+			{
+				if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S)
+				{
+					if (FlxG.keys.justPressed.W)
+						curAnim--;
+					if (FlxG.keys.justPressed.S)
+						curAnim++;
+
+					if (curAnim < 0)
+						curAnim = char.data.animations.length - 1;
+					if (curAnim >= char.data.animations.length)
+						curAnim = 0;
+				}
+
+				playCurAnim(!FlxG.keys.justPressed.SPACE);
+			}
+
+			var controlArray:Array<Bool> = [
+				FlxG.keys.justPressed.LEFT,
+				FlxG.keys.justPressed.RIGHT,
+				FlxG.keys.justPressed.UP,
+				FlxG.keys.justPressed.DOWN
+			];
+			for (i in 0...controlArray.length)
+			{
+				if (controlArray[i])
+				{
+					char.data.animations[curAnim].offset[i > 1 ? 1 : 0] += (i % 2 == 1 ? -1 : 1) * (holdShift ? 10 : 1);
+
+					var anim = char.data.animations[curAnim];
+					char.addOffset(anim.name, anim.offset[0], anim.offset[1]);
+					char.playAnim(anim.name);
+				}
+			}
+			if (controlArray.contains(true))
+				regenList();
+		}
+
+		super.update(elapsed);
 	}
 }
