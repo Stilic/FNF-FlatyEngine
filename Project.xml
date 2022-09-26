@@ -102,6 +102,7 @@
 	<haxelib name="flixel" />
 	<haxelib name="flixel-addons" />
 	<haxelib name="flixel-ui" />
+	<haxelib name="flxanimate" />
 
 	<haxelib name="polymod" if="desktop" />
 	<haxelib name="discord_rpc" if="desktop" />
