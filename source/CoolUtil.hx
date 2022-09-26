@@ -28,6 +28,13 @@ class CoolUtil
 		return daList;
 	}
 
+	public static function resetMusic(fade:Bool = false)
+	{
+		FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+		if (fade)
+			FlxG.sound.music.fadeIn(4, 0, 0.7);
+	}
+
 	public static function numberArray(max:Int, ?min = 0):Array<Int>
 	{
 		var dumbArray:Array<Int> = [];

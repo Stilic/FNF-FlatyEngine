@@ -1,7 +1,7 @@
 package;
 
-import shaderslmfao.BuildingShaders;
-import shaderslmfao.ColorSwap;
+import shaders.GridPlane;
+import shaders.ColorSwap;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
@@ -30,12 +30,10 @@ class TitleState extends MusicBeatState
 	var lastBeat:Int = 0;
 
 	var swagShader:ColorSwap;
-	var alphaShader:BuildingShaders;
 
 	override public function create():Void
 	{
 		swagShader = new ColorSwap();
-		alphaShader = new BuildingShaders();
 
 		if (curWacky == null)
 			curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -56,10 +54,7 @@ class TitleState extends MusicBeatState
 	function startIntro()
 	{
 		if (!initialized)
-		{
-			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
-			FlxG.sound.music.fadeIn(4, 0, 0.7);
-		}
+			CoolUtil.resetMusic(true);
 
 		startedIntro = true;
 

@@ -1,7 +1,7 @@
 package;
 
 import flixel.math.FlxPoint;
-import shaderslmfao.ColorSwap;
+import shaders.ColorSwap;
 
 using StringTools;
 

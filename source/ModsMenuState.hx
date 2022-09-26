@@ -30,8 +30,8 @@ class ModsMenuState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
-		if (!FlxG.sound.music.playing)
-			FlxG.sound.playMusic(Paths.music('freakyMenu'));
+		if (FlxG.sound.music == null)
+			CoolUtil.resetMusic();
 
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		add(bg);

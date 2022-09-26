@@ -48,23 +48,13 @@ class FreeplayState extends MusicBeatState
 			songs.push(new SongMetadata(initSonglist[i], 1, 'gf'));
 		}
 
-		/* 
-			if (FlxG.sound.music != null)
-			{
-				if (!FlxG.sound.music.playing)
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
-			}
-		 */
-
 		#if discord_rpc
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
-		if (!FlxG.sound.music.playing)
-		{
-			FlxG.sound.playMusic(Paths.music('freakyMenu'));
-		}
+		if (FlxG.sound.music == null)
+			CoolUtil.resetMusic();
 
 		if (StoryMenuState.weekUnlocked[2])
 			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);

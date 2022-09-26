@@ -11,12 +11,10 @@ import flixel.util.FlxColor;
 
 class ControlsMenu extends Page
 {
-	public static var controlList:Array<Control> = Control.createAll();
-	public static var controlGroups:Array<Array<Control>> = [
+	var controlGroups:Array<Array<Control>> = [
 		[NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT],
 		[UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK]
 	];
-
 	var currentDevice:Device = Keys;
 	var deviceList:TextMenuList;
 	var deviceListSelected:Bool = false;
@@ -66,7 +64,7 @@ class ControlsMenu extends Page
 		}
 		var ypos:Int = (deviceList == null) ? 30 : 120;
 		var curSection:String = null;
-		for (ctrl in controlList)
+		for (ctrl in Control.createAll())
 		{
 			var name:String = ctrl.getName();
 			if (curSection != 'UI_' && name.indexOf('UI_') == 0)

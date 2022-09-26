@@ -2,7 +2,6 @@ package;
 
 import haxe.Json;
 import ui.PreferencesMenu;
-import Section.SwagSection;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxColor;

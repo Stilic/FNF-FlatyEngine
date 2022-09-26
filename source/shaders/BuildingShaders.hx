@@ -1,6 +1,26 @@
-package shaderslmfao;
+package shaders;
 
 import flixel.system.FlxAssets.FlxShader;
+
+class BuildingShaders
+{
+	public var shader(default, null):BuildingShader = new BuildingShader();
+
+	public function new():Void
+	{
+		reset();
+	}
+
+	public function update(elapsed:Float):Void
+	{
+		shader.alphaShit.value[0] += elapsed;
+	}
+
+	public function reset():Void
+	{
+		shader.alphaShit.value[0] = 0;
+	}
+}
 
 class BuildingShader extends FlxShader
 {

@@ -67,11 +67,8 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
-		if (FlxG.sound.music != null)
-		{
-			if (!FlxG.sound.music.playing)
-				FlxG.sound.playMusic(Paths.music('freakyMenu'));
-		}
+		if (FlxG.sound.music == null)
+			CoolUtil.resetMusic();
 
 		persistentUpdate = persistentDraw = true;
 

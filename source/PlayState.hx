@@ -7,9 +7,7 @@ import vlc.MP4Handler;
 import Discord.DiscordClient;
 #end
 import Conductor.Rating;
-import Section.SwagSection;
 import Song.SwagSong;
-import Controls.Control;
 import openfl.events.KeyboardEvent;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -30,7 +28,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 import flixel.input.gamepad.FlxGamepad;
-import shaderslmfao.BuildingShaders;
+import shaders.BuildingShaders;
 import ui.PreferencesMenu;
 
 using StringTools;
@@ -105,7 +103,6 @@ class PlayState extends MusicBeatState
 	var santa:FlxSprite;
 
 	var bgGirls:BackgroundGirls;
-	var wiggleShit:WiggleEffect = new WiggleEffect();
 
 	var tankWatchtower:BGSprite;
 	var tankGround:BGSprite;
@@ -899,7 +896,7 @@ class PlayState extends MusicBeatState
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 
-		for (dir in inputDirections)
+		for (dir in Controls.noteDirections)
 			keyBinds.push(controls.getInputsFor(dir, Keys));
 
 		super.create();
@@ -1617,7 +1614,7 @@ class PlayState extends MusicBeatState
 
 			if (storyPlaylist.length <= 0)
 			{
-				FlxG.sound.playMusic(Paths.music('freakyMenu'));
+				CoolUtil.resetMusic();
 
 				MusicBeatState.switchState(new StoryMenuState());
 
@@ -1675,6 +1672,7 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
+			CoolUtil.resetMusic();
 			trace('WENT BACK TO FREEPLAY??');
 			MusicBeatState.switchState(new FreeplayState());
 		}
@@ -1878,8 +1876,6 @@ class PlayState extends MusicBeatState
 			cameraMovement(!leSection.mustHitSection, true);
 	}
 
-	public static final inputDirections:Array<Control> = [NOTE_LEFT, NOTE_DOWN, NOTE_UP, NOTE_RIGHT];
-
 	var keyBinds:Array<Array<Int>> = [];
 	var holdingArray:Array<Bool> = [];
 
@@ -1977,15 +1973,20 @@ class PlayState extends MusicBeatState
 		if (!playerStrumline.botplay)
 		{
 			var gamepad:FlxGamepad = null;
+			var binds:Array<Array<Int>> = [];
 			if (controls.gamepadsAdded.length > 0)
+			{
 				gamepad = FlxG.gamepads.getByID(controls.gamepadsAdded[0]);
+				for (direction in Controls.noteDirections)
+					binds.push(controls.getInputsFor(direction, Gamepad(gamepad.id)));
+			}
 
 			if (gamepad != null)
 			{
-				for (direction in inputDirections)
+				for (i in 0...binds.length)
 				{
-					if (gamepad.anyJustPressed(controls.getInputsFor(direction, Gamepad(gamepad.id))))
-						onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, controls.getInputsFor(direction, Keys)[0]));
+					if (gamepad.anyJustPressed(binds[i]))
+						onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keyBinds[i][0]));
 				}
 			}
 
@@ -2002,10 +2003,10 @@ class PlayState extends MusicBeatState
 
 			if (gamepad != null)
 			{
-				for (direction in inputDirections)
+				for (i in 0...binds.length)
 				{
-					if (gamepad.anyJustReleased(controls.getInputsFor(direction, Gamepad(gamepad.id))))
-						onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, controls.getInputsFor(direction, Keys)[0]));
+					if (gamepad.anyJustReleased(binds[i]))
+						onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keyBinds[i][0]));
 				}
 			}
 		}
@@ -2237,8 +2238,6 @@ class PlayState extends MusicBeatState
 			Conductor.changeBPM(section.bpm);
 			FlxG.log.add('CHANGED BPM!');
 		}
-
-		wiggleShit.update(Conductor.crochet);
 
 		if (PreferencesMenu.getPref('camera-zoom'))
 		{

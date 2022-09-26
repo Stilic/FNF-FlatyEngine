@@ -103,6 +103,8 @@ class Controls extends FlxActionSet
 	var _pause = new FlxActionDigital(Action.PAUSE);
 	var _reset = new FlxActionDigital(Action.RESET);
 
+	public static var noteDirections:Array<Control> = [NOTE_LEFT, NOTE_DOWN, NOTE_UP, NOTE_RIGHT];
+
 	public var gamepadsAdded:Array<Int> = [];
 	public var keyboardScheme:KeyboardScheme = KeyboardScheme.None;
 
@@ -508,11 +510,9 @@ class Controls extends FlxActionSet
 		});
 	}
 
-	public function getInputsFor(control:Control, device:Device, ?list:Array<Int>):Array<Int>
+	public function getInputsFor(control:Control, device:Device):Array<Int>
 	{
-		if (list == null)
-			list = [];
-
+		var list:Array<Int> = [];
 		switch (device)
 		{
 			case Keys:

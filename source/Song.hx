@@ -1,6 +1,5 @@
 package;
 
-import Section.SwagSection;
 import haxe.Json;
 import openfl.utils.Assets;
 
