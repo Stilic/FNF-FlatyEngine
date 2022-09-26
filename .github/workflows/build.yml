@@ -30,6 +30,7 @@ jobs:
           haxelib install flixel-tools
           haxelib install flixel-ui
           haxelib install flixel-addons
+          haxelib install flxanimate
           haxelib install hscript
           haxelib install polymod
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
@@ -60,6 +61,7 @@ jobs:
           haxelib install flixel-tools
           haxelib install flixel-ui
           haxelib install flixel-addons
+          haxelib install flxanimate
           haxelib install hxCodec
           haxelib install hscript
           haxelib install polymod
@@ -92,6 +94,7 @@ jobs:
           haxelib install flixel-tools
           haxelib install flixel-ui
           haxelib install flixel-addons
+          haxelib install flxanimate
           haxelib install hscript
           haxelib install polymod
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
@@ -124,8 +127,8 @@ jobs:
           haxelib install flixel-tools
           haxelib install flixel-ui
           haxelib install flixel-addons
+          haxelib install flxanimate
           haxelib install hxCodec
-          haxelib install hscript
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
       - name: Compile
         run: haxelib run lime build html5
