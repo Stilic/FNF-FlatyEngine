@@ -96,14 +96,12 @@ class Cache
 
 		AtlasText.fonts.clear();
 
-		// clearCache function is not that good, let's do the pussy stuff "manually"
+		// clearCache function isn't that good, let's do the pussy stuff "manually"
 		@:privateAccess
-		for (key => graphic in FlxG.bitmap._cache)
+		for (graphic in FlxG.bitmap._cache)
 		{
-			Assets.cache.removeBitmapData(key);
-			FlxG.bitmap._cache.remove(key);
-
 			graphic.bitmap.lock();
+
 			if (graphic.bitmap.__texture != null)
 			{
 				graphic.bitmap.__texture.dispose();
@@ -111,7 +109,7 @@ class Cache
 			}
 			graphic.bitmap.disposeImage();
 
-			graphic = FlxDestroyUtil.destroy(graphic);
+			FlxG.bitmap.remove(graphic);
 		}
 
 		#if cpp
@@ -140,27 +138,27 @@ class CoolImage implements IFlxDestroyable
 			bitmap.lock();
 			var texture = FlxG.stage.context3D.createRectangleTexture(bitmap.width, bitmap.height, BGRA, true);
 			texture.uploadFromBitmapData(bitmap);
-			bitmap.dispose();
 			bitmap.disposeImage();
+			bitmap = FlxDestroyUtil.dispose(bitmap);
 			bitmap = BitmapData.fromTexture(texture);
 		}
 
 		graphic = FlxGraphic.fromBitmapData(bitmap, false, null, false);
 		graphic.persist = true;
-		graphic.destroyOnNoUse = false;
 	}
 
 	public function destroy()
 	{
 		graphic.bitmap.lock();
+
 		@:privateAccess
 		if (graphic.bitmap.__texture != null)
 		{
 			graphic.bitmap.__texture.dispose();
 			graphic.bitmap.__texture = null;
 		}
-
 		graphic.bitmap.disposeImage();
+
 		graphic = FlxDestroyUtil.destroy(graphic);
 	}
 }
