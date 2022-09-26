@@ -132,7 +132,7 @@ class CoolImage implements IFlxDestroyable
 	{
 		this.path = path;
 
-		var bitmap = Assets.getBitmapData(path, false);
+		var bitmap = Assets.getBitmapData(path, !storeInGPU);
 		if (storeInGPU)
 		{
 			bitmap.lock();
