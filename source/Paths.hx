@@ -139,18 +139,17 @@ class Paths
 	public static function returnSound(key:String, ?library:String, stream:Bool = false)
 	{
 		var path:String = getPath('$key.$SOUND_EXT', SOUND, library);
-		#if lime_vorbis
-		var sound:Sound;
-		if (stream)
-			sound = Cache.getMusic(path);
-		else
-			sound = Cache.getSound(path);
-		#else
-		var sound:Sound = Cache.getSound(path);
-		#end
-
-		if (sound != null)
-			return sound;
+		if (OpenFlAssets.exists(path, SOUND))
+		{
+			#if lime_vorbis
+			if (stream && !OpenFlAssets.cache.hasSound(path))
+				return Cache.getMusic(path);
+			else
+				return Cache.getSound(path);
+			#else
+			return Cache.getSound(path);
+			#end
+		}
 
 		trace('oh no ${key} is returning null NOOOO');
 		return null;

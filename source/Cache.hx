@@ -132,12 +132,13 @@ class CoolImage implements IFlxDestroyable
 	{
 		this.path = path;
 
-		var bitmap = Assets.getBitmapData(path, !gpuCache);
+		var bitmap = Assets.getBitmapData(path);
 		if (gpuCache)
 		{
 			bitmap.lock();
 			var texture = FlxG.stage.context3D.createRectangleTexture(bitmap.width, bitmap.height, BGRA, true);
 			texture.uploadFromBitmapData(bitmap);
+			Assets.cache.removeBitmapData(path);
 			bitmap.disposeImage();
 			bitmap = FlxDestroyUtil.dispose(bitmap);
 			bitmap = BitmapData.fromTexture(texture);
