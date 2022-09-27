@@ -134,17 +134,14 @@ class CoolImage implements IFlxDestroyable
 
 	public function destroy()
 	{
-		if (graphic != null)
-		{
-			graphic.bitmap.lock();
+		graphic.bitmap.lock();
 
-			@:privateAccess
-			if (graphic.bitmap.__texture != null)
-				graphic.bitmap.__texture.dispose();
-			graphic.bitmap.disposeImage();
+		@:privateAccess
+		if (graphic.bitmap.__texture != null)
+			graphic.bitmap.__texture.dispose();
+		graphic.bitmap.disposeImage();
 
-			FlxG.bitmap.remove(graphic);
-			graphic = null;
-		}
+		FlxG.bitmap.remove(graphic);
+		graphic = null;
 	}
 }
