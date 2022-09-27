@@ -22,7 +22,7 @@ using StringTools;
 
 class Cache
 {
-	static final dumpExclusions:Array<String> = ['music/freakyMenu.${Paths.SOUND_EXT}', 'music/breakfast.${Paths.SOUND_EXT}'];
+	public static var dumpExclusions:Array<String> = ['music/freakyMenu.${Paths.SOUND_EXT}', 'music/breakfast.${Paths.SOUND_EXT}'];
 
 	public static function isExcludedFromDump(suffix:String)
 	{
