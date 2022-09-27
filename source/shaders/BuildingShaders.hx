@@ -8,7 +8,7 @@ class BuildingShaders
 
 	public function new():Void
 	{
-		reset();
+		shader.alphaShit.value = [0];
 	}
 
 	public function update(elapsed:Float):Void

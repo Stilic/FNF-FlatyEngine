@@ -9,13 +9,13 @@ class GridPlane
 
 	public function new(ratio:Float = 30, color:FlxColor = FlxColor.BLACK):Void
 	{
-		setRatio(ratio);
+		shader.ratio.value = [ratio];
 		setColor(color);
 	}
 
 	public function setRatio(ratio:Float):Void
 	{
-		shader.ratio.value = [ratio];
+		shader.ratio.value[0] = ratio;
 	}
 
 	public function setColor(color:FlxColor):Void
