@@ -98,6 +98,8 @@ class Main extends Sprite
 	// crash handler made by sqirra-rng
 	static function onCrash(e:UncaughtErrorEvent):Void
 	{
+		DiscordClient.shutdown();
+
 		var errMsg:String = '';
 
 		for (stackItem in CallStack.exceptionStack(true))
@@ -120,7 +122,6 @@ class Main extends Sprite
 		Sys.println(errMsg);
 		Application.current.window.alert(errMsg, 'Error!');
 
-		DiscordClient.shutdown();
 		Sys.exit(1);
 	}
 	#end

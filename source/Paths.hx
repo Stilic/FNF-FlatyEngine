@@ -108,7 +108,7 @@ class Paths
 
 	inline static public function font(key:String)
 	{
-		return 'assets/fonts/$key';
+		return getPreloadPath('fonts/$key');
 	}
 
 	inline static public function video(key:String, ?library:String)

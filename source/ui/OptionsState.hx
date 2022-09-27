@@ -16,6 +16,8 @@ class OptionsState extends MusicBeatState
 
 	override function create()
 	{
+		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
+			CoolUtil.resetMusic();
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = 0xFFEA71FD;
 		bg.setGraphicSize(Std.int(bg.width * 1.1));

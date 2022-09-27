@@ -95,9 +95,7 @@ class PauseSubState extends MusicBeatSubstate
 	private function regenMenu()
 	{
 		while (grpMenuShit.members.length > 0)
-		{
 			grpMenuShit.remove(grpMenuShit.members[0], true);
-		}
 
 		for (i in 0...menuItems.length)
 		{
@@ -155,11 +153,15 @@ class PauseSubState extends MusicBeatSubstate
 						MusicBeatState.switchState(new StoryMenuState());
 					else
 						MusicBeatState.switchState(new FreeplayState());
+					CoolUtil.resetMusic();
 
 				case "EASY" | "NORMAL" | "HARD":
-					PlayState.SONG = Song.loadFromJson(Highscore.formatSong(PlayState.SONG.song.toLowerCase(), curSelected),
-						PlayState.SONG.song.toLowerCase());
-					PlayState.storyDifficulty = curSelected;
+					if (curSelected != PlayState.storyDifficulty)
+					{
+						PlayState.SONG = Song.loadFromJson(Highscore.formatSong(PlayState.SONG.song.toLowerCase(), curSelected),
+							PlayState.SONG.song.toLowerCase());
+						PlayState.storyDifficulty = curSelected;
+					}
 					MusicBeatState.resetState();
 				case "BACK":
 					menuItems = pauseOG;

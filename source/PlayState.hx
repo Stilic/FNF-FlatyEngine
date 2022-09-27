@@ -897,7 +897,7 @@ class PlayState extends MusicBeatState
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 
 		for (dir in Controls.noteDirections)
-			keyBinds.push(controls.getInputsFor(dir, Keys));
+			keysArray.push(controls.getInputsFor(dir, Keys));
 
 		super.create();
 	}
@@ -1614,9 +1614,9 @@ class PlayState extends MusicBeatState
 
 			if (storyPlaylist.length <= 0)
 			{
-				CoolUtil.resetMusic();
-
 				MusicBeatState.switchState(new StoryMenuState());
+
+				CoolUtil.resetMusic();
 
 				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
 
@@ -1672,9 +1672,9 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			CoolUtil.resetMusic();
 			trace('WENT BACK TO FREEPLAY??');
 			MusicBeatState.switchState(new FreeplayState());
+			CoolUtil.resetMusic();
 		}
 	}
 
@@ -1876,14 +1876,14 @@ class PlayState extends MusicBeatState
 			cameraMovement(!leSection.mustHitSection, true);
 	}
 
-	var keyBinds:Array<Array<Int>> = [];
+	var keysArray:Array<Array<Int>> = [];
 	var holdingArray:Array<Bool> = [];
 
 	private function getKeyFromCode(keyCode:Int):Int
 	{
-		for (i in 0...keyBinds.length)
+		for (i in 0...keysArray.length)
 		{
-			for (bind in keyBinds[i])
+			for (bind in keysArray[i])
 			{
 				if (bind == keyCode)
 					return i;
@@ -1972,24 +1972,6 @@ class PlayState extends MusicBeatState
 	{
 		if (!playerStrumline.botplay)
 		{
-			var gamepad:FlxGamepad = null;
-			var binds:Array<Array<Int>> = [];
-			if (controls.gamepadsAdded.length > 0)
-			{
-				gamepad = FlxG.gamepads.getByID(controls.gamepadsAdded[0]);
-				for (direction in Controls.noteDirections)
-					binds.push(controls.getInputsFor(direction, Gamepad(gamepad.id)));
-			}
-
-			if (gamepad != null)
-			{
-				for (i in 0...binds.length)
-				{
-					if (gamepad.anyJustPressed(binds[i]))
-						onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keyBinds[i][0]));
-				}
-			}
-
 			if (generatedMusic)
 			{
 				playerStrumline.holdsGroup.forEachAlive(function(daNote:Note)
@@ -2001,12 +1983,16 @@ class PlayState extends MusicBeatState
 
 			boyfriend.noHoldIdle = holdingArray.contains(true) || boyfriend.animation.curAnim.name.endsWith('miss');
 
-			if (gamepad != null)
+			if (controls.gamepadsAdded.length > 0)
 			{
-				for (i in 0...binds.length)
+				var gamepad:FlxGamepad = FlxG.gamepads.getByID(controls.gamepadsAdded[0]);
+				for (i in 0...Controls.noteDirections.length)
 				{
-					if (gamepad.anyJustReleased(binds[i]))
-						onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keyBinds[i][0]));
+					var bind:Array<Int> = controls.getInputsFor(Controls.noteDirections[i], Gamepad(gamepad.id));
+					if (gamepad.anyJustPressed(bind))
+						onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keysArray[i][0]));
+					if (gamepad.anyJustReleased(bind))
+						onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keysArray[i][0]));
 				}
 			}
 		}

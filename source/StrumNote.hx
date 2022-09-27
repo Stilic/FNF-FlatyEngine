@@ -114,11 +114,9 @@ class StrumNote extends FNFSprite
 		super.playAnim(AnimName, Force, Reversed, Frame);
 
 		var leOffset:FlxPoint = offset.copyTo();
-
 		centerOffsets();
-		centerOrigin();
-
 		offset.addPoint(leOffset);
+		centerOrigin();
 		origin.addPoint(leOffset);
 	}
 

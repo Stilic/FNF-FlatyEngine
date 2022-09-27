@@ -30,7 +30,7 @@ class CoolUtil
 
 	public static function resetMusic(fade:Bool = false)
 	{
-		FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+		FlxG.sound.playMusic(Paths.music('freakyMenu'), fade ? 0 : 1);
 		if (fade)
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 	}

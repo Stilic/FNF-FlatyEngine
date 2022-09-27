@@ -76,6 +76,8 @@ class Cache
 	// it clears EVERYTHING!!!! (even the aggresive flixel cache)
 	public static function clear()
 	{
+		AtlasText.clearCache();
+
 		for (image in images)
 		{
 			if (!isExcludedFromDump(image.path))
@@ -89,27 +91,9 @@ class Cache
 		{
 			if (!isExcludedFromDump(key))
 			{
-				Assets.cache.removeSound(key);
 				sounds.remove(key);
+				Assets.cache.removeSound(key);
 			}
-		}
-
-		AtlasText.fonts.clear();
-
-		// clearCache function isn't that good, let's do the pussy stuff "manually"
-		@:privateAccess
-		for (graphic in FlxG.bitmap._cache)
-		{
-			graphic.bitmap.lock();
-
-			if (graphic.bitmap.__texture != null)
-			{
-				graphic.bitmap.__texture.dispose();
-				graphic.bitmap.__texture = null;
-			}
-			graphic.bitmap.disposeImage();
-
-			FlxG.bitmap.remove(graphic);
 		}
 
 		#if cpp
@@ -138,28 +122,29 @@ class CoolImage implements IFlxDestroyable
 			bitmap.lock();
 			var texture = FlxG.stage.context3D.createRectangleTexture(bitmap.width, bitmap.height, BGRA, true);
 			texture.uploadFromBitmapData(bitmap);
-			Assets.cache.removeBitmapData(path);
 			bitmap.disposeImage();
 			bitmap = FlxDestroyUtil.dispose(bitmap);
 			bitmap = BitmapData.fromTexture(texture);
+			Assets.cache.setBitmapData(path, bitmap);
 		}
 
-		graphic = FlxGraphic.fromBitmapData(bitmap, false, null, false);
+		graphic = FlxGraphic.fromBitmapData(bitmap, false, path);
 		graphic.persist = true;
 	}
 
 	public function destroy()
 	{
-		graphic.bitmap.lock();
-
-		@:privateAccess
-		if (graphic.bitmap.__texture != null)
+		if (graphic != null)
 		{
-			graphic.bitmap.__texture.dispose();
-			graphic.bitmap.__texture = null;
-		}
-		graphic.bitmap.disposeImage();
+			graphic.bitmap.lock();
 
-		graphic = FlxDestroyUtil.destroy(graphic);
+			@:privateAccess
+			if (graphic.bitmap.__texture != null)
+				graphic.bitmap.__texture.dispose();
+			graphic.bitmap.disposeImage();
+
+			FlxG.bitmap.remove(graphic);
+			graphic = null;
+		}
 	}
 }

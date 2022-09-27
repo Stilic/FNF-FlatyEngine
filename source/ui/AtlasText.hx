@@ -1,12 +1,22 @@
 package ui;
 
 import flixel.util.FlxStringUtil;
+import flixel.util.FlxDestroyUtil;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 {
-	public static var fonts:Map<String, AtlasFontData> = new Map<String, AtlasFontData>();
+	static var fonts:Map<String, AtlasFontData> = new Map<String, AtlasFontData>();
+
+	public static function clearCache()
+	{
+		for (key => font in fonts)
+		{
+			fonts.remove(key);
+			font = FlxDestroyUtil.destroy(font);
+		}
+	}
 
 	public var text(default, set):String = '';
 	public var font:AtlasFontData;
@@ -14,9 +24,7 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 	override public function new(?x:Float = 0, ?y:Float = 0, text:String, fontType:String = AtlasFont.Default)
 	{
 		if (!fonts.exists(fontType))
-		{
 			fonts.set(fontType, new AtlasFontData(fontType));
-		}
 		font = fonts.get(fontType);
 		super(x, y);
 		this.text = text;
@@ -114,7 +122,7 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 	}
 }
 
-class AtlasFontData
+class AtlasFontData implements IFlxDestroyable
 {
 	static var upperChar:EReg = new EReg('^[A-Z]\\d+$', '');
 	static var lowerChar:EReg = new EReg('^[a-z]\\d+$', '');
@@ -133,17 +141,16 @@ class AtlasFontData
 		{
 			maxHeight = Math.max(maxHeight, framedata.frame.height);
 			if (!hasUpper)
-			{
 				hasUpper = upperChar.match(framedata.name);
-			}
 			if (!hasLower)
-			{
 				hasLower = lowerChar.match(framedata.name);
-			}
 		}
 		if (hasUpper != hasLower)
-		{
 			caseAllowed = hasUpper ? Upper : Lower;
-		}
+	}
+
+	public function destroy()
+	{
+		atlas = FlxDestroyUtil.destroy(atlas);
 	}
 }
