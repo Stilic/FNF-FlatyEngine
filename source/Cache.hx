@@ -123,7 +123,7 @@ class CoolImage implements IFlxDestroyable
 			var texture = FlxG.stage.context3D.createRectangleTexture(bitmap.width, bitmap.height, BGRA, true);
 			texture.uploadFromBitmapData(bitmap);
 			bitmap.disposeImage();
-			bitmap = FlxDestroyUtil.dispose(bitmap);
+			bitmap.dispose();
 			bitmap = BitmapData.fromTexture(texture);
 			Assets.cache.setBitmapData(path, bitmap);
 		}
