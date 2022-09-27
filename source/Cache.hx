@@ -1,14 +1,5 @@
 package;
 
-#if cpp
-import cpp.NativeGc;
-#elseif hl
-import hl.Gc;
-#elseif java
-import java.vm.Gc;
-#elseif neko
-import neko.vm.Gc;
-#end
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.util.FlxDestroyUtil;
@@ -86,7 +77,6 @@ class Cache
 				image = FlxDestroyUtil.destroy(image);
 			}
 		}
-
 		for (key in sounds.keys())
 		{
 			if (!isExcludedFromDump(key))
@@ -96,14 +86,7 @@ class Cache
 			}
 		}
 
-		#if cpp
-		NativeGc.compact();
-		NativeGc.run(true);
-		#elseif hl
-		Gc.major();
-		#elseif (java || neko)
-		Gc.run(true);
-		#end
+		CoolUtil.runGC();
 	}
 }
 

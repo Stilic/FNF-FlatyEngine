@@ -88,8 +88,8 @@ class Main extends Sprite
 
 		#if cpp
 		NativeGc.enable(true);
-		NativeGc.run(true);
 		#end
+		CoolUtil.runGC();
 	}
 
 	#if CRASH_HANDLER

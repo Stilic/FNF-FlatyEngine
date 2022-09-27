@@ -32,6 +32,7 @@ class MusicBeatState extends FlxUIState
 		}
 		FlxTransitionableState.skipNextTransIn = false;
 		FlxG.switchState(nextState);
+		CoolUtil.runGC();
 	}
 
 	inline public static function resetState()

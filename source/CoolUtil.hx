@@ -1,5 +1,14 @@
 package;
 
+#if cpp
+import cpp.NativeGc;
+#elseif hl
+import hl.Gc;
+#elseif java
+import java.vm.Gc;
+#elseif neko
+import neko.vm.Gc;
+#end
 import flixel.FlxG;
 import flixel.math.FlxMath;
 import flixel.util.FlxSort;
@@ -28,7 +37,7 @@ class CoolUtil
 		return daList;
 	}
 
-	public static function resetMusic(fade:Bool = false)
+	public static function resetMusic(fade:Bool = false):Void
 	{
 		FlxG.sound.playMusic(Paths.music('freakyMenu'), fade ? 0 : 1);
 		if (fade)
@@ -55,6 +64,18 @@ class CoolUtil
 			tempMult *= 10;
 		var newValue:Float = Math.floor(value * tempMult);
 		return newValue / tempMult;
+	}
+
+	inline public static function runGC():Void
+	{
+		#if cpp
+		NativeGc.compact();
+		NativeGc.run(true);
+		#elseif hl
+		Gc.major();
+		#elseif (java || neko)
+		Gc.run(true);
+		#end
 	}
 
 	inline public static function sortNotes(Order:Int, Obj1:Note, Obj2:Note):Int

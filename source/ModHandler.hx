@@ -3,6 +3,7 @@ package;
 #if sys
 import sys.FileSystem;
 #end
+import lime.utils.Assets;
 import flixel.util.FlxSave;
 import polymod.Polymod;
 
@@ -77,22 +78,23 @@ class ModHandler
 			if (mod.enabled)
 				dirs.push(mod.metadata.id);
 		}
+
+		var libs:Map<String, String> = new Map<String, String>();
+		libs.set('default', './preload');
+		libs.set('shared', './');
+		@:privateAccess
+		for (lib in Assets.libraryPaths.keys())
+		{
+			if (!libs.exists(lib))
+				libs.set(lib, './$lib');
+		}
+
 		Polymod.init({
 			modRoot: MOD_DIRECTORY,
 			dirs: dirs,
-			framework: FLIXEL,
+			framework: OPENFL,
 			frameworkParams: {
-				assetLibraryPaths: [
-					'default' => './preload',
-					'songs' => 'songs',
-					'shared' => './',
-					'week2' => './week2',
-					'week3' => './week3',
-					'week4' => './week4',
-					'week5' => './week5',
-					'week6' => './week6',
-					'week7' => './week7'
-				]
+				assetLibraryPaths: libs
 			}
 		});
 	}
