@@ -17,6 +17,7 @@ class NoteSplash extends FlxSprite
 		animation.addByPrefix('note2-1', 'note impact 2 green', 24, false);
 		animation.addByPrefix('note0-1', 'note impact 2 purple', 24, false);
 		animation.addByPrefix('note3-1', 'note impact 2 red', 24, false);
+		antialiasing = true;
 		setupNoteSplash(x, y, notedata);
 	}
 
