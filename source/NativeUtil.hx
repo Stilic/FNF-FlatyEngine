@@ -25,9 +25,8 @@ private class BuildFix
 	@:functionCode('
         int darkMode = 1;
         HWND window = GetActiveWindow();
-        if (S_OK != DwmSetWindowAttribute(window, 19, &darkMode, sizeof(darkMode))) {
+        if (S_OK != DwmSetWindowAttribute(window, 19, &darkMode, sizeof(darkMode)))
             DwmSetWindowAttribute(window, 20, &darkMode, sizeof(darkMode));
-        }
         UpdateWindow(window);
     ')
 	public static function enabledDarkMode()
