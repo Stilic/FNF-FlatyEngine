@@ -1532,18 +1532,25 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		while (unspawnNotes[0] != null)
+		if (unspawnNotes[0] != null)
 		{
-			if (unspawnNotes[0].strumTime - Conductor.songPosition < 1800 / SONG.speed)
+			var time:Float = 2000;
+			if (SONG.speed < 1)
+				time /= SONG.speed;
+
+			while (unspawnNotes[0] != null)
 			{
-				if (unspawnNotes[0].mustPress)
-					playerStrumline.addNote(unspawnNotes[0]);
+				if (unspawnNotes[0].strumTime - Conductor.songPosition < time)
+				{
+					if (unspawnNotes[0].mustPress)
+						playerStrumline.addNote(unspawnNotes[0]);
+					else
+						opponentStrumline.addNote(unspawnNotes[0]);
+					unspawnNotes.shift();
+				}
 				else
-					opponentStrumline.addNote(unspawnNotes[0]);
-				unspawnNotes.shift();
+					break;
 			}
-			else
-				break;
 		}
 
 		if (!inCutscene && startedCountdown)

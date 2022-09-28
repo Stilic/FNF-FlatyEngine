@@ -76,6 +76,7 @@ class Strumline extends FlxGroup
 		super.update(elapsed);
 
 		var roundedSpeed:Float = FlxMath.roundDecimal(PlayState.SONG.speed, 2);
+		var swagCalc:Float = Note.swagWidth / 2;
 		allNotes.forEachAlive(function(daNote:Note)
 		{
 			var shouldRemove:Bool = isOutsideScreen(daNote.strumTime);
@@ -99,25 +100,23 @@ class Strumline extends FlxGroup
 			// i am so fucking sorry for these if conditions
 			if (daNote.isSustainNote)
 			{
-				daNote.y += Note.swagWidth / 2;
+				daNote.y += swagCalc;
 				if (!strum.downscroll)
 					daNote.y -= Note.swagWidth / 1.65;
 				if (strum.downscroll && daNote.isSustainEnd && daNote.prevNote != null)
 				{
 					if (daNote.sustainEndOffset == Math.NEGATIVE_INFINITY)
-					{
-						daNote.sustainEndOffset = (daNote.prevNote.y - (daNote.y + daNote.height)) + 1;
-						if (!daNote.prevNote.isSustainNote)
-							daNote.sustainEndOffset += Note.swagWidth / 2.4;
-					}
+						daNote.sustainEndOffset = (daNote.prevNote.y - (daNote.y + daNote.height)) + 1.5;
 					else
 						daNote.y += daNote.sustainEndOffset;
+					if (!daNote.prevNote.isSustainNote)
+						daNote.y += swagCalc / roundedSpeed;
 				}
 				daNote.flipY = strum.downscroll;
 
 				if (strum.sustainReduce)
 				{
-					var center:Float = strum.y + Note.swagWidth / 2;
+					var center:Float = strum.y + swagCalc;
 					if (strum.downscroll)
 					{
 						if (daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= center
