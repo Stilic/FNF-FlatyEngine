@@ -64,7 +64,10 @@ class Prompt extends FlxSubState
 	{
 		while (buttons.members.length > 0)
 		{
-			buttons.remove(buttons.members[0], true).destroy();
+			var btn = buttons.members[0];
+			btn.kill();
+			buttons.remove(btn, true);
+			btn.destroy();
 		}
 		switch (style)
 		{

@@ -804,12 +804,18 @@ class ChartingState extends MusicBeatState
 	{
 		while (curRenderedNotes.members.length > 0)
 		{
-			curRenderedNotes.remove(curRenderedNotes.members[0], true);
+			var note = curRenderedNotes.members[0];
+			note.kill();
+			curRenderedNotes.remove(note, true);
+			note.destroy();
 		}
 
 		while (curRenderedSustains.members.length > 0)
 		{
-			curRenderedSustains.remove(curRenderedSustains.members[0], true);
+			var sustain = curRenderedSustains.members[0];
+			sustain.kill();
+			curRenderedSustains.remove(sustain, true);
+			sustain.destroy();
 		}
 
 		var sectionInfo:Array<Dynamic> = _song.notes[curSection].sectionNotes;

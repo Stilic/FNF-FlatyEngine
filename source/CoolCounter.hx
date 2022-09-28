@@ -1,11 +1,12 @@
 package;
 
-import openfl.Lib;
 import haxe.Timer;
+import openfl.Lib;
+import openfl.system.System;
 import openfl.events.Event;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
-import openfl.system.System;
+import flixel.FlxG;
 import flixel.math.FlxMath;
 
 class CoolCounter extends TextField
@@ -13,6 +14,7 @@ class CoolCounter extends TextField
 	public var showFPS:Bool = true;
 	public var showMemory:Bool = true;
 	public var showMemoryPeak:Bool = true;
+	public var showObjectCount:Bool = false;
 
 	var times:Array<Float> = [];
 	var memoryPeak:Float = 0;
@@ -29,9 +31,9 @@ class CoolCounter extends TextField
 		selectable = false;
 		mouseEnabled = false;
 
-		defaultTextFormat = new TextFormat("_sans", 13, color);
+		defaultTextFormat = new TextFormat('_sans', 13, color);
 		multiline = true;
-		text = "FPS: ";
+		text = 'FPS: ';
 
 		addEventListener(Event.ENTER_FRAME, onEnter);
 	}
@@ -50,17 +52,24 @@ class CoolCounter extends TextField
 
 		if (visible)
 		{
-			text = "";
+			var leText:String = '';
 
 			if (showFPS)
-				text += "FPS: " + times.length + "\n";
+				leText += 'FPS: ${times.length}\n';
 
 			if (showMemory)
 			{
-				text += "RAM: " + mem + "mb";
+				leText += 'RAM: ${mem}mb';
 				if (showMemoryPeak)
-					text += " / " + memoryPeak + "mb";
+					leText += ' / ${memoryPeak}mb\n';
+				else
+					leText += '\n';
 			}
+
+			if (showObjectCount)
+				leText += 'Objects: ${FlxG.state != null ? FlxG.state.members.length : 0}';
+
+			text = leText;
 		}
 	}
 }

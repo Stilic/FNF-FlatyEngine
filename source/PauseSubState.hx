@@ -95,7 +95,12 @@ class PauseSubState extends MusicBeatSubstate
 	private function regenMenu()
 	{
 		while (grpMenuShit.members.length > 0)
-			grpMenuShit.remove(grpMenuShit.members[0], true);
+		{
+			var text = grpMenuShit.members[0];
+			text.kill();
+			grpMenuShit.remove(text, true);
+			text.destroy();
+		}
 
 		for (i in 0...menuItems.length)
 		{

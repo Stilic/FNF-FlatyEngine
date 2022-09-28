@@ -244,8 +244,11 @@ class TitleState extends MusicBeatState
 	{
 		while (textGroup.members.length > 0)
 		{
-			credGroup.remove(textGroup.members[0], true);
-			textGroup.remove(textGroup.members[0], true);
+			var obj = textGroup.members[0];
+			obj.kill();
+			credGroup.remove(obj, true);
+			textGroup.remove(obj, true);
+			obj.destroy();
 		}
 	}
 

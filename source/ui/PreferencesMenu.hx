@@ -23,7 +23,8 @@ class PreferencesMenu extends Page
 		['gpu rendering', 'gpu-rendering', true],
 		#end
 		#if !mobile
-		['fps counter', 'fps-counter', true], ['memory counter', 'mem-counter', true], ['memory peak counter', 'mem-peak-counter', true]
+		['fps counter', 'fps-counter', true], ['memory counter', 'mem-counter', true], ['memory peak counter', 'mem-peak-counter', true],
+		['objects counter', 'obj-counter', false]
 		#end
 	];
 
@@ -49,7 +50,7 @@ class PreferencesMenu extends Page
 			#if sys
 			'gpu-rendering',
 			#end
-			#if !mobile 'fps-counter', 'mem-counter', 'mem-peak-counter' #end
+			#if !mobile 'fps-counter', 'mem-counter', 'mem-peak-counter', 'obj-counter' #end
 		]
 	];
 
@@ -174,28 +175,32 @@ class PreferencesMenu extends Page
 		preferences.set(identifier, value);
 		savePrefs();
 		checkboxes[items.selectedIndex].daValue = value;
-		// trace('toggled? ' + Std.string(getPref(identifier)));
+		// trace('toggled? ' + Std.string(value));
 		prefUpdate(identifier);
 	}
 
 	public static function prefUpdate(identifier:String)
 	{
+		var value:Dynamic = getPref(identifier);
 		switch (identifier)
 		{
 			#if (desktop || web)
 			case 'auto-pause':
-				FlxG.autoPause = getPref(identifier);
+				FlxG.autoPause = value;
 			#end
 			#if !mobile
 			case 'fps-counter':
 				if (Main.fpsCounter != null)
-					Main.fpsCounter.showFPS = getPref(identifier);
+					Main.fpsCounter.showFPS = value;
 			case 'mem-counter':
 				if (Main.fpsCounter != null)
-					Main.fpsCounter.showMemory = getPref(identifier);
+					Main.fpsCounter.showMemory = value;
 			case 'mem-peak-counter':
 				if (Main.fpsCounter != null)
-					Main.fpsCounter.showMemoryPeak = getPref(identifier);
+					Main.fpsCounter.showMemoryPeak = value;
+			case 'obj-counter':
+				if (Main.fpsCounter != null)
+					Main.fpsCounter.showObjectCount = value;
 			#end
 		}
 	}

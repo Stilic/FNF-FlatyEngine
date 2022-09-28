@@ -1792,6 +1792,8 @@ class PlayState extends MusicBeatState
 			FlxTween.tween(numScore, {alpha: 0}, 0.2, {
 				onComplete: function(tween:FlxTween)
 				{
+					numScore.kill();
+					remove(numScore, true);
 					numScore.destroy();
 				},
 				startDelay: Conductor.crochet * 0.002
@@ -1811,6 +1813,10 @@ class PlayState extends MusicBeatState
 		FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
 			onComplete: function(tween:FlxTween)
 			{
+				comboSpr.kill();
+				rating.kill();
+				remove(comboSpr, true);
+				remove(rating, true);
 				comboSpr.destroy();
 				rating.destroy();
 			},
