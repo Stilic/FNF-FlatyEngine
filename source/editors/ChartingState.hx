@@ -1,7 +1,9 @@
 package editors;
 
-import Conductor.BPMChangeEvent;
-import Song.SwagSong;
+import haxe.Json;
+import openfl.events.Event;
+import openfl.events.IOErrorEvent;
+import openfl.net.FileReference;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
@@ -18,10 +20,8 @@ import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
-import haxe.Json;
-import openfl.events.Event;
-import openfl.events.IOErrorEvent;
-import openfl.net.FileReference;
+import Conductor.BPMChangeEvent;
+import Song.SwagSong;
 
 using StringTools;
 
@@ -189,10 +189,7 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.volume = vol;
 		};
 
-		var saveButton:FlxButton = new FlxButton(110, 8, "Save", function()
-		{
-			saveLevel();
-		});
+		var saveButton:FlxButton = new FlxButton(110, 8, "Save", save);
 
 		var reloadSong:FlxButton = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Reload Audio", function()
 		{
@@ -204,7 +201,7 @@ class ChartingState extends MusicBeatState
 			loadJson(_song.song.toLowerCase());
 		});
 
-		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'load autosave', loadAutosave);
+		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, "Load Autosave", loadAutosave);
 
 		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 2);
 		stepperSpeed.value = _song.speed;
@@ -345,7 +342,9 @@ class ChartingState extends MusicBeatState
 		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
+		vocals = new FlxSound();
+		if (_song.needsVoices)
+			vocals.loadEmbedded(Paths.voices(daSong));
 		FlxG.sound.list.add(vocals);
 
 		FlxG.sound.music.pause();
@@ -638,6 +637,9 @@ class ChartingState extends MusicBeatState
 			changeSection(curSection + shiftThing);
 		if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A)
 			changeSection(curSection - shiftThing);
+
+		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.S)
+			save();
 
 		bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
 			+ " / "
@@ -1014,37 +1016,25 @@ class ChartingState extends MusicBeatState
 		FlxG.save.flush();
 	}
 
-	private function saveLevel()
+	private function save()
 	{
 		var json = {
 			"song": _song
 		};
 
-		var data:String = Json.stringify(json);
+		var data:String = Json.stringify(json, '\t');
 
-		if ((data != null) && (data.length > 0))
+		if (data != null && data.length > 0)
 		{
 			_file = new FileReference();
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data.trim(), _song.song.toLowerCase() + ".json");
+			_file.save(data, _song.song.toLowerCase() + ".json");
 		}
 	}
 
-	function onSaveComplete(_):Void
-	{
-		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
-		_file.removeEventListener(Event.CANCEL, onSaveCancel);
-		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-		_file = null;
-		FlxG.log.notice("Successfully saved LEVEL DATA.");
-	}
-
-	/**
-	 * Called when the save file dialog is cancelled.
-	 */
-	function onSaveCancel(_):Void
+	function onSaveComplete(_)
 	{
 		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
 		_file.removeEventListener(Event.CANCEL, onSaveCancel);
@@ -1052,15 +1042,19 @@ class ChartingState extends MusicBeatState
 		_file = null;
 	}
 
-	/**
-	 * Called if there is an error while saving the gameplay recording.
-	 */
-	function onSaveError(_):Void
+	function onSaveCancel(_)
 	{
 		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
 		_file.removeEventListener(Event.CANCEL, onSaveCancel);
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 		_file = null;
-		FlxG.log.error("Problem saving Level data");
+	}
+
+	function onSaveError(_)
+	{
+		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
+		_file.removeEventListener(Event.CANCEL, onSaveCancel);
+		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+		_file = null;
 	}
 }

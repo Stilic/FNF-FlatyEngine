@@ -1,5 +1,9 @@
 package editors;
 
+import haxe.Json;
+import openfl.events.Event;
+import openfl.events.IOErrorEvent;
+import openfl.net.FileReference;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -11,6 +15,8 @@ using StringTools;
 
 class CharacterEditorState extends MusicBeatState
 {
+	var _file:FileReference;
+
 	var char:Character;
 	var camFollow:FlxObject;
 
@@ -110,6 +116,7 @@ class CharacterEditorState extends MusicBeatState
 	function playCurAnim(updateTextAnim:Bool = true)
 	{
 		var name:String = char.data.animations[curAnim].name;
+
 		char.playAnim(name, true);
 
 		if (updateTextAnim)
@@ -199,6 +206,50 @@ class CharacterEditorState extends MusicBeatState
 				regenList();
 		}
 
+		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.S)
+			save();
+
+		if (FlxG.keys.justPressed.ESCAPE)
+			MusicBeatState.switchState(new PlayState());
+
 		super.update(elapsed);
+	}
+
+	function save()
+	{
+		var data:String = Json.stringify(char.data, '\t');
+
+		if (data != null && data.length > 0)
+		{
+			_file = new FileReference();
+			_file.addEventListener(Event.COMPLETE, onSaveComplete);
+			_file.addEventListener(Event.CANCEL, onSaveCancel);
+			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+			_file.save(data, char.curCharacter + ".json");
+		}
+	}
+
+	function onSaveComplete(_)
+	{
+		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
+		_file.removeEventListener(Event.CANCEL, onSaveCancel);
+		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+		_file = null;
+	}
+
+	function onSaveCancel(_)
+	{
+		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
+		_file.removeEventListener(Event.CANCEL, onSaveCancel);
+		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+		_file = null;
+	}
+
+	function onSaveError(_)
+	{
+		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
+		_file.removeEventListener(Event.CANCEL, onSaveCancel);
+		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+		_file = null;
 	}
 }

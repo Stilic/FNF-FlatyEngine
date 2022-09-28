@@ -71,7 +71,7 @@ class StrumNote extends FNFSprite
 					animation.addByPrefix('pressed', 'down press', 24, false);
 					animation.addByPrefix('confirm', 'down confirm', 24, false);
 
-					addOffset('confirm', -3, -1);
+					addOffset('confirm', -3, -1.5);
 				case 2:
 					animation.addByPrefix('static', 'arrowUP', 24);
 					animation.addByPrefix('pressed', 'up press', 24, false);
