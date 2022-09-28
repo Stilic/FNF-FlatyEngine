@@ -2,8 +2,7 @@ package ui;
 
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.gamepad.FlxGamepad;
-import Controls.Control;
-import Controls.Device;
+import Controls;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -41,7 +40,8 @@ class ControlsMenu extends Page
 		controlGrid = new MenuTypedList(Columns(2), Vertical);
 		add(labels);
 		add(controlGrid);
-		if (FlxG.gamepads.numActiveGamepads > 0)
+		var controls:Controls = PlayerSettings.player1.controls;
+		if (controls.gamepads.length > 0)
 		{
 			var spr:FlxSprite = new FlxSprite();
 			spr.makeGraphic(FlxG.width, 100, 0xFFFAFD6D);
@@ -57,7 +57,7 @@ class ControlsMenu extends Page
 			kbItem.y = (spr.height - kbItem.height) / 2;
 			var gpItem:TextMenuItem = deviceList.createItem(null, null, 'Gamepad', AtlasFont.Bold, function()
 			{
-				selectDevice(Gamepad(FlxG.gamepads.firstActive.id));
+				selectDevice(Gamepad(controls.gamepads[0]));
 			});
 			gpItem.x = FlxG.width / 2 + 30;
 			gpItem.y = (spr.height - gpItem.height) / 2;
@@ -105,13 +105,14 @@ class ControlsMenu extends Page
 		{
 			menuCamera.camFollow.y = controlGrid.members[controlGrid.selectedIndex].y;
 		}
+		menuCamera.snapToPosition(null, null, true);
 		menuCamera.target.setSize(70, 70);
 		menuCamera.deadzone.set(0, 100, menuCamera.width, menuCamera.height - 200);
 		menuCamera.minScrollY = 0;
 		controlGrid.onChange.add(function(item:InputItem)
 		{
 			menuCamera.camFollow.y = item.y;
-			labels.forEach(function(text:AtlasText)
+			labels.forEachAlive(function(text:AtlasText)
 			{
 				text.alpha = 0.6;
 			});
@@ -181,8 +182,7 @@ class ControlsMenu extends Page
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		var controls = PlayerSettings.player1.controls;
-		if (controlGrid.enabled && deviceList != null && deviceListSelected == false && controls.BACK)
+		if (controlGrid.enabled && deviceList != null && deviceListSelected == false && PlayerSettings.player1.controls.BACK)
 		{
 			goToDeviceList();
 		}
@@ -221,6 +221,7 @@ class ControlsMenu extends Page
 		var index:Int = 2 * Math.floor(controlGrid.selectedIndex / 2);
 		if (controlGrid.members[index].input != input && controlGrid.members[index + 1].input != input)
 		{
+			var controls:Controls = PlayerSettings.player1.controls;
 			for (group in itemGroups)
 			{
 				if (group.contains(selected))
@@ -229,14 +230,14 @@ class ControlsMenu extends Page
 					{
 						if (item != selected && item.input == input)
 						{
-							PlayerSettings.player1.controls.replaceBinding(item.control, currentDevice, selected.input, item.input);
+							controls.replaceBinding(item.control, currentDevice, selected.input, item.input);
 							item.input = selected.input;
 							item.label.text = selected.label.text;
 						}
 					}
 				}
 			}
-			PlayerSettings.player1.controls.replaceBinding(selected.control, currentDevice, input, selected.input);
+			controls.replaceBinding(selected.control, currentDevice, input, selected.input);
 			selected.input = input;
 			selected.label.text = selected.getLabel(input);
 			PlayerSettings.player1.saveControls();

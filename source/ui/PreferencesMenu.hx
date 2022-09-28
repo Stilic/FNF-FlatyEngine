@@ -89,6 +89,7 @@ class PreferencesMenu extends Page
 		menuCamera.camFollow.x = FlxG.width / 2;
 		if (items != null)
 			menuCamera.camFollow.y = items.members[items.selectedIndex].y;
+		menuCamera.snapToPosition(null, null, true);
 		menuCamera.target.setSize(140, 70);
 		menuCamera.deadzone.set(0, 160, menuCamera.width, 40);
 		menuCamera.minScrollY = 0;
@@ -202,13 +203,14 @@ class PreferencesMenu extends Page
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		items.forEach(function(item:MenuItem)
-		{
-			if (item == items.members[items.selectedIndex])
-				item.x = 150;
-			else
-				item.x = 120;
-		});
+		if (items.exists)
+			items.forEachAlive(function(item:MenuItem)
+			{
+				if (item == items.members[items.selectedIndex])
+					item.x = 150;
+				else
+					item.x = 120;
+			});
 	}
 
 	override public function destroy()

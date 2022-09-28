@@ -8,14 +8,11 @@ class PlayerSettings
 {
 	static public var numPlayers(default, null) = 0;
 	static public var player1(default, null):PlayerSettings;
-	static public var player2(default, null):PlayerSettings;
 
+	// static public var player2(default, null):PlayerSettings;
 	public var id(default, null):Int;
 
 	public final controls:Controls;
-
-	// public var avatar:Player;
-	// public var camera(get, never):PlayCamera;
 
 	function new(id)
 	{
@@ -101,9 +98,9 @@ class PlayerSettings
 		var savedata = controls.createSaveData(Keys);
 		if (savedata != null)
 			keydata.keys = savedata;
-		if (controls.gamepadsAdded.length > 0)
+		if (controls.gamepads.length > 0)
 		{
-			savedata = controls.createSaveData(Gamepad(controls.gamepadsAdded[0]));
+			savedata = controls.createSaveData(Gamepad(controls.gamepads[0]));
 			if (savedata != null)
 				keydata.pad = savedata;
 		}
@@ -126,25 +123,23 @@ class PlayerSettings
 		var numGamepads = FlxG.gamepads.numActiveGamepads;
 		if (numGamepads > 0)
 		{
-			var gamepad = FlxG.gamepads.getByID(0);
-			if (gamepad == null)
+			if (FlxG.gamepads.getByID(0) == null)
 				throw 'Unexpected null gamepad. id:0';
 
 			player1.controls.addDefaultGamepad(0);
 		}
-		if (numGamepads > 1)
-		{
-			if (player2 == null)
-			{
-				player2 = new PlayerSettings(1);
-				++numPlayers;
-			}
+		// if (numGamepads > 1)
+		// {
+		// 	if (player2 == null)
+		// 	{
+		// 		player2 = new PlayerSettings(1);
+		// 		++numPlayers;
+		// 	}
 
-			var gamepad = FlxG.gamepads.getByID(1);
-			if (gamepad == null)
-				throw 'Unexpected null gamepad. id:1';
+		// 	if (FlxG.gamepads.getByID(1) == null)
+		// 		throw 'Unexpected null gamepad. id:1';
 
-			player2.controls.addDefaultGamepad(1);
-		}
+		// 	player2.controls.addDefaultGamepad(1);
+		// }
 	}
 }

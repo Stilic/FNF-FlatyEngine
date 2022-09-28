@@ -222,7 +222,7 @@ class StoryMenuState extends MusicBeatState
 
 		difficultySelectors.visible = weekUnlocked[curWeek];
 
-		grpLocks.forEach(function(lock:FlxSprite)
+		grpLocks.forEachAlive(function(lock:FlxSprite)
 		{
 			lock.y = grpWeekText.members[lock.ID].y;
 		});

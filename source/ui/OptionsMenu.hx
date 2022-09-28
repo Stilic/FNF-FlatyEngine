@@ -8,33 +8,31 @@ class OptionsMenu extends Page
 	{
 		super();
 		add(items = new TextMenuList());
-		createItem('preferences', function()
-		{
-			onSwitch.dispatch('preferences');
-		});
-		createItem('controls', function()
-		{
-			onSwitch.dispatch('controls');
-		});
+		createLinkedItem('preferences');
+		createLinkedItem('controls');
 		createItem('exit', exit);
 	}
 
-	public function createItem(label:String, ?callback:Void->Void, ?fireInstantly:Bool = false)
+	public function createItem(label:String, ?callback:Void->Void)
 	{
 		var item:TextMenuItem = items.createItem(0, 100 + 100 * items.length, label, AtlasFont.Bold, callback);
-		item.fireInstantly = fireInstantly;
 		item.screenCenter(X);
 		return item;
+	}
+
+	public function createLinkedItem(label:String, ?page:String)
+	{
+		if (page == null)
+			page = label;
+		return createItem(label, function()
+		{
+			onSwitch.dispatch(page);
+		});
 	}
 
 	override function set_enabled(state:Bool)
 	{
 		items.enabled = state;
 		return super.set_enabled(state);
-	}
-
-	public function hasMultipleOptions()
-	{
-		return items.length > 2;
 	}
 }

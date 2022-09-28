@@ -1,9 +1,11 @@
 package;
 
 import haxe.DynamicAccess;
+import flixel.FlxG;
 import flixel.input.FlxInput;
 import flixel.input.actions.FlxAction;
 import flixel.input.actions.FlxActionSet;
+import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 
@@ -69,7 +71,8 @@ enum KeyboardScheme
 }
 
 /**
- * A list of actions that a player would invoke via some input 
+ * A list of actions that a player would invoke via some input.
+ * 
  * Uses FlxActions to funnel various inputs to a single action.
  */
 class Controls extends FlxActionSet
@@ -103,10 +106,11 @@ class Controls extends FlxActionSet
 	var _pause = new FlxActionDigital(Action.PAUSE);
 	var _reset = new FlxActionDigital(Action.RESET);
 
-	public static var noteDirections:Array<Control> = [NOTE_LEFT, NOTE_DOWN, NOTE_UP, NOTE_RIGHT];
+	public static final noteDirections:Array<Control> = [NOTE_LEFT, NOTE_DOWN, NOTE_UP, NOTE_RIGHT];
 
-	public var gamepadsAdded:Array<Int> = [];
-	public var keyboardScheme:KeyboardScheme = KeyboardScheme.None;
+	public var gamepads(default, null):Array<Int> = [];
+
+	public var keyboardScheme(default, null):KeyboardScheme;
 
 	public var UI_UP(get, never):Bool;
 
@@ -248,7 +252,7 @@ class Controls extends FlxActionSet
 	inline function get_RESET()
 		return _reset.check();
 
-	public function new(name, scheme = None)
+	public function new(name:String, scheme:KeyboardScheme = None)
 	{
 		super(name);
 
@@ -282,6 +286,8 @@ class Controls extends FlxActionSet
 		add(_reset);
 
 		setKeyboardScheme(scheme, false);
+
+		FlxG.gamepads.deviceDisconnected.add(onGamepadDisconnection);
 	}
 
 	function getActionFromControl(control:Control):FlxActionDigital
@@ -450,7 +456,7 @@ class Controls extends FlxActionSet
 
 	function removeKeyboard()
 	{
-		for (action in this.digitalActions)
+		for (action in digitalActions)
 		{
 			var i = action.inputs.length;
 			while (i-- > 0)
@@ -462,9 +468,35 @@ class Controls extends FlxActionSet
 		}
 	}
 
-	public function addGamepadWithSaveData(id, data)
+	function removeGamepad(id:Int)
 	{
-		gamepadsAdded.push(id);
+		for (action in digitalActions)
+		{
+			var i = action.inputs.length;
+			while (i-- > 0)
+			{
+				var input = action.inputs[i];
+				if (input.device == GAMEPAD && input.deviceID == id)
+					action.remove(input);
+			}
+		}
+	}
+
+	function onGamepadDisconnection(pad:FlxGamepad)
+	{
+		if (gamepads.contains(pad.id))
+		{
+			removeGamepad(pad.id);
+			gamepads.remove(pad.id);
+		}
+	}
+
+	public function addGamepadWithSaveData(id:Int, data)
+	{
+		if (gamepads.contains(id))
+			removeGamepad(id);
+		else
+			gamepads.push(id);
 		fromSaveData(data, Gamepad(id));
 	}
 
@@ -497,7 +529,10 @@ class Controls extends FlxActionSet
 		map.set(Control.PAUSE, [START]);
 		map.set(Control.RESET, [Y]);
 
-		gamepadsAdded.push(id);
+		if (gamepads.contains(id))
+			removeGamepad(id);
+		else
+			gamepads.push(id);
 		for (k => v in map)
 			bindButtons(k, id, v);
 	}
@@ -524,7 +559,7 @@ class Controls extends FlxActionSet
 			case Gamepad(id):
 				for (input in getActionFromControl(control).inputs)
 				{
-					if (input.device == GAMEPAD && input.deviceID != -1 && input.deviceID == id)
+					if (input.device == GAMEPAD && input.deviceID == id)
 						list.push(input.inputID);
 				}
 		}
@@ -558,5 +593,11 @@ class Controls extends FlxActionSet
 			obj[button.getName()] = inputs;
 		}
 		return cannotReturn ? null : obj;
+	}
+
+	override function destroy()
+	{
+		super.destroy();
+		FlxG.gamepads.deviceDisconnected.remove(onGamepadDisconnection);
 	}
 }

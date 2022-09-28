@@ -130,7 +130,7 @@ class MainMenuState extends MusicBeatState
 	function startExitState(nextState:FlxState)
 	{
 		menuItems.enabled = false;
-		menuItems.forEach(function(item:MainMenuItem)
+		menuItems.forEachAlive(function(item:MainMenuItem)
 		{
 			if (menuItems.selectedIndex != item.ID)
 			{

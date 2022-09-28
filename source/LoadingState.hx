@@ -1,17 +1,17 @@
 package;
 
-import flixel.math.FlxMath;
+import haxe.io.Path;
 import lime.app.Promise;
 import lime.app.Future;
+import lime.utils.AssetLibrary;
+import lime.utils.AssetManifest;
+import lime.utils.Assets as LimeAssets;
+import openfl.utils.Assets as OpenFlAssets;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.FlxSprite;
 import flixel.util.FlxTimer;
-import openfl.utils.Assets as OpenFlAssets;
-import lime.utils.Assets as LimeAssets;
-import lime.utils.AssetLibrary;
-import lime.utils.AssetManifest;
-import haxe.io.Path;
+import flixel.math.FlxMath;
 
 class LoadingState extends MusicBeatState
 {
@@ -178,12 +178,10 @@ class LoadingState extends MusicBeatState
 		var id = "songs";
 		var promise = new Promise<AssetLibrary>();
 
-		var library = LimeAssets.getLibrary(id);
+		var library = OpenFlAssets.getLibrary(id);
 
 		if (library != null)
-		{
 			return Future.withValue(library);
-		}
 
 		var path = id;
 		var rootPath = null;

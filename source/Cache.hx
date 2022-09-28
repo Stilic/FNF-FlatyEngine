@@ -74,7 +74,7 @@ class Cache
 			if (!isExcludedFromDump(image.path))
 			{
 				images.remove(image);
-				image = FlxDestroyUtil.destroy(image);
+				FlxDestroyUtil.destroy(image);
 			}
 		}
 		for (key in sounds.keys())
@@ -106,7 +106,7 @@ class CoolImage implements IFlxDestroyable
 			var texture = FlxG.stage.context3D.createRectangleTexture(bitmap.width, bitmap.height, BGRA, true);
 			texture.uploadFromBitmapData(bitmap);
 			bitmap.disposeImage();
-			bitmap.dispose();
+			FlxDestroyUtil.dispose(bitmap);
 			bitmap = BitmapData.fromTexture(texture);
 			Assets.cache.setBitmapData(path, bitmap);
 		}

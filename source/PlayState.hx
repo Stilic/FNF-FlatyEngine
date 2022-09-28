@@ -780,7 +780,7 @@ class PlayState extends MusicBeatState
 		camGame.snapToPosition(camPos.x, camPos.y, true);
 		if (prevCamFollow != null)
 		{
-			camGame.camFollow = prevCamFollow;
+			camGame.camFollow.copyFrom(prevCamFollow);
 			prevCamFollow = null;
 		}
 		if (prevCamFollowPos != null)
@@ -1983,9 +1983,9 @@ class PlayState extends MusicBeatState
 
 			boyfriend.noHoldIdle = holdingArray.contains(true) || boyfriend.animation.curAnim.name.endsWith('miss');
 
-			if (controls.gamepadsAdded.length > 0)
+			if (controls.gamepads.length > 0)
 			{
-				var gamepad:FlxGamepad = FlxG.gamepads.getByID(controls.gamepadsAdded[0]);
+				var gamepad:FlxGamepad = FlxG.gamepads.getByID(controls.gamepads[0]);
 				for (i in 0...Controls.noteDirections.length)
 				{
 					var inputs:Array<Int> = controls.getInputsFor(Controls.noteDirections[i], Gamepad(gamepad.id));
@@ -2073,7 +2073,7 @@ class PlayState extends MusicBeatState
 			char.playAnim(Character.singAnimations[note.noteData] + animSuffix, true);
 			char.holdTimer = 0;
 
-			strumline.strumsGroup.forEach(function(strum:StrumNote)
+			strumline.strumsGroup.forEachAlive(function(strum:StrumNote)
 			{
 				if (Math.abs(note.noteData) == strum.noteData)
 				{
@@ -2266,7 +2266,7 @@ class PlayState extends MusicBeatState
 			dad.playAnim('cheer', true);
 		}
 
-		foregroundSprites.forEach(function(spr:BGSprite)
+		foregroundSprites.forEachAlive(function(spr:BGSprite)
 		{
 			spr.dance();
 		});
@@ -2284,7 +2284,7 @@ class PlayState extends MusicBeatState
 				santa.animation.play('idle', true);
 
 			case 'limo':
-				grpLimoDancers.forEach(function(dancer:BackgroundDancer)
+				grpLimoDancers.forEachAlive(function(dancer:BackgroundDancer)
 				{
 					dancer.dance();
 				});
@@ -2299,7 +2299,7 @@ class PlayState extends MusicBeatState
 				{
 					lightFadeShader.reset();
 
-					phillyCityLights.forEach(function(light:FlxSprite)
+					phillyCityLights.forEachAlive(function(light:FlxSprite)
 					{
 						light.visible = false;
 					});

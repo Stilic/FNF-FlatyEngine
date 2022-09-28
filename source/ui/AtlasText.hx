@@ -1,7 +1,6 @@
 package ui;
 
 import flixel.util.FlxStringUtil;
-import flixel.util.FlxDestroyUtil;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
@@ -9,13 +8,9 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 {
 	static var fonts:Map<String, AtlasFontData> = new Map<String, AtlasFontData>();
 
-	public static function clearCache()
+	inline public static function clearCache()
 	{
-		for (key => font in fonts)
-		{
-			fonts.remove(key);
-			font = FlxDestroyUtil.destroy(font);
-		}
+		fonts.clear();
 	}
 
 	public var text(default, set):String = '';
@@ -122,14 +117,14 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 	}
 }
 
-class AtlasFontData implements IFlxDestroyable
+class AtlasFontData
 {
 	static var upperChar:EReg = new EReg('^[A-Z]\\d+$', '');
 	static var lowerChar:EReg = new EReg('^[a-z]\\d+$', '');
 
-	public var atlas:FlxAtlasFrames;
-	public var maxHeight:Float = 0;
-	public var caseAllowed:Case = Both;
+	public var atlas(default, null):FlxAtlasFrames;
+	public var maxHeight(default, null):Float = 0;
+	public var caseAllowed(default, null):Case = Both;
 
 	public function new(font:String)
 	{
@@ -147,10 +142,5 @@ class AtlasFontData implements IFlxDestroyable
 		}
 		if (hasUpper != hasLower)
 			caseAllowed = hasUpper ? Upper : Lower;
-	}
-
-	public function destroy()
-	{
-		atlas = FlxDestroyUtil.destroy(atlas);
 	}
 }

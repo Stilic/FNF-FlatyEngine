@@ -15,6 +15,7 @@ class CheckboxThingie extends FNFSprite
 		setGraphicSize(Std.int(width * 0.7));
 		updateHitbox();
 		daValue = state;
+		animation.finish();
 	}
 
 	function set_daValue(state:Bool)

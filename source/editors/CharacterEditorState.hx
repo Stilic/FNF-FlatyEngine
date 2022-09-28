@@ -65,7 +65,9 @@ class CharacterEditorState extends MusicBeatState
 		if (char != null)
 		{
 			index = members.indexOf(char);
-			remove(char);
+			char.kill();
+			remove(char, true);
+			char.destroy();
 		}
 		char = new Character(0, 0, daAnim, daAnim.startsWith('bf'));
 		char.screenCenter();

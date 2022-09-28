@@ -6,7 +6,7 @@ import flixel.math.FlxPoint;
 
 class FNFCamera extends FlxCamera
 {
-	public var camFollow:FlxPoint = FlxPoint.get();
+	public var camFollow(default, null):FlxPoint = FlxPoint.get();
 
 	var camFollowPos:FlxObject = new FlxObject(0, 0, 1, 1);
 
@@ -34,8 +34,13 @@ class FNFCamera extends FlxCamera
 		follow(camFollowPos, null, 1);
 	}
 
-	public function snapToPosition(x:Float, y:Float, focus:Bool = false)
+	public function snapToPosition(?x:Float, ?y:Float, focus:Bool = false)
 	{
+		if (x == null)
+			x = camFollow.x;
+		if (y == null)
+			y = camFollow.y;
+
 		camFollow.set(x, y);
 		target.setPosition(x, y);
 
