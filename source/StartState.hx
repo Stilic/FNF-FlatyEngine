@@ -11,6 +11,10 @@ class StartState extends FlxState
 {
 	override function create()
 	{
+		#if windows
+		NativeUtil.enabledDarkMode();
+		#end
+
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		PlayerSettings.init();
