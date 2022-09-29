@@ -1832,46 +1832,38 @@ class PlayState extends MusicBeatState
 		else
 			char = boyfriend;
 
-		var midpoint:FlxPoint = char.getMidpoint();
-		var centerX:Float = midpoint.x;
-		var centerY:Float = midpoint.y - 100;
+		var midpoint:FlxPoint = char.getMidpoint(FlxPoint.weak());
 
 		if (isDad)
 		{
-			centerX += 150;
-
 			switch (char.curCharacter)
 			{
-				case 'mom':
-					centerY = midpoint.y;
 				case 'senpai' | 'senpai-angry':
-					centerY = midpoint.y - 430;
-					centerX = midpoint.x - 100;
+					midpoint.add(-100, -430);
+				default:
+					if (char.curCharacter != 'mom')
+						midpoint.x += 150;
 			}
 		}
 		else
 		{
-			centerX -= 100;
-
 			switch (curStage)
 			{
 				case 'limo':
-					centerX = midpoint.x - 300;
+					midpoint.x -= 300;
 				case 'mall':
-					centerY = midpoint.y - 200;
+					midpoint.y -= 200;
 				case 'school' | 'schoolEvil':
-					centerX = midpoint.x - 200;
-					centerY = midpoint.y - 200;
+					midpoint.add(-200, -200);
+				default:
+					midpoint.x -= 100;
 			}
 		}
 
 		if (followChar && char.cameraMove && char.cameraMoveArray != null)
-		{
-			centerX += char.cameraMoveArray[0];
-			centerY += char.cameraMoveArray[1];
-		}
+			midpoint.add(char.cameraMoveArray[0], char.cameraMoveArray[1]);
 
-		camGame.camFollow.set(centerX, centerY);
+		camGame.camFollow.copyFrom(midpoint);
 
 		if (SONG.song.toLowerCase() == 'tutorial')
 		{
