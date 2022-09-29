@@ -3,6 +3,7 @@ package;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.math.FlxPoint;
+import flixel.util.FlxDestroyUtil;
 
 class FNFCamera extends FlxCamera
 {
@@ -46,5 +47,15 @@ class FNFCamera extends FlxCamera
 
 		if (focus)
 			focusOn(camFollow);
+	}
+
+	override public function destroy()
+	{
+		super.destroy();
+
+		camFollow.put();
+		camFollow = null;
+
+		camFollowPos = FlxDestroyUtil.destroy(camFollowPos);
 	}
 }

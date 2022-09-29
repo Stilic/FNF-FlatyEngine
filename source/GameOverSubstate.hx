@@ -15,7 +15,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	var bf:Boyfriend;
 	var camGame:FNFCamera;
 
-	var randomGameover:Int = 1;
+	var randomGameover:String;
 	var playingDeathSound:Bool = false;
 
 	public static function resetVariables()
@@ -61,12 +61,12 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		bf.playAnim('firstDeath');
 
-		var exclude = [];
+		// CACHE RANDOM GAMEOVER SOUND
+		var exclude:Array<Int> = [];
 		if (PreferencesMenu.getPref('censor-naughty'))
-		{
 			exclude = [1, 3, 8, 13, 17, 21];
-		}
-		randomGameover = FlxG.random.int(1, 25, exclude);
+		randomGameover = 'jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, exclude);
+		Paths.sound(randomGameover);
 	}
 
 	override function update(elapsed:Float)
@@ -103,7 +103,7 @@ class GameOverSubstate extends MusicBeatSubstate
 				playingDeathSound = true;
 				bf.startedDeath = true;
 				coolStartDeath(0.2);
-				FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + randomGameover), 1, false, null, true, function()
+				FlxG.sound.play(Paths.sound(randomGameover), 1, false, null, true, function()
 				{
 					FlxG.sound.music.fadeIn(4, 0.2, 1);
 				});

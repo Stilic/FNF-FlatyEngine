@@ -613,7 +613,7 @@ class PlayState extends MusicBeatState
 
 		dad = new Character(100, 100, SONG.player2);
 
-		var camPos:FlxPoint = dad.getGraphicMidpoint();
+		var camPos:FlxPoint = dad.getGraphicMidpoint(FlxPoint.weak());
 
 		switch (SONG.player2)
 		{
@@ -778,6 +778,7 @@ class PlayState extends MusicBeatState
 		generateSong();
 
 		camGame.snapToPosition(camPos.x, camPos.y, true);
+		camPos.putWeak();
 		if (prevCamFollow != null)
 		{
 			camGame.camFollow.copyFrom(prevCamFollow);
@@ -785,7 +786,7 @@ class PlayState extends MusicBeatState
 		}
 		if (prevCamFollowPos != null)
 		{
-			camGame.target = prevCamFollowPos;
+			camGame.target.setPosition(prevCamFollowPos.x, prevCamFollowPos.y);
 			prevCamFollowPos = null;
 		}
 
@@ -1644,9 +1645,6 @@ class PlayState extends MusicBeatState
 				if (storyDifficulty == 2)
 					difficulty = '-hard';
 
-				trace('LOADING NEXT SONG');
-				trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
-
 				FlxTransitionableState.skipNextTransIn = true;
 				FlxTransitionableState.skipNextTransOut = true;
 
@@ -1679,7 +1677,6 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			trace('WENT BACK TO FREEPLAY??');
 			MusicBeatState.switchState(new FreeplayState());
 			CoolUtil.resetMusic();
 		}
@@ -1832,38 +1829,40 @@ class PlayState extends MusicBeatState
 		else
 			char = boyfriend;
 
-		var midpoint:FlxPoint = char.getMidpoint(FlxPoint.weak());
+		var camPos:FlxPoint = char.getMidpoint(FlxPoint.weak());
+		var adjustedY:Bool = false;
 
 		if (isDad)
-		{
 			switch (char.curCharacter)
 			{
 				case 'senpai' | 'senpai-angry':
-					midpoint.add(-100, -430);
+					adjustedY = true;
+					camPos.add(-100, -430);
 				default:
 					if (char.curCharacter != 'mom')
-						midpoint.x += 150;
+						camPos.x += 150;
 			}
-		}
 		else
-		{
 			switch (curStage)
 			{
 				case 'limo':
-					midpoint.x -= 300;
+					camPos.x -= 300;
 				case 'mall':
-					midpoint.y -= 200;
+					adjustedY = true;
+					camPos.y -= 200;
 				case 'school' | 'schoolEvil':
-					midpoint.add(-200, -200);
+					adjustedY = true;
+					camPos.add(-200, -200);
 				default:
-					midpoint.x -= 100;
+					camPos.x -= 100;
 			}
-		}
+		if (!adjustedY)
+			camPos.y -= 100;
 
 		if (followChar && char.cameraMove && char.cameraMoveArray != null)
-			midpoint.add(char.cameraMoveArray[0], char.cameraMoveArray[1]);
+			camPos.add(char.cameraMoveArray[0], char.cameraMoveArray[1]);
 
-		camGame.camFollow.copyFrom(midpoint);
+		camGame.camFollow.copyFrom(camPos);
 
 		if (SONG.song.toLowerCase() == 'tutorial')
 		{
