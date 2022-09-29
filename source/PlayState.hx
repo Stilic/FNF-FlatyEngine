@@ -734,7 +734,7 @@ class PlayState extends MusicBeatState
 
 		Conductor.songPosition = -5000;
 
-		strumLine = new FlxPoint(42, 50);
+		strumLine = FlxPoint.get(42, 50);
 		if (PreferencesMenu.getPref('downscroll'))
 			strumLine.y = FlxG.height - 150;
 
