@@ -2004,7 +2004,7 @@ class PlayState extends MusicBeatState
 			if (controls.gamepads.length > 0)
 			{
 				var gamepad:FlxGamepad = FlxG.gamepads.getByID(controls.gamepads[0]);
-				var genArray:Bool = buttonsArray.length < 0;
+				var genArray:Bool = buttonsArray.length <= 0;
 				for (i in 0...Controls.noteDirections.length)
 				{
 					if (genArray)
