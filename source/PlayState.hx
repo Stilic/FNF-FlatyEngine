@@ -1880,7 +1880,11 @@ class PlayState extends MusicBeatState
 			cameraMovement(!leSection.mustHitSection, true);
 	}
 
+	// for the keyboard
 	var keysArray:Array<Array<Int>> = [];
+	// for the gamepad
+	var buttonsArray:Array<Array<Int>> = [];
+
 	var holdingArray:Array<Bool> = [];
 
 	private function getKeyFromCode(keyCode:Int):Int
@@ -1896,18 +1900,12 @@ class PlayState extends MusicBeatState
 		return -1;
 	}
 
-	private function onKeyDown(evt:KeyboardEvent):Void
+	private function handleInput(key:Int, pressed:Bool)
 	{
-		if ((!persistentUpdate && subState != null) || (playerStrumline.botplay || inCutscene || !startedCountdown))
-			return;
+		holdingArray[key] = pressed;
 
-		var key:Int = getKeyFromCode(evt.keyCode);
-		if (key > -1 && !holdingArray[key])
+		if (pressed)
 		{
-			// trace('key $key down');
-
-			holdingArray[key] = true;
-
 			if (generatedMusic && !endingSong && !boyfriend.stunned)
 			{
 				// accurate hit moment part one
@@ -1952,23 +1950,39 @@ class PlayState extends MusicBeatState
 			if (strum != null && strum.animation.curAnim.name != 'confirm')
 				strum.playAnim('pressed');
 		}
+		else
+		{
+			var strum:StrumNote = playerStrumline.strumsGroup.members[key];
+			if (strum != null)
+				strum.playAnim('static');
+		}
+	}
+
+	private function onKeyDown(evt:KeyboardEvent):Void
+	{
+		if (FlxG.keys.enabled
+			&& (FlxG.state.active || FlxG.state.persistentUpdate)
+			&& !playerStrumline.botplay
+			&& !inCutscene
+			&& startedCountdown)
+		{
+			var key:Int = getKeyFromCode(evt.keyCode);
+			if (key > -1 && !holdingArray[key])
+				handleInput(key, true);
+		}
 	}
 
 	private function onKeyUp(evt:KeyboardEvent):Void
 	{
-		if ((!persistentUpdate && subState != null) || (playerStrumline.botplay || inCutscene || !startedCountdown))
-			return;
-
-		var key:Int = getKeyFromCode(evt.keyCode);
-		if (key > -1)
+		if (FlxG.keys.enabled
+			&& (FlxG.state.active || FlxG.state.persistentUpdate)
+			&& !playerStrumline.botplay
+			&& !inCutscene
+			&& startedCountdown)
 		{
-			// trace('key $key up');
-
-			holdingArray[key] = false;
-
-			var strum:StrumNote = playerStrumline.strumsGroup.members[key];
-			if (strum != null)
-				strum.playAnim('static');
+			var key:Int = getKeyFromCode(evt.keyCode);
+			if (key > -1)
+				handleInput(key, false);
 		}
 	}
 
@@ -1990,13 +2004,15 @@ class PlayState extends MusicBeatState
 			if (controls.gamepads.length > 0)
 			{
 				var gamepad:FlxGamepad = FlxG.gamepads.getByID(controls.gamepads[0]);
+				var genArray:Bool = buttonsArray.length < 0;
 				for (i in 0...Controls.noteDirections.length)
 				{
-					var inputs:Array<Int> = controls.getInputsFor(Controls.noteDirections[i], Gamepad(gamepad.id));
-					if (gamepad.anyJustPressed(inputs))
-						onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keysArray[i][0]));
-					if (gamepad.anyJustReleased(inputs))
-						onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keysArray[i][0]));
+					if (genArray)
+						buttonsArray[i] = controls.getInputsFor(Controls.noteDirections[i], Gamepad(gamepad.id));
+					if (gamepad.anyJustPressed(buttonsArray[i]))
+						handleInput(i, true);
+					if (gamepad.anyJustReleased(buttonsArray[i]))
+						handleInput(i, false);
 				}
 			}
 		}

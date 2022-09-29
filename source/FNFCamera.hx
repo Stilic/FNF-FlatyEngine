@@ -16,7 +16,6 @@ class FNFCamera extends FlxCamera
 	override public function new(Lerp:Float = 0, Width:Int = 0, Height:Int = 0, Zoom:Float = 0)
 	{
 		super(0, 0, Width, Height, Zoom);
-
 		lerp = Lerp;
 
 		resetTarget();
@@ -26,7 +25,6 @@ class FNFCamera extends FlxCamera
 	{
 		if (camFollow != null && target != null)
 			target.setPosition(CoolUtil.coolLerp(target.x, camFollow.x, lerp), CoolUtil.coolLerp(target.y, camFollow.y, lerp));
-
 		super.update(elapsed);
 	}
 
@@ -52,10 +50,7 @@ class FNFCamera extends FlxCamera
 	override public function destroy()
 	{
 		super.destroy();
-
-		camFollow.put();
-		camFollow = null;
-
+		camFollow = FlxDestroyUtil.put(camFollow);
 		camFollowPos = FlxDestroyUtil.destroy(camFollowPos);
 	}
 }
