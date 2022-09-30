@@ -14,6 +14,7 @@ typedef Rating =
 	var name:String;
 	var time:Float;
 	var score:Int;
+	var ?fcType:String;
 	var mod:Float;
 	var splash:Bool;
 }
@@ -25,6 +26,7 @@ class Conductor
 			name: 'sick',
 			time: 45,
 			score: 350,
+			fcType: 'MFC',
 			mod: 1,
 			splash: true
 		},
@@ -32,6 +34,7 @@ class Conductor
 			name: 'good',
 			time: 90,
 			score: 200,
+			fcType: 'GFC',
 			mod: 0.7,
 			splash: false
 		},
@@ -39,6 +42,7 @@ class Conductor
 			name: 'bad',
 			time: 135,
 			score: 100,
+			fcType: 'FC',
 			mod: 0.4,
 			splash: false
 		},

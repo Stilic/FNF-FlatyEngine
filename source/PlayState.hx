@@ -113,10 +113,7 @@ class PlayState extends MusicBeatState
 	var songMisses:Int = 0;
 	var scoreTxt:FlxText;
 
-	var sicks:Int = 0;
-	var goods:Int = 0;
-	var bads:Int = 0;
-	var shits:Int = 0;
+	var hitMap:Map<String, Int> = new Map<String, Int>();
 
 	public static var campaignScore:Int = 0;
 
@@ -1584,19 +1581,16 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	static inline var scoreSeparator:String = ' / ';
-	static inline var rankSeparator:String = ' | ';
+	var scoreSeparator:String = ' / ';
+	var rankSeparator:String = ' | ';
 
 	var rank:String = '?';
 	var accuracy:Float = 0;
 
-	// lmao sorry stilic i just had to change it
-	public var ratingIndexArray:Array<String> = ["sick", "good", "bad", "shit"];
-
 	// left to right, Marvelous (Sick) Full Combo, Good Full Combo, Full Combo
 	public var ratingNameArray:Array<String> = ["MFC", "GFC", "FC", ""];
 	public var ratingString:String; // Full Combo Rating string;
-	public var smallestRating:String; // last gotten rating;
+	public var smallestRatingIndex:Int; // last gotten rating index;
 
 	function recalculateRating()
 	{
@@ -1607,7 +1601,7 @@ class PlayState extends MusicBeatState
 		rank = Conductor.getRank(floorAccuracy);
 
 		if (songMisses < 10)
-			rank += (ratingString != null ? rankSeparator + ratingString : '');
+			rank += ratingString != null ? rankSeparator + ratingString : '';
 		else if (totalPlayed < 1)
 			rank = '?';
 
@@ -1709,9 +1703,10 @@ class PlayState extends MusicBeatState
 		// gets your last rating, then sets the fc rating string accordingly, -gabi
 		if (songMisses <= 0)
 		{
-			if (ratingIndexArray.indexOf(daRating.name) > ratingIndexArray.indexOf(smallestRating))
-				smallestRating = daRating.name;
-			ratingString = ratingNameArray[ratingIndexArray.indexOf(smallestRating)];
+			var leIndex:Int = Conductor.ratings.indexOf(daRating);
+			if (leIndex > smallestRatingIndex)
+				smallestRatingIndex = leIndex;
+			ratingString = Conductor.ratings[smallestRatingIndex].fcType;
 		}
 
 		if (!practiceMode)
@@ -1723,10 +1718,7 @@ class PlayState extends MusicBeatState
 		if (daRating.splash && PreferencesMenu.getPref('note-splashes'))
 			playerStrumline.spawnSplash(daNote.noteData);
 
-		var fieldName:String = daRating.name + 's';
-		var fieldContent:Null<Int> = cast Reflect.field(this, fieldName);
-		if (fieldContent != null)
-			Reflect.setField(this, fieldName, fieldContent + 1);
+		hitMap.set(daRating.name, hitMap.exists(daRating.name) ? (hitMap.get(daRating.name) + 1) : 1);
 
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
