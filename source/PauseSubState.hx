@@ -11,7 +11,8 @@ import flixel.util.FlxColor;
 
 class PauseSubState extends MusicBeatSubstate
 {
-	static final pauseOG:Array<String> = [
+	// do not make this static
+	final pauseOG:Array<String> = [
 		'Resume',
 		'Restart Song',
 		'Exit to menu'
@@ -109,24 +110,25 @@ class PauseSubState extends MusicBeatSubstate
 
 	private function regenMenu()
 	{
-		while (grpMenuShit.members.length > 0)
+		// kill and destroy all the existing items inside the item group;
+		for (i in 0...grpMenuShit.members.length)
 		{
-			var text = grpMenuShit.members[0];
-			text.kill();
-			grpMenuShit.remove(text, true);
-			text.destroy();
+			var existingItem = grpMenuShit.members[0];
+			existingItem.kill();
+			grpMenuShit.remove(existingItem, true);
+			existingItem.destroy();
 		}
 
+		// generate the new menu items;
 		for (i in 0...menuItems.length)
 		{
-			var menuItem:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
-			menuItem.isMenuItem = true;
-			menuItem.targetY = i;
-			grpMenuShit.add(menuItem);
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
+			songText.isMenuItem = true;
+			songText.targetY = i;
+			grpMenuShit.add(songText);
 		}
 
 		curSelected = 0;
-
 		changeSelection();
 	}
 
