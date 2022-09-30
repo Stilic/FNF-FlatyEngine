@@ -14,14 +14,13 @@ class PauseSubState extends MusicBeatSubstate
 	static final pauseOG:Array<String> = [
 		'Resume',
 		'Restart Song',
-		'Change Difficulty',
-		'Toggle Practice Mode',
 		'Exit to menu'
 	];
 
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var difficultyChoices:Array<String> = ['EASY', 'NORMAL', 'HARD', 'BACK'];
+	var difficultyChoices:Array<String> = [];
+	var gameDifficulties:Array<Array<String>> = [];
 
 	var menuItems:Array<String> = [];
 	var curSelected:Int = 0;
@@ -35,6 +34,23 @@ class PauseSubState extends MusicBeatSubstate
 		super();
 
 		menuItems = pauseOG;
+
+		// make sure that you aren't cheating
+		if (!PlayState.isStoryMode)
+		{
+			menuItems.insert(3, 'Change Difficulty');
+			menuItems.insert(4, 'Toggle Practice Mode');
+		}
+
+		for (i in CoolUtil.difficultyArray)
+			difficultyChoices.push(i);
+
+		if (difficultyChoices.length > 1) // no need to show the button if there's only a single difficulty;
+		{
+			menuItems.insert(5, 'Change Difficulty');
+			gameDifficulties.push(difficultyChoices);
+			difficultyChoices.push('BACK');
+		}
 
 		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
 		pauseMusic.volume = 0;
@@ -139,6 +155,26 @@ class PauseSubState extends MusicBeatSubstate
 		{
 			var daSelected:String = menuItems[curSelected];
 
+			if (menuItems == difficultyChoices && daSelected != 'BACK' && difficultyChoices.contains(daSelected))
+			{
+				var leSongRaw = PlayState.SONG.song.toLowerCase();
+				var leSong = Highscore.formatSong(PlayState.SONG.song.toLowerCase(), curSelected);
+
+				try
+				{
+					PlayState.SONG = Song.loadFromJson(leSong, leSongRaw);
+					PlayState.storyDifficulty = curSelected;
+					MusicBeatState.switchState(new PlayState());
+				}
+				catch (e)
+				{
+					trace("Uncaught Error: " + e);
+					menuItems = pauseOG;
+					regenMenu();
+				}
+				return;
+			}
+
 			switch (daSelected)
 			{
 				case "Resume":
@@ -160,14 +196,6 @@ class PauseSubState extends MusicBeatSubstate
 						MusicBeatState.switchState(new FreeplayState());
 					CoolUtil.resetMusic();
 
-				case "EASY" | "NORMAL" | "HARD":
-					if (curSelected != PlayState.storyDifficulty)
-					{
-						PlayState.SONG = Song.loadFromJson(Highscore.formatSong(PlayState.SONG.song.toLowerCase(), curSelected),
-							PlayState.SONG.song.toLowerCase());
-						PlayState.storyDifficulty = curSelected;
-					}
-					MusicBeatState.resetState();
 				case "BACK":
 					menuItems = pauseOG;
 					regenMenu();
