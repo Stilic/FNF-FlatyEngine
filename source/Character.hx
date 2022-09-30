@@ -46,8 +46,10 @@ class Character extends FNFSprite
 	public var curCharacter:String;
 
 	public var singDuration:Float = 4;
+	public var idleSpeed:Int = 1;
 	public var holdTimer:Float = 0;
 	public var noHoldIdle:Bool = false;
+	public var simpleIdle(get, never):Bool;
 
 	public var stunned:Bool = false;
 
@@ -59,8 +61,6 @@ class Character extends FNFSprite
 	public var cameraMove:Bool;
 	public var cameraMoveAdd:Float = 15;
 	public var cameraMoveArray:Array<Float>;
-
-	public var simpleIdle(get, never):Bool;
 
 	public function get_simpleIdle()
 		return !animation.exists('danceLeft') && !animation.exists('danceRight');

@@ -66,7 +66,6 @@ class PlayState extends MusicBeatState
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
 
-	private var gfSpeed:Int = 1;
 	private var health:Float = 1;
 	private var combo:Int = 0;
 
@@ -621,6 +620,7 @@ class PlayState extends MusicBeatState
 		{
 			case 'gf':
 				dad.setPosition(gf.x, gf.y);
+				dad.idleSpeed = 2;
 				gf.visible = false;
 				if (isStoryMode)
 				{
@@ -1458,13 +1458,13 @@ class PlayState extends MusicBeatState
 			{
 				case 16:
 					camZooming = true;
-					gfSpeed = 2;
+					gf.idleSpeed = 2;
 				case 48:
-					gfSpeed = 1;
+					gf.idleSpeed = 1;
 				case 80:
-					gfSpeed = 2;
+					gf.idleSpeed = 2;
 				case 112:
-					gfSpeed = 1;
+					gf.idleSpeed = 1;
 					// case 163:
 					// FlxG.sound.music.stop();
 					// MusicBeatState.switchState(new TitleState());
@@ -1565,17 +1565,27 @@ class PlayState extends MusicBeatState
 		if (beat == null)
 			beat = curBeat;
 
-		if (beat % gfSpeed == 0 && !gf.animation.curAnim.name.startsWith('sing') && !gf.stunned)
-			gf.dance();
-
+		var ignoredChars:Array<Character> = [];
 		for (strumline in strumlines)
 		{
-			for (char in strumline.characters)
+			var chars:Array<Character> = [];
+			if (!ignoredChars.contains(gf) && !strumline.characters.contains(gf))
+				chars.push(gf);
+			for (char in chars.concat(strumline.characters))
 			{
-				if (char != gf)
+				if (!ignoredChars.contains(char))
 				{
-					if ((!char.simpleIdle || beat % 2 == 0) && !char.animation.curAnim.name.startsWith('sing') && !char.stunned)
-						char.dance();
+					if (!char.animation.curAnim.name.startsWith('sing') && !char.stunned)
+					{
+						if (char.simpleIdle)
+						{
+							if (beat % 2 == 0)
+								char.dance();
+						}
+						else if (beat % char.idleSpeed == 0)
+							char.dance();
+					}
+					ignoredChars.push(char);
 				}
 			}
 		}
