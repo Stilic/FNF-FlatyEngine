@@ -570,23 +570,29 @@ class PlayState extends MusicBeatState
 		GameOverSubstate.resetVariables();
 
 		var gfVersion:String = 'gf';
+		gfVersion = SONG.gfVersion;
 
-		switch (curStage)
+		if (SONG.gfVersion.length < 1 || SONG.gfVersion == null)
 		{
-			case 'limo':
-				gfVersion = 'gf-car';
-			case 'mall' | 'mallEvil':
-				gfVersion = 'gf-christmas';
-			case 'school':
-				gfVersion = 'gf-pixel';
-			case 'schoolEvil':
-				gfVersion = 'gf-pixel';
-			case 'tank':
-				gfVersion = 'gf-tankmen';
+			switch (curStage)
+			{
+				case 'limo':
+					gfVersion = 'gf-car';
+				case 'mall' | 'mallEvil':
+					gfVersion = 'gf-christmas';
+				case 'school':
+					gfVersion = 'gf-pixel';
+				case 'schoolEvil':
+					gfVersion = 'gf-pixel';
+				case 'tank':
+					if (SONG.song.toLowerCase() == 'stress')
+						gfVersion = 'pico-speaker';
+					else
+						gfVersion = 'gf-tankmen';
+				default:
+					gfVersion = 'gf';
+			}
 		}
-
-		if (SONG.song.toLowerCase() == 'stress')
-			gfVersion = 'pico-speaker';
 
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
@@ -1584,28 +1590,26 @@ class PlayState extends MusicBeatState
 	var rank:String = '?';
 	var accuracy:Float = 0;
 
+	// lmao sorry stilic i just had to change it
+	public var ratingIndexArray:Array<String> = ["sick", "good", "bad", "shit"];
+
+	// left to right, Marvelous (Sick) Full Combo, Good Full Combo, Full Combo
+	public var ratingNameArray:Array<String> = ["MFC", "GFC", "FC", ""];
+	public var ratingString:String; // Full Combo Rating string;
+	public var smallestRating:String; // last gotten rating;
+
 	function recalculateRating()
 	{
 		var floorAccuracy:Float = 0;
 
-		if (totalPlayed < 1)
-			rank = '?';
-		else
-		{
-			accuracy = Math.min(1, Math.max(0, totalNotesHit / totalPlayed));
-			floorAccuracy = CoolUtil.floorDecimal(accuracy * 100, 2);
+		accuracy = Math.min(1, Math.max(0, totalNotesHit / totalPlayed));
+		floorAccuracy = CoolUtil.floorDecimal(accuracy * 100, 2);
+		rank = Conductor.getRank(floorAccuracy);
 
-			rank = Conductor.getRank(floorAccuracy);
-			// 'stolen' from ke lol
-			if (songMisses == 0 && bads == 0 && shits == 0 && goods == 0) // Marvelous (SICK) Full Combo
-				rank += rankSeparator + 'MFC';
-			else if (songMisses == 0 && bads == 0 && shits == 0 && goods >= 1) // Good Full Combo (Nothing but Goods & Sicks)
-				rank += rankSeparator + 'GFC';
-			else if (songMisses == 0) // Regular FC
-				rank += rankSeparator + 'FC';
-			else if (songMisses < 10) // Single Digit Combo Breaks
-				rank += rankSeparator + 'SDCB';
-		}
+		if (songMisses < 10)
+			rank += (ratingString != null ? rankSeparator + ratingString : '');
+		else if (totalPlayed < 1)
+			rank = '?';
 
 		scoreTxt.text = 'Score: ' + songScore + scoreSeparator + 'Combo Breaks: ' + songMisses + scoreSeparator + 'Accuracy: '
 			+ (rank != '?' ? '$floorAccuracy% [$rank]' : '?');
@@ -1701,6 +1705,15 @@ class PlayState extends MusicBeatState
 
 		var daRating:Rating = Conductor.getRating(Math.abs(daNote.strumTime - Conductor.songPosition));
 		totalNotesHit += daRating.mod;
+
+		// gets your last rating, then sets the fc rating string accordingly, -gabi
+		if (songMisses <= 0)
+		{
+			if (ratingIndexArray.indexOf(daRating.name) > ratingIndexArray.indexOf(smallestRating))
+				smallestRating = daRating.name;
+			ratingString = ratingNameArray[ratingIndexArray.indexOf(smallestRating)];
+		}
+
 		if (!practiceMode)
 		{
 			songScore += daRating.score;
@@ -2041,16 +2054,7 @@ class PlayState extends MusicBeatState
 	function noteMiss(daNote:Note):Void
 	{
 		vocals.volume = 0;
-
-		health -= 0.0475;
-		combo = 0;
-		if (!practiceMode)
-			songScore -= 10;
-
-		songMisses++;
-		totalPlayed++;
-		recalculateRating();
-
+		decreaseCombo(0.0475);
 		boyfriend.playAnim(Character.singAnimations[daNote.noteData] + 'miss', true);
 	}
 
@@ -2064,19 +2068,23 @@ class PlayState extends MusicBeatState
 			if (combo > 5 && gf.animOffsets.exists('sad'))
 				gf.playAnim('sad');
 
-			health -= 0.04;
-			combo = 0;
-			if (!practiceMode)
-				songScore -= 10;
-
-			songMisses++;
-			totalPlayed++;
-			recalculateRating();
+			decreaseCombo(0.04);
 
 			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
-
 			boyfriend.playAnim(Character.singAnimations[direction] + 'miss', true);
 		}
+	}
+
+	function decreaseCombo(damage:Float)
+	{
+		health -= damage;
+		combo = 0;
+		if (!practiceMode)
+			songScore -= 10;
+		songMisses++;
+		totalPlayed++;
+		ratingString = (songMisses < 10 ? 'SDCB' : '');
+		recalculateRating();
 	}
 
 	function goodNoteHit(strumline:Strumline, note:Note):Void

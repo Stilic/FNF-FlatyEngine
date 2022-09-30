@@ -12,7 +12,7 @@ class StartState extends FlxState
 	override function create()
 	{
 		#if windows
-		NativeUtil.enabledDarkMode();
+		NativeUtil.enableDarkMode();
 		#end
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
@@ -35,6 +35,12 @@ class StartState extends FlxState
 			if (!StoryMenuState.weekUnlocked[0])
 				StoryMenuState.weekUnlocked[0] = true;
 		}
+
+		// saves your volume setting
+		if (FlxG.save.data.volume != null)
+			FlxG.sound.volume = FlxG.save.data.volume;
+		if (FlxG.save.data.mute != null)
+			FlxG.sound.muted = FlxG.save.data.mute;
 
 		#if discord_rpc
 		DiscordClient.initialize();
