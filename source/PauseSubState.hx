@@ -43,12 +43,12 @@ class PauseSubState extends MusicBeatSubstate
 
 			if (difficultyChoices.length > 1) // no need to show the button if there's only a single difficulty;
 			{
-				menuItems.insert(1, 'Change Difficulty');
+				menuItems.insert(2, 'Change Difficulty');
 				gameDifficulties.push(difficultyChoices);
 				difficultyChoices.push('BACK');
 			}
 
-			menuItems.insert(2, 'Toggle Practice Mode');
+			menuItems.insert(3, 'Toggle Practice Mode');
 		}
 
 		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
