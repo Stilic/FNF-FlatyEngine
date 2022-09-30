@@ -1,11 +1,11 @@
 package;
 
-import flixel.FlxG;
-import flixel.graphics.FlxGraphic;
-import flixel.util.FlxDestroyUtil;
 import openfl.utils.Assets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
+import flixel.FlxG;
+import flixel.graphics.FlxGraphic;
+import flixel.util.FlxDestroyUtil;
 import ui.PreferencesMenu;
 import ui.AtlasText;
 
@@ -13,11 +13,11 @@ using StringTools;
 
 class Cache
 {
-	public static var dumpExclusions:Array<String> = ['music/freakyMenu.${Paths.SOUND_EXT}', 'music/breakfast.${Paths.SOUND_EXT}'];
+	public static var persistantAssets:Array<String> = ['music/freakyMenu.${Paths.SOUND_EXT}', 'music/breakfast.${Paths.SOUND_EXT}'];
 
-	public static function isExcludedFromDump(suffix:String)
+	public static function isPersistant(suffix:String)
 	{
-		for (path in dumpExclusions)
+		for (path in persistantAssets)
 		{
 			if (path.endsWith(suffix))
 				return true;
@@ -71,7 +71,7 @@ class Cache
 
 		for (image in images)
 		{
-			if (!isExcludedFromDump(image.path))
+			if (!isPersistant(image.path))
 			{
 				images.remove(image);
 				FlxDestroyUtil.destroy(image);
@@ -79,7 +79,7 @@ class Cache
 		}
 		for (key in sounds.keys())
 		{
-			if (!isExcludedFromDump(key))
+			if (!isPersistant(key))
 			{
 				sounds.remove(key);
 				Assets.cache.removeSound(key);
