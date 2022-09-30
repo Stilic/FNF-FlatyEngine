@@ -565,10 +565,8 @@ class PlayState extends MusicBeatState
 
 		GameOverSubstate.resetVariables();
 
-		var gfVersion:String = 'gf';
-		gfVersion = SONG.gfVersion;
-
-		if (SONG.gfVersion.length < 1 || SONG.gfVersion == null)
+		var gfVersion:String = SONG.gfVersion;
+		if (gfVersion == null || gfVersion.length <= 0)
 		{
 			switch (curStage)
 			{
@@ -765,7 +763,7 @@ class PlayState extends MusicBeatState
 		strumlines.push(opponentStrumline);
 		strumlines.push(playerStrumline);
 
-		if (!PlayState.isStoryMode || PlayState.isFirstStorySong)
+		if (!isStoryMode || isFirstStorySong)
 		{
 			for (strumline in strumlines)
 			{
@@ -1044,7 +1042,7 @@ class PlayState extends MusicBeatState
 
 		camHUD.visible = true;
 
-		if (!PlayState.isStoryMode || PlayState.isFirstStorySong)
+		if (!isStoryMode || isFirstStorySong)
 		{
 			for (strumline in strumlines)
 				strumline.tweenStrums();
@@ -1152,7 +1150,7 @@ class PlayState extends MusicBeatState
 		previousFrameTime = FlxG.game.ticks;
 
 		if (!paused)
-			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+			FlxG.sound.playMusic(Paths.inst(SONG.song), 1, false);
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 
@@ -1675,7 +1673,7 @@ class PlayState extends MusicBeatState
 
 					FlxG.sound.play(Paths.sound('Lights_Shut_off'), 1, false, null, true, function()
 					{
-						PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+						SONG = Song.loadFromJson(storyPlaylist[0].toLowerCase() + difficulty, storyPlaylist[0]);
 						LoadingState.loadAndSwitchState(new PlayState());
 					});
 				}
@@ -1684,7 +1682,7 @@ class PlayState extends MusicBeatState
 					prevCamFollow = camGame.camFollow;
 					prevCamFollowPos = camGame.target;
 
-					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+					SONG = Song.loadFromJson(storyPlaylist[0].toLowerCase() + difficulty, storyPlaylist[0]);
 					LoadingState.loadAndSwitchState(new PlayState());
 				}
 			}
