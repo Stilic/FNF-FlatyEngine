@@ -12,7 +12,6 @@ class OutdatedSubState extends MusicBeatState
 
 	override function create()
 	{
-		super.create();
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		add(bg);
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
@@ -24,6 +23,7 @@ class OutdatedSubState extends MusicBeatState
 		txt.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
 		txt.screenCenter();
 		add(txt);
+		super.create();
 	}
 
 	override function update(elapsed:Float)

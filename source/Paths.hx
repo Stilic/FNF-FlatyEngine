@@ -128,9 +128,9 @@ class Paths
 
 	public static function returnGraphic(key:String, ?library:String)
 	{
-		var path:String = getPath('$key.png', IMAGE, library);
-		if (OpenFlAssets.exists(path, IMAGE))
-			return Cache.getGraphic(path);
+		var graphic = Cache.getGraphic(getPath('$key.png', IMAGE, library));
+		if (graphic != null)
+			return graphic;
 
 		trace('oh no ${key} is returning null NOOOO');
 		return null;
@@ -138,18 +138,18 @@ class Paths
 
 	public static function returnSound(key:String, ?library:String, stream:Bool = false)
 	{
-		var path:String = getPath('$key.$SOUND_EXT', SOUND, library);
-		if (OpenFlAssets.exists(path, SOUND))
-		{
-			#if lime_vorbis
-			if (stream && !OpenFlAssets.cache.hasSound(path))
-				return Cache.getMusic(path);
-			else
-				return Cache.getSound(path);
-			#else
-			return Cache.getSound(path);
-			#end
-		}
+		var path = getPath('$key.$SOUND_EXT', SOUND, library);
+		var sound;
+		#if lime_vorbis
+		if (stream && !OpenFlAssets.cache.hasSound(path))
+			sound = Cache.getMusic(path);
+		else
+			sound = Cache.getSound(path);
+		#else
+		sound = Cache.getSound(path);
+		#end
+		if (sound != null)
+			return sound;
 
 		trace('oh no ${key} is returning null NOOOO');
 		return null;

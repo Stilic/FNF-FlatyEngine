@@ -17,10 +17,13 @@ class Cache
 
 	public static function isPersistant(suffix:String)
 	{
-		for (path in persistantAssets)
+		if (persistantAssets != null)
 		{
-			if (path.endsWith(suffix))
-				return true;
+			for (path in persistantAssets)
+			{
+				if (path.endsWith(suffix))
+					return true;
+			}
 		}
 		return false;
 	}
@@ -32,13 +35,17 @@ class Cache
 	{
 		for (bitmap in images)
 		{
-			if (bitmap.path == id)
+			if (bitmap.graphic.key == id)
 				return bitmap.graphic;
 		}
 
-		var image:CoolImage = new CoolImage(id, #if sys PreferencesMenu.getPref('gpu-rendering') #else false #end);
-		images.push(image);
-		return image.graphic;
+		if (Assets.exists(id, IMAGE))
+		{
+			var image:CoolImage = new CoolImage(id, #if sys PreferencesMenu.getPref('gpu-rendering') #else false #end);
+			images.push(image);
+			return image.graphic;
+		}
+		return null;
 	}
 
 	#if lime_vorbis
@@ -48,9 +55,13 @@ class Cache
 		if (sounds.exists(id))
 			return sounds.get(id);
 
-		var music:Sound = Assets.getMusic(id, false);
-		sounds.set(id, music);
-		return music;
+		if (Assets.exists(id, SOUND))
+		{
+			var music:Sound = Assets.getMusic(id, false);
+			sounds.set(id, music);
+			return music;
+		}
+		return null;
 	}
 	#end
 
@@ -59,19 +70,51 @@ class Cache
 		if (sounds.exists(id))
 			return sounds.get(id);
 
-		var sound:Sound = Assets.getSound(id);
-		sounds.set(id, sound);
-		return sound;
+		if (Assets.exists(id, SOUND))
+		{
+			var sound:Sound = Assets.getSound(id);
+			sounds.set(id, sound);
+			return sound;
+		}
+		return null;
 	}
 
-	// it clears EVERYTHING!!!! (even the aggresive flixel cache)
+	public static function hasGraphic(id:String)
+	{
+		if (id != null)
+		{
+			for (image in images)
+			{
+				if (image.graphic.key == id)
+					return true;
+			}
+		}
+		return false;
+	}
+
+	public static function hasSound(id:String)
+	{
+		if (id != null)
+			return sounds.exists(id);
+		return false;
+	}
+
 	public static function clear()
 	{
 		AtlasText.clearCache();
 
+		// clear the flixel cache manually since the clearCache function is dumb
+		@:privateAccess
+		for (graphic in FlxG.bitmap._cache)
+		{
+			// it crashes at some point if i put it after the custom cache clear code bruh
+			if (!hasGraphic(graphic.key))
+				CoolUtil.destroyGraphic(graphic);
+		}
+
 		for (image in images)
 		{
-			if (!isPersistant(image.path))
+			if (!isPersistant(image.graphic.key))
 			{
 				images.remove(image);
 				FlxDestroyUtil.destroy(image);
@@ -88,17 +131,26 @@ class Cache
 
 		CoolUtil.runGC();
 	}
+
+	public static function clearUnusedImages()
+	{
+		for (image in images)
+		{
+			if (!isPersistant(image.graphic.key) && image.graphic.useCount <= 0)
+			{
+				images.remove(image);
+				FlxDestroyUtil.destroy(image);
+			}
+		}
+	}
 }
 
 class CoolImage implements IFlxDestroyable
 {
-	public var path(default, null):String;
 	public var graphic(default, null):FlxGraphic;
 
 	public function new(path:String, gpuCache:Bool = false)
 	{
-		this.path = path;
-
 		var bitmap = Assets.getBitmapData(path);
 		if (gpuCache)
 		{
@@ -117,14 +169,6 @@ class CoolImage implements IFlxDestroyable
 
 	public function destroy()
 	{
-		graphic.bitmap.lock();
-
-		@:privateAccess
-		if (graphic.bitmap.__texture != null)
-			graphic.bitmap.__texture.dispose();
-		graphic.bitmap.disposeImage();
-
-		FlxG.bitmap.remove(graphic);
-		graphic = null;
+		graphic = CoolUtil.destroyGraphic(graphic);
 	}
 }

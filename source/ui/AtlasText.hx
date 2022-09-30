@@ -9,9 +9,7 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 	static var fonts:Map<String, AtlasFontData> = new Map<String, AtlasFontData>();
 
 	inline public static function clearCache()
-	{
 		fonts.clear();
-	}
 
 	public var text(default, set):String = '';
 	public var font:AtlasFontData;

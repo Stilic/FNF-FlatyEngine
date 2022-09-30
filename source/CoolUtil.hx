@@ -9,10 +9,11 @@ import java.vm.Gc;
 #elseif neko
 import neko.vm.Gc;
 #end
+import openfl.utils.Assets;
 import flixel.FlxG;
+import flixel.graphics.FlxGraphic;
 import flixel.math.FlxMath;
 import flixel.util.FlxSort;
-import openfl.utils.Assets;
 
 using StringTools;
 
@@ -64,6 +65,22 @@ class CoolUtil
 			tempMult *= 10;
 		var newValue:Float = Math.floor(value * tempMult);
 		return newValue / tempMult;
+	}
+
+	public static function destroyGraphic(graphic:FlxGraphic):Null<FlxGraphic>
+	{
+		if (graphic != null)
+		{
+			graphic.bitmap.lock();
+
+			@:privateAccess
+			if (graphic.bitmap.__texture != null)
+				graphic.bitmap.__texture.dispose();
+			graphic.bitmap.disposeImage();
+
+			FlxG.bitmap.remove(graphic);
+		}
+		return null;
 	}
 
 	inline public static function runGC():Void

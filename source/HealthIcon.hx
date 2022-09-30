@@ -48,7 +48,7 @@ class HealthIcon extends AttachedSprite
 
 		if (char != this.char)
 		{
-			if (animation.getByName(char) == null)
+			if (!animation.exists(char))
 			{
 				loadGraphic(Paths.image('icons/icon-' + char), true, 150, 150);
 				animation.add(char, [0, 1], 0, false, isPlayer);

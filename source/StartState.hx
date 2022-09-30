@@ -44,11 +44,6 @@ class StartState extends FlxState
 		});
 		#end
 
-		super.create();
-
-		FlxG.switchState(new TitleState());
-		// LoadingState.loadAndSwitchState(new editors.CharacterEditorState());
-
 		FlxG.signals.preStateCreate.add(function(state:FlxState)
 		{
 			if (!Std.isOfType(state, PlayState)
@@ -58,5 +53,10 @@ class StartState extends FlxState
 				Cache.clear();
 			}
 		});
+
+		super.create();
+
+		FlxG.switchState(new TitleState());
+		// LoadingState.loadAndSwitchState(new editors.CharacterEditorState());
 	}
 }

@@ -10,18 +10,20 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 
 class Strumline extends FlxGroup
 {
-	public var strumsGroup:FlxTypedGroup<StrumNote>;
+	public var strumsGroup(default, null):FlxTypedGroup<StrumNote>;
 
-	public var allNotes:FlxTypedGroup<Note>;
-	public var notesGroup:FlxTypedGroup<Note>;
-	public var holdsGroup:FlxTypedGroup<Note>;
+	public var allNotes(default, null):FlxTypedGroup<Note>;
+	public var notesGroup(default, null):FlxTypedGroup<Note>;
+	public var holdsGroup(default, null):FlxTypedGroup<Note>;
 
-	public var splashesGroup:FlxTypedGroup<NoteSplash>;
+	public var splashesGroup(default, null):FlxTypedGroup<NoteSplash>;
 
 	public var botplay:Bool = false;
 
-	public var onNoteBotHit:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
-	public var onNoteUpdate:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
+	public var onNoteBotHit(default, null):FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
+	public var onNoteUpdate(default, null):FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
+
+	public var characters:Array<Character> = [];
 
 	inline public static function isOutsideScreen(strumTime:Float)
 	{

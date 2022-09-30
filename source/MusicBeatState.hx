@@ -48,6 +48,8 @@ class MusicBeatState extends FlxUIState
 		if (!skip)
 			openSubState(new CustomFadeTransition(0.6, true));
 		FlxTransitionableState.skipNextTransOut = false;
+
+		Cache.clearUnusedImages();
 	}
 
 	override function update(elapsed:Float)
@@ -62,6 +64,12 @@ class MusicBeatState extends FlxUIState
 			stepHit();
 
 		super.update(elapsed);
+	}
+
+	override function closeSubState()
+	{
+		super.closeSubState();
+		Cache.clearUnusedImages();
 	}
 
 	private function updateBeat():Void

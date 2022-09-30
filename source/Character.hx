@@ -60,6 +60,11 @@ class Character extends FNFSprite
 	public var cameraMoveAdd:Float = 15;
 	public var cameraMoveArray:Array<Float>;
 
+	public var simpleIdle(get, never):Bool;
+
+	public function get_simpleIdle()
+		return !animation.exists('danceLeft') && !animation.exists('danceRight');
+
 	public function new(x:Float, y:Float, character:String = "bf", isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -659,32 +664,27 @@ class Character extends FNFSprite
 	{
 		if (!debugMode)
 		{
+			// TODO: unharcode this
 			switch (curCharacter)
 			{
-				case 'gf' | 'gf-car' | 'gf-christmas' | 'gf-pixel' | 'gf-tankmen':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
 				case 'pico-speaker':
 				// do nothing LOL
-				case 'spooky':
-					danced = !danced;
-
-					if (danced)
-						playAnim('danceRight');
-					else
-						playAnim('danceLeft');
-				case 'tankman':
-					if (!animation.curAnim.name.endsWith('DOWN-alt'))
-						playAnim('idle');
 				default:
-					playAnim('idle');
+					if ((!curCharacter.startsWith('gf') || !animation.curAnim.name.startsWith('hair'))
+						|| (curCharacter != 'tankman' || !animation.curAnim.name.endsWith('DOWN-alt')))
+					{
+						if (simpleIdle)
+							playAnim('idle');
+						else
+						{
+							danced = !danced;
+
+							if (danced)
+								playAnim('danceRight');
+							else
+								playAnim('danceLeft');
+						}
+					}
 			}
 		}
 	}
