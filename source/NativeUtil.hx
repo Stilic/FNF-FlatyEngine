@@ -3,9 +3,9 @@ package;
 class NativeUtil
 {
 	#if windows
-	public static function enabledDarkMode()
+	public static function enableDarkMode()
 	{
-		BuildFix.enabledDarkMode();
+		BuildFix.enableDarkMode();
 	}
 	#end
 }
@@ -29,7 +29,7 @@ private class BuildFix
             DwmSetWindowAttribute(window, 20, &darkMode, sizeof(darkMode));
         UpdateWindow(window);
     ')
-	public static function enabledDarkMode()
+	public static function enableDarkMode()
 	{
 	}
 	#end

@@ -230,11 +230,11 @@ class ChartingState extends MusicBeatState
 		gfVersionDropDown.selectedLabel = (_song.gfVersion == null ? 'gf' : _song.gfVersion);
 
 		var player2DropDown = new FlxUIDropDownMenu(player1DropDown.x, gfVersionDropDown.y + 20, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true),
-		function(character:String)
-		{
-			_song.player2 = characters[Std.parseInt(character)];
-			updateHeads();
-		});
+			function(character:String)
+			{
+				_song.player2 = characters[Std.parseInt(character)];
+				updateHeads();
+			});
 		player2DropDown.selectedLabel = _song.player2;
 
 		var tab_group_song = new FlxUI(null, UI_box);

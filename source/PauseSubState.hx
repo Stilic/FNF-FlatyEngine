@@ -12,11 +12,7 @@ import flixel.util.FlxColor;
 class PauseSubState extends MusicBeatSubstate
 {
 	// do not make this static
-	final pauseOG:Array<String> = [
-		'Resume',
-		'Restart Song',
-		'Exit to menu'
-	];
+	final pauseOG:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
 
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
