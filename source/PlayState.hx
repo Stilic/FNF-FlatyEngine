@@ -1587,10 +1587,8 @@ class PlayState extends MusicBeatState
 	var rank:String = '?';
 	var accuracy:Float = 0;
 
-	// left to right, Marvelous (Sick) Full Combo, Good Full Combo, Full Combo
-	public var ratingNameArray:Array<String> = ["MFC", "GFC", "FC", ""];
-	public var ratingString:String; // Full Combo Rating string;
-	public var smallestRatingIndex:Int; // last gotten rating index;
+	var fcString:String; // Full Combo Rating string;
+	var smallestRatingIndex:Int; // last gotten rating index;
 
 	function recalculateRating()
 	{
@@ -1601,7 +1599,7 @@ class PlayState extends MusicBeatState
 		rank = Conductor.getRank(floorAccuracy);
 
 		if (songMisses < 10)
-			rank += ratingString != null ? rankSeparator + ratingString : '';
+			rank += fcString != null ? rankSeparator + fcString : '';
 		else if (totalPlayed < 1)
 			rank = '?';
 
@@ -1706,7 +1704,7 @@ class PlayState extends MusicBeatState
 			var leIndex:Int = Conductor.ratings.indexOf(daRating);
 			if (leIndex > smallestRatingIndex)
 				smallestRatingIndex = leIndex;
-			ratingString = Conductor.ratings[smallestRatingIndex].fcType;
+			fcString = Conductor.ratings[smallestRatingIndex].fc;
 		}
 
 		if (!practiceMode)
@@ -2075,7 +2073,7 @@ class PlayState extends MusicBeatState
 			songScore -= 10;
 		songMisses++;
 		totalPlayed++;
-		ratingString = (songMisses < 10 ? 'SDCB' : '');
+		fcString = (songMisses < 10 ? 'SDCB' : '');
 		recalculateRating();
 	}
 
