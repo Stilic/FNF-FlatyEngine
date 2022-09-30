@@ -97,7 +97,7 @@
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
-	<haxedev set="webgl" />
+	<haxedev set="webgl" if="html5" />
 
 	<haxelib name="flixel" />
 	<haxelib name="flixel-addons" />
