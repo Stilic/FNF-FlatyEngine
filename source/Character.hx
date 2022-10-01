@@ -46,10 +46,15 @@ class Character extends FNFSprite
 	public var curCharacter:String;
 
 	public var singDuration:Float = 4;
-	public var idleSpeed:Int = 1;
+	public var danceSpeed:Int;
+
 	public var holdTimer:Float = 0;
-	public var noHoldIdle:Bool = false;
+	public var noHoldDance:Bool = false;
+
 	public var simpleIdle(get, never):Bool;
+
+	public function get_simpleIdle()
+		return !animation.exists('danceLeft') && !animation.exists('danceRight');
 
 	public var stunned:Bool = false;
 
@@ -61,9 +66,6 @@ class Character extends FNFSprite
 	public var cameraMove:Bool;
 	public var cameraMoveAdd:Float = 15;
 	public var cameraMoveArray:Array<Float>;
-
-	public function get_simpleIdle()
-		return !animation.exists('danceLeft') && !animation.exists('danceRight');
 
 	public function new(x:Float, y:Float, character:String = "bf", isPlayer:Bool = false)
 	{
@@ -575,6 +577,8 @@ class Character extends FNFSprite
 				}
 		}
 
+		danceSpeed = simpleIdle ? 2 : 1;
+
 		dance();
 		animation.finish();
 
@@ -622,7 +626,7 @@ class Character extends FNFSprite
 		if (animation.curAnim.name.startsWith('sing'))
 			holdTimer += elapsed;
 
-		if (!noHoldIdle && holdTimer >= Conductor.stepCrochet * singDuration * 0.0011)
+		if (!noHoldDance && holdTimer >= Conductor.stepCrochet * singDuration * 0.0011)
 		{
 			dance();
 			holdTimer = 0;

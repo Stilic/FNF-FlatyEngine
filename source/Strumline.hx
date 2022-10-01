@@ -24,6 +24,7 @@ class Strumline extends FlxGroup
 	public var onNoteUpdate(default, null):FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
 
 	public var characters:Array<Character> = [];
+	public var singingCharacters:Array<Character> = [];
 
 	inline public static function isOutsideScreen(strumTime:Float)
 	{

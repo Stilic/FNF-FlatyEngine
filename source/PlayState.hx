@@ -618,7 +618,7 @@ class PlayState extends MusicBeatState
 		{
 			case 'gf':
 				dad.setPosition(gf.x, gf.y);
-				dad.idleSpeed = 2;
+				dad.danceSpeed = 2;
 				gf.visible = false;
 				if (isStoryMode)
 				{
@@ -743,7 +743,8 @@ class PlayState extends MusicBeatState
 		{
 			goodNoteHit(opponentStrumline, daNote);
 		});
-		opponentStrumline.characters.push(dad);
+		opponentStrumline.characters = [dad, gf];
+		opponentStrumline.singingCharacters = [dad];
 
 		playerStrumline = new Strumline(baseX * (baseXShit / 1.75), baseY, PreferencesMenu.getPref('downscroll'));
 		playerStrumline.onNoteBotHit.add(function(daNote:Note)
@@ -755,7 +756,8 @@ class PlayState extends MusicBeatState
 			if (Strumline.isOutsideScreen(daNote.strumTime) && (daNote.tooLate || !daNote.wasGoodHit))
 				noteMiss(daNote);
 		});
-		playerStrumline.characters.push(boyfriend);
+		playerStrumline.characters = [boyfriend, gf];
+		playerStrumline.singingCharacters = [boyfriend];
 
 		add(opponentStrumline);
 		add(playerStrumline);
@@ -1456,13 +1458,13 @@ class PlayState extends MusicBeatState
 			{
 				case 16:
 					camZooming = true;
-					gf.idleSpeed = 2;
+					gf.danceSpeed = 2;
 				case 48:
-					gf.idleSpeed = 1;
+					gf.danceSpeed = 1;
 				case 80:
-					gf.idleSpeed = 2;
+					gf.danceSpeed = 2;
 				case 112:
-					gf.idleSpeed = 1;
+					gf.danceSpeed = 1;
 					// case 163:
 					// FlxG.sound.music.stop();
 					// MusicBeatState.switchState(new TitleState());
@@ -1566,23 +1568,12 @@ class PlayState extends MusicBeatState
 		var ignoredChars:Array<Character> = [];
 		for (strumline in strumlines)
 		{
-			var chars:Array<Character> = [];
-			if (!ignoredChars.contains(gf) && !strumline.characters.contains(gf))
-				chars.push(gf);
-			for (char in chars.concat(strumline.characters))
+			for (char in strumline.characters)
 			{
 				if (!ignoredChars.contains(char))
 				{
-					if (!char.animation.curAnim.name.startsWith('sing') && !char.stunned)
-					{
-						if (char.simpleIdle)
-						{
-							if (beat % 2 == 0)
-								char.dance();
-						}
-						else if (beat % char.idleSpeed == 0)
-							char.dance();
-					}
+					if (beat % char.danceSpeed == 0 && !char.animation.curAnim.name.startsWith('sing') && !char.stunned)
+						char.dance();
 					ignoredChars.push(char);
 				}
 			}
@@ -2027,7 +2018,7 @@ class PlayState extends MusicBeatState
 				});
 			}
 
-			boyfriend.noHoldIdle = holdingArray.contains(true) || boyfriend.animation.curAnim.name.endsWith('miss');
+			boyfriend.noHoldDance = holdingArray.contains(true) || boyfriend.animation.curAnim.name.endsWith('miss');
 
 			if (controls.gamepads.length > 0)
 			{
@@ -2045,7 +2036,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 		else
-			boyfriend.noHoldIdle = false;
+			boyfriend.noHoldDance = false;
 	}
 
 	// for when you don't hit a note and let it go instead
@@ -2113,7 +2104,7 @@ class PlayState extends MusicBeatState
 					animSuffix = '-alt';
 			}
 
-			for (char in strumline.characters)
+			for (char in strumline.singingCharacters)
 			{
 				char.playAnim(Character.singAnimations[note.noteData] + animSuffix, true);
 				char.holdTimer = 0;
