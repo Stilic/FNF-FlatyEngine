@@ -1610,9 +1610,10 @@ class PlayState extends MusicBeatState
 		seenCutscene = false;
 		deathCounter = 0;
 		canPause = false;
+		FlxG.sound.music.volume = 0;
+		vocals.volume = 0;
 		FlxG.sound.music.stop();
 		vocals.stop();
-		vocals.volume = 0;
 		#if !switch
 		Highscore.saveScore(SONG.song, songScore, storyDifficulty);
 		#end
@@ -1627,9 +1628,7 @@ class PlayState extends MusicBeatState
 			{
 				MusicBeatState.switchState(new StoryMenuState());
 
-				#if NO_PRELOAD_ALL
 				CoolUtil.resetMusic();
-				#end
 
 				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
 
