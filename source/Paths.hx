@@ -1,10 +1,9 @@
 package;
 
+import openfl.utils.Assets;
+import openfl.utils.AssetType;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
-import openfl.utils.AssetType;
-import openfl.utils.Assets as OpenFlAssets;
-import openfl.media.Sound;
 
 class Paths
 {
@@ -25,11 +24,11 @@ class Paths
 		if (currentLevel != null)
 		{
 			var levelPath = getLibraryPathForce(file, currentLevel);
-			if (OpenFlAssets.exists(levelPath, type))
+			if (Assets.exists(levelPath, type))
 				return levelPath;
 
 			levelPath = getLibraryPathForce(file, "shared");
-			if (OpenFlAssets.exists(levelPath, type))
+			if (Assets.exists(levelPath, type))
 				return levelPath;
 		}
 
@@ -109,6 +108,11 @@ class Paths
 	inline static public function font(key:String)
 	{
 		return getPreloadPath('fonts/$key');
+	}
+
+	inline static public function fontName(key:String)
+	{
+		return Assets.getFont(font(key)).fontName;
 	}
 
 	inline static public function video(key:String, ?library:String)

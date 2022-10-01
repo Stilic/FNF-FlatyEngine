@@ -26,7 +26,7 @@ class CoolCounter extends TextField
 		selectable = false;
 		mouseEnabled = false;
 
-		defaultTextFormat = new TextFormat('./' + Paths.font('vcr.ttf'), 13, color);
+		defaultTextFormat = new TextFormat(Paths.fontName('vcr.ttf'), 13, color);
 		autoSize = LEFT;
 		multiline = true;
 
