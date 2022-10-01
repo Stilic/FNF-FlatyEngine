@@ -126,7 +126,7 @@ class DialogueBox extends FlxSpriteGroup
 		talkingRight = !talkingRight;
 
 		swagDialogue = new FlxTypeText(240, 500, Std.int(FlxG.width * 0.6), "", 32);
-		swagDialogue.font = 'Pixel Arial 11 Bold';
+		swagDialogue.font = Paths.font('pixel.otf');
 		swagDialogue.color = 0xFF3F2021;
 		swagDialogue.borderStyle = SHADOW;
 		swagDialogue.borderColor = 0xFFD89494;

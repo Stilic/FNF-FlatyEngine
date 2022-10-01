@@ -77,7 +77,7 @@ class Main extends Sprite
 		FlxG.mouse.visible = false;
 
 		#if !mobile
-		fpsCounter = new CoolCounter(8, 3, 0xFFFFFF);
+		fpsCounter = new CoolCounter();
 		addChild(fpsCounter);
 		#end
 

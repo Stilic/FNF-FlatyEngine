@@ -1,13 +1,10 @@
 package;
 
 import haxe.Timer;
-import openfl.Lib;
-import openfl.system.System;
 import openfl.events.Event;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import flixel.FlxG;
-import flixel.math.FlxMath;
 
 class CoolCounter extends TextField
 {
@@ -19,23 +16,35 @@ class CoolCounter extends TextField
 	var times:Array<Float> = [];
 	var memoryPeak:Float = 0;
 
-	public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000)
+	public function new(x:Float = 7, y:Float = 3, color:Int = 0xFFFFFF)
 	{
 		super();
 
 		this.x = x;
 		this.y = y;
 
-		width = Lib.current.stage.width;
-
 		selectable = false;
 		mouseEnabled = false;
 
-		defaultTextFormat = new TextFormat('_sans', 13, color);
+		defaultTextFormat = new TextFormat('./' + Paths.font('vcr.ttf'), 13, color);
+		autoSize = LEFT;
 		multiline = true;
-		text = 'FPS: ';
 
 		addEventListener(Event.ENTER_FRAME, onEnter);
+	}
+
+	static final intervalArray:Array<String> = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']; // tb support for the myth engine modders :)
+
+	public static function getInterval(size:Float)
+	{
+		var data:Int = 0;
+		while (size > 1024 && data < intervalArray.length - 1)
+		{
+			data++;
+			size = size / 1024;
+		}
+		size = Math.round(size * 100) / 100;
+		return '$size ${intervalArray[data]}';
 	}
 
 	@:noCompletion function onEnter(_)
@@ -46,7 +55,12 @@ class CoolCounter extends TextField
 		while (times[0] < now - 1)
 			times.shift();
 
-		var mem:Float = FlxMath.roundDecimal(System.totalMemory / 1000000, 1);
+		#if cpp
+		var mem:Float = cpp.vm.Gc.memInfo64(3);
+		#else
+		var mem:Int = openfl.system.System.totalMemory;
+		#end
+
 		if (mem > memoryPeak)
 			memoryPeak = mem;
 
@@ -59,9 +73,17 @@ class CoolCounter extends TextField
 
 			if (showMemory)
 			{
-				leText += 'RAM: ${mem}mb';
+				var memText:String = getInterval(mem);
+				leText += 'RAM: $memText';
 				if (showMemoryPeak)
-					leText += ' / ${memoryPeak}mb\n';
+				{
+					leText += ' / ';
+					if (memoryPeak == mem)
+						leText += memText;
+					else
+						leText += getInterval(memoryPeak);
+					leText += '\n';
+				}
 				else
 					leText += '\n';
 			}

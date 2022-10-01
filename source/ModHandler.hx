@@ -84,7 +84,6 @@ class ModHandler
 			if (mod.enabled)
 				dirs.push(mod.metadata.id);
 		}
-		trace(dirs);
 
 		var libs:Map<String, String> = new Map<String, String>();
 		libs.set('default', './preload');

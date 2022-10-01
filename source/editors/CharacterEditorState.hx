@@ -35,11 +35,11 @@ class CharacterEditorState extends MusicBeatState
 
 		dumbText = new FlxText(5, 10, 0, "", 14);
 		dumbText.scrollFactor.set();
-		dumbText.setFormat("VCR OSD Mono", 18, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		dumbText.setFormat(Paths.font('vcr.ttf'), 18, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 
 		textAnim = new FlxText(300, 16);
 		textAnim.scrollFactor.set();
-		textAnim.setFormat("VCR OSD Mono", 18, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		textAnim.setFormat(Paths.font('vcr.ttf'), 18, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		textAnim.borderSize = 1;
 		textAnim.size = 30;
 
