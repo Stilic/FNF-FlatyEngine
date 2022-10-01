@@ -16,6 +16,8 @@ class ModsMenuState extends MusicBeatState
 {
 	var curSelected:Int = 0;
 
+	var changedSomethin:Bool = false;
+
 	var bg:FlxSprite;
 	var scoreBG:FlxSprite;
 	var scoreText:FlxText;
@@ -41,37 +43,40 @@ class ModsMenuState extends MusicBeatState
 
 		ModHandler.reloadModList();
 
-		for (i in 0...ModHandler.modList.length)
+		if (ModHandler.modList.length > 0)
 		{
-			var text:Alphabet = new Alphabet(0, (70 * i) + 30, ModHandler.modList[i].metadata.title, true, false);
-			text.isMenuItem = true;
-			text.targetY = i;
-			grpText.add(text);
-
-			if (ModHandler.modList[i].metadata.icon != null)
+			for (i in 0...ModHandler.modList.length)
 			{
-				var icon:AttachedSprite = new AttachedSprite(text);
-				icon.loadGraphic(BitmapData.fromBytes(ModHandler.modList[i].metadata.icon));
+				var text:Alphabet = new Alphabet(0, (70 * i) + 30, ModHandler.modList[i].metadata.title, true, false);
+				text.isMenuItem = true;
+				text.targetY = i;
+				grpText.add(text);
 
-				// using a FlxGroup is too much fuss!
-				iconArray.push(icon);
-				add(icon);
+				if (ModHandler.modList[i].metadata.icon != null)
+				{
+					var icon:AttachedSprite = new AttachedSprite(text);
+					icon.loadGraphic(BitmapData.fromBytes(ModHandler.modList[i].metadata.icon));
+
+					// using a FlxGroup is too much fuss!
+					iconArray.push(icon);
+					add(icon);
+				}
 			}
+
+			scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
+			// scoreText.autoSize = false;
+			scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
+			// scoreText.alignment = RIGHT;
+
+			scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 66, 0xFF000000);
+			scoreBG.antialiasing = false;
+			scoreBG.alpha = 0.6;
+			add(scoreBG);
+
+			add(scoreText);
+
+			changeSelection();
 		}
-
-		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
-		// scoreText.autoSize = false;
-		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
-		// scoreText.alignment = RIGHT;
-
-		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 66, 0xFF000000);
-		scoreBG.antialiasing = false;
-		scoreBG.alpha = 0.6;
-		add(scoreBG);
-
-		add(scoreText);
-
-		changeSelection();
 
 		super.create();
 	}
@@ -80,33 +85,28 @@ class ModsMenuState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		scoreText.text = ModHandler.modList[curSelected].enabled ? "ENABLED" : "DISABLED";
-		positionHighscore();
-
-		var upP = controls.UI_UP_P;
-		var downP = controls.UI_DOWN_P;
-		var accepted = controls.ACCEPT;
-
-		if (upP)
+		if (ModHandler.modList.length > 0)
 		{
-			changeSelection(-1);
-		}
-		if (downP)
-		{
-			changeSelection(1);
+			scoreText.text = ModHandler.modList[curSelected].enabled ? "ENABLED" : "DISABLED";
+			positionHighscore();
+
+			if (controls.UI_UP_P)
+				changeSelection(-1);
+			if (controls.UI_DOWN_P)
+				changeSelection(1);
+
+			if (controls.ACCEPT)
+			{
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+				ModHandler.modList[curSelected].enabled = !ModHandler.modList[curSelected].enabled;
+				ModHandler.saveModList();
+			}
 		}
 
 		if (controls.BACK)
 		{
 			FlxG.sound.play(Paths.sound("cancelMenu"));
 			MusicBeatState.switchState(new MainMenuState());
-		}
-
-		if (accepted)
-		{
-			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-			ModHandler.modList[curSelected].enabled = !ModHandler.modList[curSelected].enabled;
-			ModHandler.saveModList();
 		}
 	}
 

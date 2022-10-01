@@ -6,6 +6,7 @@ import sys.FileSystem;
 import lime.utils.Assets;
 import flixel.util.FlxSave;
 import polymod.Polymod;
+import polymod.fs.PolymodFileSystem;
 
 typedef Mod =
 {
@@ -16,6 +17,7 @@ typedef Mod =
 class ModHandler
 {
 	public static final MOD_DIRECTORY:String = './mods';
+	public static final GLOBAL_MOD_ID:String = 'global';
 
 	public static var modList(default, null):Array<Mod> = [];
 
@@ -45,6 +47,9 @@ class ModHandler
 		var doSave:Bool = false;
 		for (modMetadata in Polymod.scan(MOD_DIRECTORY))
 		{
+			if (modMetadata.id == GLOBAL_MOD_ID)
+				continue;
+
 			if (!savedModList.exists(modMetadata.id))
 			{
 				doSave = true;
@@ -72,12 +77,14 @@ class ModHandler
 	public static function reloadPolymod()
 	{
 		var dirs:Array<String> = [];
+		if (PolymodFileSystem.makeFileSystem(null, {modRoot: MOD_DIRECTORY}).exists('$MOD_DIRECTORY/$GLOBAL_MOD_ID'))
+			dirs.push(GLOBAL_MOD_ID);
 		for (mod in modList)
 		{
-			// trace(mod.metadata.id, mod.enabled);
 			if (mod.enabled)
 				dirs.push(mod.metadata.id);
 		}
+		trace(dirs);
 
 		var libs:Map<String, String> = new Map<String, String>();
 		libs.set('default', './preload');
@@ -92,7 +99,7 @@ class ModHandler
 		Polymod.init({
 			modRoot: MOD_DIRECTORY,
 			dirs: dirs,
-			framework: OPENFL,
+			framework: FLIXEL,
 			frameworkParams: {
 				assetLibraryPaths: libs
 			}
