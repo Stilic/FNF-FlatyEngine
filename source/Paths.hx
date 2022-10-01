@@ -141,13 +141,11 @@ class Paths
 		var path = getPath('$key.$SOUND_EXT', SOUND, library);
 		var sound;
 		#if lime_vorbis
-		if (stream && !OpenFlAssets.cache.hasSound(path))
+		if (stream)
 			sound = Cache.getMusic(path);
 		else
-			sound = Cache.getSound(path);
-		#else
-		sound = Cache.getSound(path);
 		#end
+		sound = Cache.getSound(path);
 		if (sound != null)
 			return sound;
 

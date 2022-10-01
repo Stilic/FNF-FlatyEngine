@@ -17,6 +17,9 @@ class FreeplayState extends MusicBeatState
 
 	var curSelected:Int = 0;
 	var curDifficulty:Int = 1;
+	#if PRELOAD_ALL
+	var curPlaying:Int = -1;
+	#end
 
 	var bg:FlxSprite;
 	var scoreBG:FlxSprite;
@@ -41,20 +44,20 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
-		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
-
-		for (i in 0...initSonglist.length)
-		{
-			songs.push(new SongMetadata(initSonglist[i], 1, 'gf'));
-		}
-
 		#if discord_rpc
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
+		#if PRELOAD_ALL
+		if (FlxG.sound.music != null)
+			FlxG.sound.music.stop();
+		#else
 		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
 			CoolUtil.resetMusic();
+		#end
+
+		addWeek(['Tutorial'], 0, ['gf']);
 
 		if (StoryMenuState.weekUnlocked[2])
 			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
@@ -152,10 +155,10 @@ class FreeplayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
+		#if PRELOAD_ALL
 		if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.7)
-		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-		}
+		#end
 
 		lerpScore = CoolUtil.coolLerp(lerpScore, intendedScore, 0.4);
 		bg.color = FlxColor.interpolate(bg.color, coolColors[songs[curSelected].week % coolColors.length], CoolUtil.camLerpShit(0.045));
@@ -163,18 +166,10 @@ class FreeplayState extends MusicBeatState
 		scoreText.text = "PERSONAL BEST:" + Math.round(lerpScore);
 		positionHighscore();
 
-		var upP = controls.UI_UP_P;
-		var downP = controls.UI_DOWN_P;
-		var accepted = controls.ACCEPT;
-
-		if (upP)
-		{
+		if (controls.UI_UP_P)
 			changeSelection(-1);
-		}
-		if (downP)
-		{
+		if (controls.UI_DOWN_P)
 			changeSelection(1);
-		}
 
 		if (controls.UI_LEFT_P)
 			changeDiff(-1);
@@ -185,9 +180,13 @@ class FreeplayState extends MusicBeatState
 		{
 			FlxG.sound.play(Paths.sound("cancelMenu"));
 			MusicBeatState.switchState(new MainMenuState());
+			#if PRELOAD_ALL
+			if (curPlaying > -1)
+				CoolUtil.resetMusic();
+			#end
 		}
 
-		if (accepted)
+		if (controls.ACCEPT)
 		{
 			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
 
@@ -229,8 +228,20 @@ class FreeplayState extends MusicBeatState
 		if (curSelected >= songs.length)
 			curSelected = 0;
 
+		var songName:String = songs[curSelected].songName;
+
+		#if PRELOAD_ALL
+		if (curPlaying > -1)
+		{
+			FlxG.sound.music.stop();
+			Cache.removeSound(Paths.instPath(songs[curPlaying].songName));
+		}
+		FlxG.sound.playMusic(Paths.inst(songName), 0);
+		curPlaying = curSelected;
+		#end
+
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		intendedScore = Highscore.getScore(songName, curDifficulty);
 		#end
 
 		var bullShit:Int = 0;

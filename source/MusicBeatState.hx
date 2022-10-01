@@ -49,7 +49,7 @@ class MusicBeatState extends FlxUIState
 			openSubState(new CustomFadeTransition(0.6, true));
 		FlxTransitionableState.skipNextTransOut = false;
 
-		Cache.clearUnusedGraphics();
+		Cache.clearUnused();
 	}
 
 	override function update(elapsed:Float)
@@ -68,7 +68,7 @@ class MusicBeatState extends FlxUIState
 	override function closeSubState()
 	{
 		super.closeSubState();
-		Cache.clearUnusedGraphics();
+		Cache.clearUnused(true);
 	}
 
 	private function updateBeat():Void

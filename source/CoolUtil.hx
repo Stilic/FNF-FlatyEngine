@@ -45,6 +45,9 @@ class CoolUtil
 		return daList;
 	}
 
+	/**
+	 * ALWAYS CALL THIS AFTER THE STATE CHANGE!!!
+	 */
 	public static function resetMusic(fade:Bool = false):Void
 	{
 		FlxG.sound.playMusic(Paths.music('freakyMenu'), fade ? 0 : 1);
@@ -82,7 +85,10 @@ class CoolUtil
 
 			@:privateAccess
 			if (graphic.bitmap.__texture != null)
+			{
 				graphic.bitmap.__texture.dispose();
+				graphic.bitmap.__texture = null;
+			}
 			graphic.bitmap.disposeImage();
 
 			FlxG.bitmap.remove(graphic);

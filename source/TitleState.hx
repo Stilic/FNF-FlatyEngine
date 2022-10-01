@@ -150,16 +150,6 @@ class TitleState extends MusicBeatState
 
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
-		#if mobile
-		for (touch in FlxG.touches.list)
-		{
-			if (touch.justPressed)
-			{
-				pressedEnter = true;
-			}
-		}
-		#end
-
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
 		if (gamepad != null)
@@ -175,11 +165,6 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-			if (FlxG.sound.music != null)
-			{
-				FlxG.sound.music.onComplete = null;
-			}
-
 			// #if !switch
 			// // If it's Friday according to da clock
 			// if (Date.now().getDay() == 5)
@@ -205,18 +190,12 @@ class TitleState extends MusicBeatState
 		}
 
 		if (pressedEnter && !skippedIntro && initialized)
-		{
 			skipIntro();
-		}
 
 		if (controls.UI_LEFT)
-		{
 			swagShader.update(elapsed * 0.1);
-		}
 		if (controls.UI_RIGHT)
-		{
 			swagShader.update(-elapsed * 0.1);
-		}
 
 		super.update(elapsed);
 	}

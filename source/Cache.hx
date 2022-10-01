@@ -5,6 +5,7 @@ import openfl.display.BitmapData;
 import openfl.media.Sound;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
+import flixel.system.FlxSound;
 import flixel.util.FlxDestroyUtil;
 import ui.PreferencesMenu;
 import ui.AtlasText;
@@ -21,7 +22,7 @@ class Cache
 		{
 			for (path in persistantAssets)
 			{
-				if (path.endsWith(suffix))
+				if (suffix.endsWith(path))
 					return true;
 			}
 		}
@@ -57,7 +58,7 @@ class Cache
 
 		if (Assets.exists(id, SOUND))
 		{
-			var music:Sound = Assets.getMusic(id, false);
+			var music = Assets.getMusic(id, false);
 			sounds.set(id, music);
 			return music;
 		}
@@ -72,7 +73,7 @@ class Cache
 
 		if (Assets.exists(id, SOUND))
 		{
-			var sound:Sound = Assets.getSound(id);
+			var sound = Assets.getSound(id);
 			sounds.set(id, sound);
 			return sound;
 		}
@@ -99,6 +100,44 @@ class Cache
 		return false;
 	}
 
+	public static function removeGraphic(id:String)
+	{
+		if (id != null)
+		{
+			for (image in images)
+			{
+				if (image.graphic.key == id)
+				{
+					images.remove(image);
+					FlxDestroyUtil.destroy(image);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public static function removeSound(id:String)
+	{
+		if (id != null && sounds.exists(id))
+		{
+			var sound = sounds.get(id);
+
+			sounds.remove(id);
+			Assets.cache.removeSound(id);
+
+			@:privateAccess
+			if (sound.__buffer != null)
+			{
+				sound.__buffer.dispose();
+				sound.__buffer = null;
+			}
+
+			return true;
+		}
+		return false;
+	}
+
 	public static function clear()
 	{
 		AtlasText.clearCache();
@@ -120,19 +159,13 @@ class Cache
 				FlxDestroyUtil.destroy(image);
 			}
 		}
-		for (key in sounds.keys())
-		{
-			if (!isPersistant(key))
-			{
-				sounds.remove(key);
-				Assets.cache.removeSound(key);
-			}
-		}
+
+		clearUnusedSounds();
 
 		CoolUtil.runGC();
 	}
 
-	public static function clearUnusedGraphics()
+	public static function clearUnused(onlyGraphics:Bool = false)
 	{
 		for (image in images)
 		{
@@ -142,6 +175,34 @@ class Cache
 				FlxDestroyUtil.destroy(image);
 			}
 		}
+
+		if (!onlyGraphics)
+			clearUnusedSounds();
+
+		CoolUtil.runGC();
+	}
+
+	// helpers
+	static function clearUnusedSounds()
+	{
+		var usedSounds:Array<Sound> = [];
+		FlxG.sound.list.forEachAlive(function(sound:FlxSound)
+		{
+			@:privateAccess
+			if (sound._sound != null)
+				usedSounds.push(sound._sound);
+		});
+		for (key => sound in sounds)
+		{
+			if (!usedSounds.contains(sound) && !isPersistant(key) && !soundIsPlayingAsMusic(sound))
+				removeSound(key);
+		}
+	}
+
+	inline static function soundIsPlayingAsMusic(sound:Sound)
+	{
+		@:privateAccess
+		return FlxG.sound.music != null && FlxG.sound.music.playing && FlxG.sound.music._sound == sound;
 	}
 }
 
