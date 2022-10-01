@@ -191,7 +191,9 @@ class PauseSubState extends MusicBeatSubstate
 						MusicBeatState.switchState(new StoryMenuState());
 					else
 						MusicBeatState.switchState(new FreeplayState());
+					#if NO_PRELOAD_ALL
 					CoolUtil.resetMusic();
+					#end
 
 				case "BACK":
 					menuItems = pauseOG;
