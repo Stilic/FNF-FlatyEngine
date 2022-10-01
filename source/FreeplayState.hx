@@ -193,16 +193,7 @@ class FreeplayState extends MusicBeatState
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 			PlayState.storyWeek = songs[curSelected].week;
-
-			// workaround to skip the reload of the inst
-			#if PRELOAD_ALL
-			var poop:String = Paths.instPath(songs[curSelected].songName);
-			Cache.persist(poop);
-			#end
 			LoadingState.loadAndSwitchState(new PlayState(), true);
-			#if PRELOAD_ALL
-			Cache.persistantAssets.remove(poop);
-			#end
 		}
 	}
 

@@ -144,26 +144,11 @@ class TitleState extends MusicBeatState
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 
 		if (FlxG.keys.justPressed.F)
-		{
 			FlxG.fullscreen = !FlxG.fullscreen;
-		}
 
-		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
+		var accept = controls.ACCEPT;
 
-		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
-
-		if (gamepad != null)
-		{
-			if (gamepad.justPressed.START)
-				pressedEnter = true;
-
-			#if switch
-			if (gamepad.justPressed.B)
-				pressedEnter = true;
-			#end
-		}
-
-		if (pressedEnter && !transitioning && skippedIntro)
+		if (accept && !transitioning && skippedIntro)
 		{
 			// #if !switch
 			// // If it's Friday according to da clock
@@ -189,7 +174,7 @@ class TitleState extends MusicBeatState
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 
-		if (pressedEnter && !skippedIntro && initialized)
+		if (accept && !skippedIntro && initialized)
 			skipIntro();
 
 		if (controls.UI_LEFT)

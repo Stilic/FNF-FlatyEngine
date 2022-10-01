@@ -514,7 +514,7 @@ class Controls extends FlxActionSet
 		map.set(Control.NOTE_LEFT, [DPAD_LEFT, X, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT]);
 		map.set(Control.NOTE_RIGHT, [DPAD_RIGHT, B, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT]);
 
-		map.set(Control.ACCEPT, [A]);
+		map.set(Control.ACCEPT, [A, START]);
 		map.set(Control.BACK, [B]);
 		#else
 		// Swap A-B / X-Y for switch
@@ -523,11 +523,11 @@ class Controls extends FlxActionSet
 		map.set(Control.NOTE_LEFT, [DPAD_LEFT, Y, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT]);
 		map.set(Control.NOTE_RIGHT, [DPAD_RIGHT, A, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT]);
 
-		map.set(Control.ACCEPT, [B]);
+		map.set(Control.ACCEPT, [B, START]);
 		map.set(Control.BACK, [A]);
 		#end
 		map.set(Control.PAUSE, [START]);
-		map.set(Control.RESET, [Y]);
+		map.set(Control.RESET, [LEFT_STICK_CLICK]);
 
 		if (gamepads.contains(id))
 			removeGamepad(id);

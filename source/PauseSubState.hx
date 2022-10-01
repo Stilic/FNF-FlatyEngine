@@ -128,82 +128,78 @@ class PauseSubState extends MusicBeatSubstate
 		changeSelection();
 	}
 
+	var cantUnpause:Float = 0.1;
+
 	override function update(elapsed:Float)
 	{
+		cantUnpause -= elapsed;
+
 		if (pauseMusic.volume < 0.5)
 			pauseMusic.volume += 0.01 * elapsed;
 
 		super.update(elapsed);
 
-		var upP = controls.UI_UP_P;
-		var downP = controls.UI_DOWN_P;
-		var accepted = controls.ACCEPT;
-
-		if (upP)
-		{
+		if (controls.UI_UP_P)
 			changeSelection(-1);
-		}
-		if (downP)
-		{
+		if (controls.UI_DOWN_P)
 			changeSelection(1);
-		}
 
-		if (accepted)
+		if (controls.ACCEPT && cantUnpause <= 0)
 		{
 			var daSelected:String = menuItems[curSelected];
 
 			if (menuItems == difficultyChoices && daSelected != 'BACK' && difficultyChoices.contains(daSelected))
 			{
-				var leSongRaw = PlayState.SONG.song.toLowerCase();
-				var leSong = Highscore.formatSong(PlayState.SONG.song.toLowerCase(), curSelected);
-
 				try
 				{
-					PlayState.SONG = Song.loadFromJson(leSong, leSongRaw);
+					PlayState.SONG = Song.loadFromJson(PlayState.SONG.song.toLowerCase(),
+						Highscore.formatSong(PlayState.SONG.song.toLowerCase(), curSelected));
 					PlayState.storyDifficulty = curSelected;
 					MusicBeatState.switchState(new PlayState());
 				}
-				catch (e)
+				catch (_)
 				{
-					trace("Uncaught Error: " + e);
 					menuItems = pauseOG;
 					regenMenu();
 				}
-				return;
 			}
-
-			switch (daSelected)
+			else
 			{
-				case "Resume":
-					close();
-				case "Restart Song":
-					MusicBeatState.resetState();
-				case "Change Difficulty":
-					menuItems = difficultyChoices;
-					regenMenu();
-				case "Toggle Practice Mode":
-					PlayState.practiceMode = !PlayState.practiceMode;
-					practiceText.visible = PlayState.practiceMode;
-				case "Exit to menu":
-					PlayState.seenCutscene = false;
-					PlayState.deathCounter = 0;
-					if (PlayState.isStoryMode)
-						MusicBeatState.switchState(new StoryMenuState());
-					else
-						MusicBeatState.switchState(new FreeplayState());
-					#if NO_PRELOAD_ALL
-					CoolUtil.resetMusic();
-					#end
+				switch (daSelected)
+				{
+					case "Resume":
+						close();
+					case "Restart Song":
+						MusicBeatState.resetState();
+					case "Change Difficulty":
+						menuItems = difficultyChoices;
+						regenMenu();
+					case "Toggle Practice Mode":
+						PlayState.practiceMode = !PlayState.practiceMode;
+						practiceText.visible = PlayState.practiceMode;
+					case "Exit to menu":
+						PlayState.seenCutscene = false;
+						PlayState.deathCounter = 0;
+						if (PlayState.isStoryMode)
+							MusicBeatState.switchState(new StoryMenuState());
+						else
+							MusicBeatState.switchState(new FreeplayState());
+						#if NO_PRELOAD_ALL
+						CoolUtil.resetMusic();
+						#end
 
-				case "BACK":
-					menuItems = pauseOG;
-					regenMenu();
+					case "BACK":
+						menuItems = pauseOG;
+						regenMenu();
+				}
 			}
 		}
 	}
 
 	override function destroy()
 	{
+		pauseMusic.kill();
+		FlxG.sound.list.remove(pauseMusic, true);
 		pauseMusic.destroy();
 
 		super.destroy();

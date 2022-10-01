@@ -27,6 +27,7 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
+import flixel.input.keyboard.FlxKey;
 import flixel.input.gamepad.FlxGamepad;
 import shaders.BuildingShaders;
 import ui.PreferencesMenu;
@@ -1911,22 +1912,25 @@ class PlayState extends MusicBeatState
 
 	private function getKeyFromCode(keyCode:Int):Int
 	{
-		for (i in 0...keysArray.length)
+		if (keyCode != FlxKey.NONE)
 		{
-			for (bind in keysArray[i])
+			for (i in 0...keysArray.length)
 			{
-				if (bind == keyCode)
-					return i;
+				for (bind in keysArray[i])
+				{
+					if (bind == keyCode)
+						return i;
+				}
 			}
 		}
-		return -1;
+		return FlxKey.NONE;
 	}
 
-	private function handleInput(key:Int, pressed:Bool)
+	private function handleInput(key:Int, down:Bool)
 	{
-		holdingArray[key] = pressed;
+		holdingArray[key] = down;
 
-		if (pressed)
+		if (down)
 		{
 			if (generatedMusic && !endingSong && !boyfriend.stunned)
 			{
@@ -1983,13 +1987,13 @@ class PlayState extends MusicBeatState
 	private function onKeyDown(evt:KeyboardEvent):Void
 	{
 		if (FlxG.keys.enabled
-			&& (FlxG.state.active || FlxG.state.persistentUpdate)
+			&& (persistentUpdate || subState == null)
 			&& !playerStrumline.botplay
 			&& !inCutscene
 			&& startedCountdown)
 		{
-			var key:Int = getKeyFromCode(evt.keyCode);
-			if (key > -1 && !holdingArray[key])
+			var key = getKeyFromCode(evt.keyCode);
+			if (key != FlxKey.NONE && !holdingArray[key])
 				handleInput(key, true);
 		}
 	}
@@ -1997,13 +2001,13 @@ class PlayState extends MusicBeatState
 	private function onKeyUp(evt:KeyboardEvent):Void
 	{
 		if (FlxG.keys.enabled
-			&& (FlxG.state.active || FlxG.state.persistentUpdate)
+			&& (persistentUpdate || subState == null)
 			&& !playerStrumline.botplay
 			&& !inCutscene
 			&& startedCountdown)
 		{
-			var key:Int = getKeyFromCode(evt.keyCode);
-			if (key > -1)
+			var key = getKeyFromCode(evt.keyCode);
+			if (key != FlxKey.NONE)
 				handleInput(key, false);
 		}
 	}
