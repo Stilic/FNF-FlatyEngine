@@ -27,7 +27,6 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
-import flixel.util.FlxDestroyUtil;
 import flixel.input.gamepad.FlxGamepad;
 import shaders.BuildingShaders;
 import ui.PreferencesMenu;
@@ -1703,7 +1702,10 @@ class PlayState extends MusicBeatState
 			var leIndex:Int = Conductor.ratings.indexOf(daRating);
 			if (leIndex > smallestRatingIndex)
 				smallestRatingIndex = leIndex;
-			fcString = Conductor.ratings[smallestRatingIndex].fc;
+			fcString = null;
+			var smallestRating:Rating = Conductor.ratings[smallestRatingIndex];
+			if (smallestRating.fc != null)
+				fcString = smallestRating.fc;
 		}
 
 		if (!practiceMode)

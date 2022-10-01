@@ -5,8 +5,10 @@ import cpp.NativeGc;
 #end
 #if CRASH_HANDLER
 import haxe.CallStack;
+#if sys
 import sys.io.File;
 import sys.FileSystem;
+#end
 import lime.app.Application;
 import openfl.events.UncaughtErrorEvent;
 #end
@@ -98,7 +100,12 @@ class Main extends Sprite
 	// crash handler made by sqirra-rng
 	static function onCrash(e:UncaughtErrorEvent):Void
 	{
+		if (FlxG.sound != null)
+			FlxG.sound.destroy(true);
+
+		#if discord_rpc
 		DiscordClient.shutdown();
+		#end
 
 		var errMsg:String = '';
 
@@ -107,22 +114,28 @@ class Main extends Sprite
 			switch (stackItem)
 			{
 				case FilePos(s, file, line, column):
-					errMsg += file + ' (line ' + line + ')\n';
+					errMsg += '$file:$line\n';
 				default:
-					Sys.println(stackItem);
+					CoolUtil.nativeTrace(stackItem);
 			}
 		}
 
-		errMsg += '\nUncaught Error: ' + e.error + '\nPlease report this error to the GitHub page: https://github.com/Stilic/FNF-SoftieEngine';
+		errMsg += '\nUncaught Error: ' + e.error + '\nPlease report this error to the GitHub issues page: https://github.com/Stilic/FNF-FlatyEngine/issues';
 
+		#if sys
 		if (!FileSystem.exists(crashHandlerDirectory))
 			FileSystem.createDirectory(crashHandlerDirectory);
 		File.saveContent(crashHandlerDirectory + '/' + Date.now().toString().replace(' ', '_').replace(':', "'") + '.txt', errMsg + '\n');
+		#end
 
-		Sys.println(errMsg);
+		CoolUtil.nativeTrace(errMsg);
 		Application.current.window.alert(errMsg, 'Error!');
 
+		#if sys
 		Sys.exit(1);
+		#else
+		Application.current.window.close();
+		#end
 	}
 	#end
 }

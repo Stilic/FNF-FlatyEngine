@@ -9,6 +9,13 @@ import java.vm.Gc;
 #elseif neko
 import neko.vm.Gc;
 #end
+#if sys
+import sys.io.File;
+import sys.FileSystem;
+#end
+#if js
+import js.html.Console;
+#end
 import openfl.utils.Assets;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
@@ -92,6 +99,15 @@ class CoolUtil
 		Gc.major();
 		#elseif (java || neko)
 		Gc.run(true);
+		#end
+	}
+
+	inline public static function nativeTrace(data:Dynamic)
+	{
+		#if sys
+		Sys.println(data);
+		#elseif js
+		Console.error(data);
 		#end
 	}
 
