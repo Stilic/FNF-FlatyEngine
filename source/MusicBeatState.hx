@@ -3,8 +3,11 @@ package;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.FlxState;
+import flixel.FlxSubState;
 import flixel.addons.ui.FlxUIState;
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
 
 class MusicBeatState extends FlxUIState
 {
@@ -49,12 +52,11 @@ class MusicBeatState extends FlxUIState
 			openSubState(new CustomFadeTransition(0.6, true));
 		FlxTransitionableState.skipNextTransOut = false;
 
-		Cache.clearUnusedImages();
+		Cache.clearUnusedGraphics();
 	}
 
 	override function update(elapsed:Float)
 	{
-		// everyStep();
 		var oldStep:Int = curStep;
 
 		updateCurStep();
@@ -69,7 +71,7 @@ class MusicBeatState extends FlxUIState
 	override function closeSubState()
 	{
 		super.closeSubState();
-		Cache.clearUnusedImages();
+		Cache.clearUnusedGraphics();
 	}
 
 	private function updateBeat():Void

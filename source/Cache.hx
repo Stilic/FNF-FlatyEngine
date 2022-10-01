@@ -132,7 +132,7 @@ class Cache
 		CoolUtil.runGC();
 	}
 
-	public static function clearUnusedImages()
+	public static function clearUnusedGraphics()
 	{
 		for (image in images)
 		{
