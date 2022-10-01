@@ -16,6 +16,12 @@ class Cache
 {
 	public static var persistantAssets:Array<String> = ['music/freakyMenu.${Paths.SOUND_EXT}', 'music/breakfast.${Paths.SOUND_EXT}'];
 
+	public static function persist(id:String)
+	{
+		if (!persistantAssets.contains(id))
+			persistantAssets.push(id);
+	}
+
 	public static function isPersistant(suffix:String)
 	{
 		if (persistantAssets != null)
@@ -121,18 +127,9 @@ class Cache
 	{
 		if (id != null && sounds.exists(id))
 		{
-			var sound = sounds.get(id);
-
+			sounds.get(id).close();
 			sounds.remove(id);
 			Assets.cache.removeSound(id);
-
-			@:privateAccess
-			if (sound.__buffer != null)
-			{
-				sound.__buffer.dispose();
-				sound.__buffer = null;
-			}
-
 			return true;
 		}
 		return false;

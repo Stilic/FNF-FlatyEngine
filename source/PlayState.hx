@@ -902,6 +902,13 @@ class PlayState extends MusicBeatState
 			keysArray.push(controls.getInputsFor(dir, Keys));
 
 		super.create();
+
+		Paths.image('alphabet');
+		// Paths.image('characters/' + GameOverSubstate.character);
+
+		Paths.music('breakfast');
+		for (i in 1...3)
+			Paths.sound('missnote' + i);
 	}
 
 	function playCutscene(name:String, atEndOfSong:Bool = false, ?callback:Void->Void)
@@ -1032,13 +1039,6 @@ class PlayState extends MusicBeatState
 
 	function startCountdown():Void
 	{
-		Paths.image('alphabet');
-		// Paths.image('characters/' + GameOverSubstate.character);
-
-		Paths.music('breakfast');
-		for (i in 1...3)
-			Paths.sound('missnote' + i);
-
 		inCutscene = false;
 
 		camHUD.visible = true;

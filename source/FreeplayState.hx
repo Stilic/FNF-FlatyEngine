@@ -188,14 +188,21 @@ class FreeplayState extends MusicBeatState
 
 		if (controls.ACCEPT)
 		{
-			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
-
-			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+			PlayState.SONG = Song.loadFromJson(Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty),
+				songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
-
 			PlayState.storyWeek = songs[curSelected].week;
+
+			// workaround to skip the reload of the inst
+			#if PRELOAD_ALL
+			var poop:String = Paths.instPath(songs[curSelected].songName);
+			Cache.persist(poop);
+			#end
 			LoadingState.loadAndSwitchState(new PlayState(), true);
+			#if PRELOAD_ALL
+			Cache.persistantAssets.remove(poop);
+			#end
 		}
 	}
 

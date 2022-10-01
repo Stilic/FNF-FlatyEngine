@@ -66,19 +66,19 @@ class Paths
 		return getPath('data/$key.json', TEXT, library);
 	}
 
-	static public function sound(key:String, ?library:String)
+	static public function sound(key:String, ?library:String, persist:Bool = false)
 	{
-		return returnSound('sounds/$key', library);
+		return returnSound('sounds/$key', library, persist);
 	}
 
-	inline static public function soundRandom(key:String, min:Int, max:Int, ?library:String)
+	inline static public function soundRandom(key:String, min:Int, max:Int, ?library:String, persist:Bool = false)
 	{
-		return sound(key + FlxG.random.int(min, max), library);
+		return sound(key + FlxG.random.int(min, max), library, persist);
 	}
 
-	inline static public function music(key:String, ?library:String)
+	inline static public function music(key:String, ?library:String, persist:Bool = false)
 	{
-		return returnSound('music/$key', library, true);
+		return returnSound('music/$key', library, true, persist);
 	}
 
 	inline static public function voicesPath(song:String)
@@ -91,19 +91,19 @@ class Paths
 		return getLibraryPathForce('${song.toLowerCase()}/Inst.$SOUND_EXT', 'songs');
 	}
 
-	inline static public function voices(song:String)
+	inline static public function voices(song:String, persist:Bool = false)
 	{
-		return returnSound('${song.toLowerCase()}/Voices', 'songs', true);
+		return returnSound('${song.toLowerCase()}/Voices', 'songs', true, persist);
 	}
 
-	inline static public function inst(song:String)
+	inline static public function inst(song:String, persist:Bool = false)
 	{
-		return returnSound('${song.toLowerCase()}/Inst', 'songs', true);
+		return returnSound('${song.toLowerCase()}/Inst', 'songs', true, persist);
 	}
 
-	inline static public function image(key:String, ?library:String)
+	inline static public function image(key:String, ?library:String, persist:Bool = false)
 	{
-		return returnGraphic('images/$key', library);
+		return returnGraphic('images/$key', library, persist);
 	}
 
 	inline static public function font(key:String)
@@ -126,9 +126,14 @@ class Paths
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), getPath('images/$key.txt', library));
 	}
 
-	public static function returnGraphic(key:String, ?library:String)
+	public static function returnGraphic(key:String, ?library:String, persist:Bool = false)
 	{
-		var graphic = Cache.getGraphic(getPath('$key.png', IMAGE, library));
+		var path = getPath('$key.png', IMAGE, library);
+
+		if (persist)
+			Cache.persist(path);
+
+		var graphic = Cache.getGraphic(path);
 		if (graphic != null)
 			return graphic;
 
@@ -136,9 +141,13 @@ class Paths
 		return null;
 	}
 
-	public static function returnSound(key:String, ?library:String, stream:Bool = false)
+	public static function returnSound(key:String, ?library:String, stream:Bool = false, persist:Bool = false)
 	{
 		var path = getPath('$key.$SOUND_EXT', SOUND, library);
+
+		if (persist)
+			Cache.persist(path);
+
 		var sound;
 		#if lime_vorbis
 		if (stream)
