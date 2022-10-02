@@ -7,6 +7,7 @@ import openfl.net.FileReference;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.FlxCamera;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
@@ -16,6 +17,9 @@ using StringTools;
 class CharacterEditorState extends MusicBeatState
 {
 	var _file:FileReference;
+
+	var camGame:FlxCamera;
+	var camHUD:FlxCamera;
 
 	var char:Character;
 	var camFollow:FlxObject;
@@ -28,6 +32,14 @@ class CharacterEditorState extends MusicBeatState
 	{
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
+
+		camGame = new FlxCamera();
+		camHUD = new FlxCamera();
+		camGame.bgColor.alpha = 0;
+		camHUD.bgColor.alpha = 0;
+
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camHUD, false);
 
 		var gridBG:FlxSprite = FlxGridOverlay.create(10, 10, -1, -1, true, FlxColor.fromRGB(48, 48, 48), FlxColor.fromRGB(78, 78, 78));
 		gridBG.scrollFactor.set();
@@ -44,6 +56,9 @@ class CharacterEditorState extends MusicBeatState
 		textAnim.size = 30;
 
 		loadChar();
+
+		dumbText.cameras = [camHUD];
+		textAnim.cameras = [camHUD];
 
 		add(dumbText);
 		add(textAnim);
