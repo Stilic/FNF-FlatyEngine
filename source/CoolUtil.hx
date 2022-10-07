@@ -79,7 +79,7 @@ class CoolUtil
 
 	public static function destroyGraphic(graphic:FlxGraphic):Null<FlxGraphic>
 	{
-		if (graphic != null)
+		if (graphic != null && graphic.bitmap != null)
 		{
 			graphic.bitmap.lock();
 
