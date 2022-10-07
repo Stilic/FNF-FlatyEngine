@@ -139,15 +139,6 @@ class Cache
 	{
 		AtlasText.clearCache();
 
-		// clear the flixel cache manually since the clearCache function is dumb
-		@:privateAccess
-		for (graphic in FlxG.bitmap._cache)
-		{
-			// it crashes at some point if i put it after the custom cache clear code bruh
-			if (!hasGraphic(graphic.key))
-				CoolUtil.destroyGraphic(graphic);
-		}
-
 		for (image in images)
 		{
 			if (!isPersistant(image.graphic.key))
@@ -155,6 +146,14 @@ class Cache
 				images.remove(image);
 				FlxDestroyUtil.destroy(image);
 			}
+		}
+
+		// clear the flixel cache manually since the clearCache function is dumb
+		@:privateAccess
+		for (graphic in FlxG.bitmap._cache)
+		{
+			if (!isPersistant(image.graphic.key))
+				CoolUtil.destroyGraphic(graphic);
 		}
 
 		clearUnusedSounds();
@@ -186,7 +185,7 @@ class Cache
 		FlxG.sound.list.forEachAlive(function(sound:FlxSound)
 		{
 			@:privateAccess
-			if (sound._sound != null)
+			if (sound._sound != null && !usedSounds.contains(sound._sound))
 				usedSounds.push(sound._sound);
 		});
 		for (key => sound in sounds)
@@ -199,7 +198,7 @@ class Cache
 	inline static function soundIsPlayingAsMusic(sound:Sound)
 	{
 		@:privateAccess
-		return FlxG.sound.music != null && FlxG.sound.music.playing && FlxG.sound.music._sound == sound;
+		return FlxG.sound.music != null && FlxG.sound.music._sound == sound;
 	}
 }
 
