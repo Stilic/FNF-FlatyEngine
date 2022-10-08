@@ -24,13 +24,10 @@ class Cache
 
 	public static function isPersistant(suffix:String)
 	{
-		if (persistantAssets != null)
+		for (path in persistantAssets)
 		{
-			for (path in persistantAssets)
-			{
-				if (suffix.endsWith(path))
-					return true;
-			}
+			if (suffix.endsWith(path))
+				return true;
 		}
 		return false;
 	}
@@ -40,10 +37,10 @@ class Cache
 
 	public static function getGraphic(id:String)
 	{
-		for (bitmap in images)
+		for (image in images)
 		{
-			if (bitmap.graphic.key == id)
-				return bitmap.graphic;
+			if (image.graphic.key == id)
+				return image.graphic;
 		}
 
 		if (Assets.exists(id, IMAGE))
@@ -165,7 +162,7 @@ class Cache
 	{
 		for (image in images)
 		{
-			if (!isPersistant(image.graphic.key) && image.graphic.useCount <= 0)
+			if (image.graphic.useCount <= 0 && !isPersistant(image.graphic.key))
 			{
 				images.remove(image);
 				FlxDestroyUtil.destroy(image);
@@ -178,7 +175,6 @@ class Cache
 		CoolUtil.runGC();
 	}
 
-	// helpers
 	static function clearUnusedSounds()
 	{
 		var usedSounds:Array<Sound> = [];
