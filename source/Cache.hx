@@ -192,7 +192,7 @@ class Cache
 
 		@:privateAccess
 		if (FlxG.sound.music != null && FlxG.sound.music._sound != null && !usedSounds.contains(FlxG.sound.music._sound))
-			usedSounds.push(sound._sound);
+			usedSounds.push(FlxG.sound.music._sound);
 
 		for (key in sounds.keys())
 		{
