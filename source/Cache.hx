@@ -56,7 +56,7 @@ class Cache
 	}
 
 	#if lime_vorbis
-	// we call this "music streaming, without loading the full music in the memory"
+	// music streaming stuff
 	public static function getMusic(id:String)
 	{
 		if (sounds.exists(id))
@@ -182,23 +182,23 @@ class Cache
 	static function clearUnusedSounds()
 	{
 		var usedSounds:Array<Sound> = [];
+
 		FlxG.sound.list.forEachAlive(function(sound:FlxSound)
 		{
 			@:privateAccess
 			if (sound._sound != null && !usedSounds.contains(sound._sound))
 				usedSounds.push(sound._sound);
 		});
-		for (key => sound in sounds)
+
+		@:privateAccess
+		if (FlxG.sound.music != null && FlxG.sound.music._sound != null && !usedSounds.contains(FlxG.sound.music._sound))
+			usedSounds.push(sound._sound);
+
+		for (key in sounds.keys())
 		{
-			if (!usedSounds.contains(sound) && !isPersistant(key) && !soundIsPlayingAsMusic(sound))
+			if (!usedSounds.contains(sounds.get(key)) && !isPersistant(key))
 				removeSound(key);
 		}
-	}
-
-	inline static function soundIsPlayingAsMusic(sound:Sound)
-	{
-		@:privateAccess
-		return FlxG.sound.music != null && FlxG.sound.music._sound == sound;
 	}
 }
 
