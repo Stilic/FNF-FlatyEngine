@@ -113,7 +113,7 @@ class CoolUtil
 		#if sys
 		Sys.println(data);
 		#elseif js
-		Console.error(data);
+		Console.log(data);
 		#end
 	}
 
