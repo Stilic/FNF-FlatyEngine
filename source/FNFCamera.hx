@@ -13,7 +13,7 @@ class FNFCamera extends FlxCamera
 
 	public var lerp:Float;
 
-	override public function new(Lerp:Float = 0, Width:Int = 0, Height:Int = 0, Zoom:Float = 0)
+	override public function new(Lerp:Float, Width:Int = 0, Height:Int = 0, Zoom:Float = 0)
 	{
 		super(0, 0, Width, Height, Zoom);
 		lerp = Lerp;

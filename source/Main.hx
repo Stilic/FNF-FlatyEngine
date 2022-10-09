@@ -87,11 +87,6 @@ class Main extends Sprite
 		#if CRASH_HANDLER
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		#end
-
-		#if cpp
-		NativeGc.enable(true);
-		#end
-		CoolUtil.runGC();
 	}
 
 	#if CRASH_HANDLER

@@ -63,6 +63,5 @@ class StartState extends FlxState
 		super.create();
 
 		FlxG.switchState(new TitleState());
-		// LoadingState.loadAndSwitchState(new editors.CharacterEditorState());
 	}
 }

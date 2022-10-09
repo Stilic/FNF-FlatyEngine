@@ -24,13 +24,10 @@ class Cache
 
 	public static function isPersistant(suffix:String)
 	{
-		if (persistantAssets != null)
+		for (path in persistantAssets)
 		{
-			for (path in persistantAssets)
-			{
-				if (suffix.endsWith(path))
-					return true;
-			}
+			if (suffix.endsWith(path))
+				return true;
 		}
 		return false;
 	}
@@ -40,10 +37,10 @@ class Cache
 
 	public static function getGraphic(id:String)
 	{
-		for (bitmap in images)
+		for (image in images)
 		{
-			if (bitmap.graphic.key == id)
-				return bitmap.graphic;
+			if (image.graphic.key == id)
+				return image.graphic;
 		}
 
 		if (Assets.exists(id, IMAGE))
@@ -56,7 +53,7 @@ class Cache
 	}
 
 	#if lime_vorbis
-	// we call this "music streaming, without loading the full music in the memory"
+	// music streaming stuff
 	public static function getMusic(id:String)
 	{
 		if (sounds.exists(id))
@@ -139,15 +136,6 @@ class Cache
 	{
 		AtlasText.clearCache();
 
-		// clear the flixel cache manually since the clearCache function is dumb
-		@:privateAccess
-		for (graphic in FlxG.bitmap._cache)
-		{
-			// it crashes at some point if i put it after the custom cache clear code bruh
-			if (!hasGraphic(graphic.key))
-				CoolUtil.destroyGraphic(graphic);
-		}
-
 		for (image in images)
 		{
 			if (!isPersistant(image.graphic.key))
@@ -155,6 +143,14 @@ class Cache
 				images.remove(image);
 				FlxDestroyUtil.destroy(image);
 			}
+		}
+
+		// clear the flixel cache manually since the clearCache function is dumb
+		@:privateAccess
+		for (graphic in FlxG.bitmap._cache)
+		{
+			if (!isPersistant(graphic.key))
+				CoolUtil.destroyGraphic(graphic);
 		}
 
 		clearUnusedSounds();
@@ -166,7 +162,7 @@ class Cache
 	{
 		for (image in images)
 		{
-			if (!isPersistant(image.graphic.key) && image.graphic.useCount <= 0)
+			if (image.graphic.useCount <= 0 && !isPersistant(image.graphic.key))
 			{
 				images.remove(image);
 				FlxDestroyUtil.destroy(image);
@@ -179,27 +175,26 @@ class Cache
 		CoolUtil.runGC();
 	}
 
-	// helpers
 	static function clearUnusedSounds()
 	{
 		var usedSounds:Array<Sound> = [];
+
 		FlxG.sound.list.forEachAlive(function(sound:FlxSound)
 		{
 			@:privateAccess
-			if (sound._sound != null)
+			if (sound._sound != null && !usedSounds.contains(sound._sound))
 				usedSounds.push(sound._sound);
 		});
-		for (key => sound in sounds)
+
+		@:privateAccess
+		if (FlxG.sound.music != null && FlxG.sound.music._sound != null && !usedSounds.contains(FlxG.sound.music._sound))
+			usedSounds.push(FlxG.sound.music._sound);
+
+		for (key in sounds.keys())
 		{
-			if (!usedSounds.contains(sound) && !isPersistant(key) && !soundIsPlayingAsMusic(sound))
+			if (!usedSounds.contains(sounds.get(key)) && !isPersistant(key))
 				removeSound(key);
 		}
-	}
-
-	inline static function soundIsPlayingAsMusic(sound:Sound)
-	{
-		@:privateAccess
-		return FlxG.sound.music != null && FlxG.sound.music.playing && FlxG.sound.music._sound == sound;
 	}
 }
 
