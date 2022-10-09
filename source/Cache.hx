@@ -149,7 +149,7 @@ class Cache
 		@:privateAccess
 		for (graphic in FlxG.bitmap._cache)
 		{
-			if (!isPersistant(image.graphic.key))
+			if (!isPersistant(graphic.key))
 				CoolUtil.destroyGraphic(graphic);
 		}
 
