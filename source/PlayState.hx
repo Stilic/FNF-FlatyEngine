@@ -29,6 +29,7 @@ import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.input.gamepad.FlxGamepad;
+import Strumline.Receptor;
 import shaders.BuildingShaders;
 import ui.PreferencesMenu;
 
@@ -765,11 +766,9 @@ class PlayState extends MusicBeatState
 		strumlines.push(opponentStrumline);
 		strumlines.push(playerStrumline);
 
-		for (strumline in strumlines)
+		if (!isStoryMode || isFirstStorySong)
 		{
-			strumline.modManager.registerDefaultMods();
-
-			if (!isStoryMode || isFirstStorySong)
+			for (strumline in strumlines)
 			{
 				strumline.receptors.forEachAlive(function(receptor:Receptor)
 				{
@@ -1393,7 +1392,7 @@ class PlayState extends MusicBeatState
 
 			// 1 / 1000 chance for Gitaroo Man easter egg
 			if (FlxG.random.bool(0.1))
-				MusicBeatState.switchState(new GitarooPause());
+				Main.switchState(new GitarooPause());
 			else
 			{
 				var pauseMenu:PauseSubState = new PauseSubState();
@@ -1408,7 +1407,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
-			MusicBeatState.switchState(new editors.ChartingState());
+			Main.switchState(new editors.ChartingState());
 
 			#if discord_rpc
 			DiscordClient.changePresence("Chart Editor", null, null, true);
@@ -1436,10 +1435,10 @@ class PlayState extends MusicBeatState
 			iconP2.animation.curAnim.curFrame = 0;
 
 		/* if (FlxG.keys.justPressed.NINE)
-			MusicBeatState.switchState(new Charting()); */
+			Main.switchState(new Charting()); */
 
 		if (FlxG.keys.justPressed.EIGHT)
-			MusicBeatState.switchState(new editors.CharacterEditorState());
+			Main.switchState(new editors.CharacterEditorState());
 
 		if (generatedMusic && !endingSong)
 			cameraSection(Std.int(curStep / 16));
@@ -1469,7 +1468,7 @@ class PlayState extends MusicBeatState
 					gf.danceSpeed = 1;
 					// case 163:
 					// FlxG.sound.music.stop();
-					// MusicBeatState.switchState(new TitleState());
+					// Main.switchState(new TitleState());
 			}
 		}
 
@@ -1480,7 +1479,7 @@ class PlayState extends MusicBeatState
 				case 128, 129, 130:
 					vocals.volume = 0;
 					// FlxG.sound.music.stop();
-					// MusicBeatState.switchState(new PlayState());
+					// Main.switchState(new PlayState());
 			}
 		}
 		// better streaming of shit
@@ -1516,7 +1515,7 @@ class PlayState extends MusicBeatState
 
 				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
-				// MusicBeatState.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+				// Main.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 				#if discord_rpc
 				// Game Over doesn't get his own variable because it's only used here
@@ -1629,7 +1628,7 @@ class PlayState extends MusicBeatState
 
 			if (storyPlaylist.length <= 0)
 			{
-				MusicBeatState.switchState(new StoryMenuState());
+				Main.switchState(new StoryMenuState());
 
 				CoolUtil.resetMusic();
 
@@ -1681,7 +1680,7 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			MusicBeatState.switchState(new FreeplayState());
+			Main.switchState(new FreeplayState());
 			#if NO_PRELOAD_ALL
 			CoolUtil.resetMusic();
 			#end
@@ -1932,58 +1931,49 @@ class PlayState extends MusicBeatState
 	{
 		holdingArray[key] = down;
 
-		if (down)
+		if (down && generatedMusic && !endingSong && !boyfriend.stunned)
 		{
-			if (generatedMusic && !endingSong && !boyfriend.stunned)
-			{
-				// accurate hit moment part one
-				var lastTime:Float = Conductor.songPosition;
-				Conductor.songPosition = FlxG.sound.music.time;
+			// accurate hit moment part one
+			var lastTime:Float = Conductor.songPosition;
+			Conductor.songPosition = FlxG.sound.music.time;
 
-				var possibleNotes:Array<Note> = [];
-				playerStrumline.notesGroup.forEachAlive(function(daNote:Note)
+			var possibleNotes:Array<Note> = [];
+			playerStrumline.notesGroup.forEachAlive(function(daNote:Note)
+			{
+				if (daNote.noteData == key && !daNote.isSustainNote && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && daNote.canBeHit)
+					possibleNotes.push(daNote);
+			});
+			possibleNotes.sort(sortByTime);
+			if (possibleNotes.length > 0)
+			{
+				var pressedNotes:Array<Note> = [];
+				var blockPress:Bool = false;
+				for (note in possibleNotes)
 				{
-					if (daNote.noteData == key && !daNote.isSustainNote && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && daNote.canBeHit)
-						possibleNotes.push(daNote);
-				});
-				possibleNotes.sort(sortByTime);
-				if (possibleNotes.length > 0)
-				{
-					var pressedNotes:Array<Note> = [];
-					var blockPress:Bool = false;
-					for (note in possibleNotes)
+					for (pressedNote in pressedNotes)
 					{
-						for (pressedNote in pressedNotes)
-						{
-							if (Math.abs(pressedNote.strumTime - note.strumTime) < 1.5)
-								playerStrumline.removeNote(pressedNote);
-							else
-								blockPress = true;
-						}
-						if (!blockPress)
-						{
-							goodNoteHit(playerStrumline, note);
-							pressedNotes.push(note);
-						}
+						if (Math.abs(pressedNote.strumTime - note.strumTime) < 1.5)
+							playerStrumline.removeNote(pressedNote);
+						else
+							blockPress = true;
+					}
+					if (!blockPress)
+					{
+						goodNoteHit(playerStrumline, note);
+						pressedNotes.push(note);
 					}
 				}
-				else if (!PreferencesMenu.getPref('ghost-tapping'))
-					noteMissPress(key);
-
-				// accurate hit moment part two (the old times)
-				Conductor.songPosition = lastTime;
 			}
+			else if (!PreferencesMenu.getPref('ghost-tapping'))
+				noteMissPress(key);
 
-			var receptor:Receptor = playerStrumline.receptors.members[key];
-			if (receptor != null && receptor.animation.curAnim.name != 'confirm')
-				receptor.playAnim('pressed');
+			// accurate hit moment part two (the old times)
+			Conductor.songPosition = lastTime;
 		}
-		else
-		{
-			var receptor:Receptor = playerStrumline.receptors.members[key];
-			if (receptor != null)
-				receptor.playAnim('static');
-		}
+
+		var receptor = playerStrumline.receptors.members[key];
+		if (receptor != null && (!down || receptor.animation.curAnim.name != 'confirm'))
+			receptor.playAnim(down ? 'pressed' : 'static');
 	}
 
 	private function onKeyDown(evt:KeyboardEvent):Void
@@ -2119,7 +2109,7 @@ class PlayState extends MusicBeatState
 				char.holdTimer = 0;
 			}
 
-			var receptor:Receptor = strumline.receptors.members[note.noteData];
+			var receptor = strumline.receptors.members[note.noteData];
 			if (receptor != null)
 			{
 				if (note.mustPress)

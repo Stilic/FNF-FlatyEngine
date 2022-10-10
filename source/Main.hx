@@ -21,6 +21,7 @@ import openfl.events.Event;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
+import flixel.addons.transition.FlxTransitionableState;
 import ui.PreferencesMenu;
 
 using StringTools;
@@ -59,18 +60,14 @@ class Main extends Sprite
 	{
 		if (hasEventListener(Event.ADDED_TO_STAGE))
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-		setupGame();
-	}
 
-	private function setupGame():Void
-	{
 		#if polymod
 		ModHandler.init();
 		#end
 
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
-		var zoom = Math.min(stageWidth / gameWidth, stageHeight / gameHeight);
+		var zoom:Float = Math.min(stageWidth / gameWidth, stageHeight / gameHeight);
 		addChild(new FlxGame(Math.ceil(stageWidth / zoom), Math.ceil(stageHeight / zoom), initialState, zoom, framerate, framerate, skipSplash,
 			startFullscreen));
 
@@ -87,6 +84,29 @@ class Main extends Sprite
 		#if CRASH_HANDLER
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		#end
+	}
+
+	public static function switchState(nextState:FlxState)
+	{
+		var callback = function()
+		{
+			if (nextState == FlxG.state)
+				FlxG.resetState();
+			else
+				FlxG.switchState(nextState);
+		};
+		if (!FlxTransitionableState.skipNextTransIn)
+		{
+			FlxG.state.openSubState(new FadeSubstate(0.5, false, callback));
+			FlxTransitionableState.skipNextTransIn = false;
+		}
+		else
+			callback();
+	}
+
+	inline public static function resetState()
+	{
+		switchState(FlxG.state);
 	}
 
 	#if CRASH_HANDLER

@@ -1,17 +1,141 @@
 package;
 
+import flixel.math.FlxMath;
 import flixel.math.FlxRect;
+import flixel.math.FlxPoint;
 import flixel.group.FlxGroup;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import ui.PreferencesMenu;
-import modchart.ModManager;
+
+using StringTools;
+
+class Receptor extends FNFSprite
+{
+	public var noteData:Int;
+
+	public var direction:Float = 90;
+	public var downscroll:Bool = false;
+	public var sustainReduce:Bool = true;
+
+	var resetAnim:Float = 0;
+
+	override public function new(x:Float, y:Float, noteData:Int, downscroll:Bool)
+	{
+		super(x, y);
+
+		this.noteData = noteData;
+		this.downscroll = downscroll;
+
+		if (PlayState.curStage.startsWith('school'))
+		{
+			loadGraphic(Paths.image('pixelUI/arrows-pixels'), true, 17, 17);
+
+			antialiasing = false;
+			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+
+			switch (noteData)
+			{
+				case 0:
+					animation.add('static', [0], 12);
+					animation.add('pressed', [4, 8], 12, false);
+					animation.add('confirm', [12, 16], 12, false);
+				case 1:
+					animation.add('static', [1], 12);
+					animation.add('pressed', [5, 9], 12, false);
+					animation.add('confirm', [13, 17], 12, false);
+				case 2:
+					animation.add('static', [2], 12);
+					animation.add('pressed', [6, 10], 12, false);
+					animation.add('confirm', [14, 18], 12, false);
+				case 3:
+					animation.add('static', [3], 12);
+					animation.add('pressed', [7, 11], 12, false);
+					animation.add('confirm', [15, 19], 12, false);
+			}
+		}
+		else
+		{
+			frames = Paths.getSparrowAtlas('NOTE_assets');
+
+			antialiasing = true;
+			setGraphicSize(Std.int(width * 0.7));
+
+			switch (noteData)
+			{
+				case 0:
+					animation.addByPrefix('static', 'arrowLEFT', 24);
+					animation.addByPrefix('pressed', 'left press', 24, false);
+					animation.addByPrefix('confirm', 'left confirm', 24, false);
+
+					addOffset('confirm', -1, -4);
+				case 1:
+					animation.addByPrefix('static', 'arrowDOWN', 24);
+					animation.addByPrefix('pressed', 'down press', 24, false);
+					animation.addByPrefix('confirm', 'down confirm', 24, false);
+
+					addOffset('confirm', -3, -1.5);
+				case 2:
+					animation.addByPrefix('static', 'arrowUP', 24);
+					animation.addByPrefix('pressed', 'up press', 24, false);
+					animation.addByPrefix('confirm', 'up confirm', 24, false);
+
+					addOffset('confirm', -1.5, -1);
+				case 3:
+					animation.addByPrefix('static', 'arrowRIGHT', 24);
+					animation.addByPrefix('pressed', 'right press', 24, false);
+					animation.addByPrefix('confirm', 'right confirm', 24, false);
+
+					addOffset('confirm', -3, 0);
+			}
+		}
+
+		updateHitbox();
+	}
+
+	override function update(elapsed:Float)
+	{
+		if (resetAnim > 0)
+		{
+			resetAnim -= elapsed;
+			if (resetAnim <= 0)
+			{
+				playAnim('static');
+				resetAnim = 0;
+			}
+		}
+
+		super.update(elapsed);
+	}
+
+	override function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0)
+	{
+		super.playAnim(AnimName, Force, Reversed, Frame);
+
+		var leOffset:FlxPoint = offset.copyTo();
+		centerOffsets();
+		offset.addPoint(leOffset);
+		centerOrigin();
+		origin.addPoint(leOffset);
+	}
+
+	public function autoConfirm(time:Float)
+	{
+		playAnim('confirm', true);
+		resetAnim = time;
+	}
+
+	public function postAddedToGroup()
+	{
+		scrollFactor.set();
+		playAnim('static');
+		x += Note.swagWidth * noteData;
+	}
+}
 
 class Strumline extends FlxGroup
 {
-	public var modManager(default, null):ModManager;
-
 	public var receptors(default, null):FlxTypedGroup<Receptor>;
 
 	public var allNotes(default, null):FlxTypedGroup<Note>;
@@ -38,8 +162,6 @@ class Strumline extends FlxGroup
 		super();
 
 		this.botplay = botplay;
-
-		modManager = new ModManager();
 
 		var smClipStyle:Bool = PreferencesMenu.getPref('sm-clip');
 
@@ -82,79 +204,102 @@ class Strumline extends FlxGroup
 	{
 		super.update(elapsed);
 
-		allNotes.forEachAlive(function(daNote:Note)
+		var roundedSpeed:Float = FlxMath.roundDecimal(PlayState.SONG.speed, 2);
+		allNotes.forEachAlive(function(note:Note)
 		{
-			var shouldRemove:Bool = isOutsideScreen(daNote.strumTime);
-			daNote.active = !shouldRemove;
-			daNote.visible = !shouldRemove;
+			var shouldRemove:Bool = isOutsideScreen(note.strumTime);
+			note.active = !shouldRemove;
+			note.visible = !shouldRemove;
 
-			var receptor:Receptor = receptors.members[daNote.noteData % receptors.length];
+			var receptor:Receptor = receptors.members[note.noteData % receptors.length];
+			var scrollMult:Int = receptor.downscroll ? 1 : -1;
+			var distance:Float = (0.45 * scrollMult) * (Conductor.songPosition - note.strumTime) * roundedSpeed;
+			var angleDir:Float = (receptor.direction * Math.PI) / 180;
 
-			modManager.setPos(daNote, receptor.x, receptor.y, receptor.direction, receptor.downscroll, PlayState.SONG != null ? PlayState.SONG.speed : 1);
+			note.x = receptor.x + note.offsetX + Math.cos(angleDir) * distance;
+			note.y = receptor.y + note.offsetY + Math.sin(angleDir) * distance;
 
-			// i am so fucking sorry for these if conditions
-			if (daNote.isSustainNote)
+			if (note.isSustainNote)
 			{
-				if (receptor.sustainReduce && (botplay || daNote.wasGoodHit || (daNote.prevNote != null && daNote.prevNote.wasGoodHit)))
+				note.y += (Note.swagWidth / 7.5) * scrollMult;
+				if (receptor.downscroll)
 				{
-					var center:Float = receptor.y + Note.swagWidth / 2;
-					if (receptor.downscroll)
+					note.y += note.height / 1.7;
+					if (note.isSustainEnd && note.prevNote != null)
 					{
-						if (daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= center)
+						if (note.sustainEndOffset == Math.NEGATIVE_INFINITY)
 						{
-							var swagRect:FlxRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
-							swagRect.height = (center - daNote.y) / daNote.scale.y;
-							swagRect.y = daNote.frameHeight - swagRect.height;
-
-							daNote.clipRect = swagRect;
+							note.sustainEndOffset = (note.prevNote.y - (note.y + note.height - 1));
+							if (!note.prevNote.isSustainNote)
+								note.sustainEndOffset += note.height / 1.25;
 						}
-					}
-					else if (daNote.y + daNote.offset.y * daNote.scale.y <= center)
-					{
-						var swagRect:FlxRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
-						swagRect.y = (center - daNote.y) / daNote.scale.y;
-						swagRect.height -= swagRect.y;
-
-						daNote.clipRect = swagRect;
+						note.y += note.sustainEndOffset;
 					}
 				}
 			}
 
-			modManager.updateNote(daNote);
+			if (note.copyAngle)
+				note.angle = receptor.direction - 90 + receptor.angle + note.offsetAngle;
 
-			if (onNoteBotHit != null && botplay && daNote.strumTime <= Conductor.songPosition)
-				onNoteBotHit.dispatch(daNote);
+			// i am so fucking sorry for these if conditions
+			if (note.isSustainNote)
+			{
+				if (receptor.sustainReduce && (botplay || note.wasGoodHit || (note.prevNote != null && note.prevNote.wasGoodHit)))
+				{
+					var center:Float = receptor.y + Note.swagWidth / 2;
+					if (receptor.downscroll)
+					{
+						if (note.y - note.offset.y * note.scale.y + note.height >= center)
+						{
+							var swagRect:FlxRect = new FlxRect(0, 0, note.frameWidth, note.frameHeight);
+							swagRect.height = (center - note.y) / note.scale.y;
+							swagRect.y = note.frameHeight - swagRect.height;
+
+							note.clipRect = swagRect;
+						}
+					}
+					else if (note.y + note.offset.y * note.scale.y <= center)
+					{
+						var swagRect:FlxRect = new FlxRect(0, 0, note.width / note.scale.x, note.height / note.scale.y);
+						swagRect.y = (center - note.y) / note.scale.y;
+						swagRect.height -= swagRect.y;
+
+						note.clipRect = swagRect;
+					}
+				}
+			}
+
+			if (onNoteBotHit != null && botplay && note.strumTime <= Conductor.songPosition)
+				onNoteBotHit.dispatch(note);
 			if (onNoteUpdate != null)
-				onNoteUpdate.dispatch(daNote);
+				onNoteUpdate.dispatch(note);
 
 			if (shouldRemove)
-				removeNote(daNote);
+				removeNote(note);
 		});
-
-		receptors.forEachAlive(modManager.updateReceptor);
 	}
 
-	public function addNote(daNote:Note)
+	public function addNote(note:Note)
 	{
-		allNotes.add(daNote);
+		allNotes.add(note);
 		var leGroup:FlxTypedGroup<Note>;
-		if (daNote.isSustainNote)
+		if (note.isSustainNote)
 			leGroup = holdsGroup;
 		else
 			leGroup = notesGroup;
-		leGroup.add(daNote);
+		leGroup.add(note);
 		leGroup.sort(CoolUtil.sortNotes);
 	}
 
-	public function removeNote(daNote:Note)
+	public function removeNote(note:Note)
 	{
-		daNote.kill();
-		allNotes.remove(daNote, true);
-		if (daNote.isSustainNote)
-			holdsGroup.remove(daNote, true);
+		note.kill();
+		allNotes.remove(note, true);
+		if (note.isSustainNote)
+			holdsGroup.remove(note, true);
 		else
-			notesGroup.remove(daNote, true);
-		daNote.destroy();
+			notesGroup.remove(note, true);
+		note.destroy();
 	}
 
 	public function tweenStrums()

@@ -143,7 +143,7 @@ class MainMenuState extends MusicBeatState
 		});
 		new FlxTimer().start(0.4, function(tmr:FlxTimer)
 		{
-			MusicBeatState.switchState(nextState);
+			Main.switchState(nextState);
 		});
 	}
 
@@ -156,7 +156,7 @@ class MainMenuState extends MusicBeatState
 			menuItems.enabled = false;
 
 		if (controls.BACK && menuItems.enabled && !menuItems.busy)
-			MusicBeatState.switchState(new TitleState());
+			Main.switchState(new TitleState());
 
 		super.update(elapsed);
 	}

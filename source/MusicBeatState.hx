@@ -1,10 +1,8 @@
 package;
 
-import Conductor.BPMChangeEvent;
-import flixel.FlxG;
-import flixel.FlxState;
 import flixel.addons.ui.FlxUIState;
 import flixel.addons.transition.FlxTransitionableState;
+import Conductor.BPMChangeEvent;
 
 class MusicBeatState extends FlxUIState
 {
@@ -16,40 +14,17 @@ class MusicBeatState extends FlxUIState
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
-	public static function switchState(nextState:FlxState)
-	{
-		if (!FlxTransitionableState.skipNextTransIn)
-		{
-			FlxG.state.openSubState(new CustomFadeTransition(0.5, false));
-			if (nextState == FlxG.state)
-				CustomFadeTransition.finishCallback = FlxG.resetState;
-			else
-				CustomFadeTransition.finishCallback = function()
-				{
-					FlxG.switchState(nextState);
-				};
-			return;
-		}
-		FlxTransitionableState.skipNextTransIn = false;
-		FlxG.switchState(nextState);
-		CoolUtil.runGC();
-	}
-
-	inline public static function resetState()
-	{
-		switchState(FlxG.state);
-	}
-
 	override function create()
 	{
 		var skip:Bool = FlxTransitionableState.skipNextTransOut;
+
 		super.create();
 
 		if (!skip)
-			openSubState(new CustomFadeTransition(0.6, true));
-		FlxTransitionableState.skipNextTransOut = false;
-
-		Cache.clearUnused();
+		{
+			openSubState(new FadeSubstate(0.6, true));
+			FlxTransitionableState.skipNextTransOut = false;
+		}
 	}
 
 	override function update(elapsed:Float)
@@ -63,12 +38,6 @@ class MusicBeatState extends FlxUIState
 			stepHit();
 
 		super.update(elapsed);
-	}
-
-	override function closeSubState()
-	{
-		super.closeSubState();
-		Cache.clearUnused(true);
 	}
 
 	private function updateBeat():Void

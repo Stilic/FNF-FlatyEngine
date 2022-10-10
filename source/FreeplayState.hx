@@ -179,7 +179,7 @@ class FreeplayState extends MusicBeatState
 		if (controls.BACK)
 		{
 			FlxG.sound.play(Paths.sound("cancelMenu"));
-			MusicBeatState.switchState(new MainMenuState());
+			Main.switchState(new MainMenuState());
 			#if PRELOAD_ALL
 			if (curPlaying > -1)
 				CoolUtil.resetMusic();

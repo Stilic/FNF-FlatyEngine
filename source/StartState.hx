@@ -6,6 +6,7 @@ import Discord.DiscordClient;
 #end
 import flixel.FlxG;
 import flixel.FlxState;
+import flixel.FlxSubState;
 
 class StartState extends FlxState
 {
@@ -44,24 +45,45 @@ class StartState extends FlxState
 
 		#if discord_rpc
 		DiscordClient.initialize();
-		Application.current.onExit.add(function(exitCode)
-		{
-			DiscordClient.shutdown();
-		});
+		if (!Application.current.onExit.has(onExit))
+			Application.current.onExit.add(onExit);
 		#end
 
-		FlxG.signals.preStateCreate.add(function(state:FlxState)
-		{
-			if (!Std.isOfType(state, PlayState)
-				&& !Std.isOfType(state, editors.ChartingState)
-				&& !Std.isOfType(state, editors.CharacterEditorState))
-			{
-				Cache.clear();
-			}
-		});
+		if (!FlxG.signals.preStateCreate.has(onStateCreate))
+			FlxG.signals.preStateCreate.add(onStateCreate);
+		if (!FlxG.signals.postStateSwitch.has(onSwitchEnd))
+			FlxG.signals.postStateSwitch.add(onSwitchEnd);
 
 		super.create();
 
 		FlxG.switchState(new TitleState());
+	}
+
+	static function onExit(exitCode:Int)
+	{
+		DiscordClient.shutdown();
+	}
+
+	static function onStateCreate(state:FlxState)
+	{
+		if (!state.subStateClosed.has(onSubStateClose))
+			state.subStateClosed.add(onSubStateClose);
+
+		if (!Std.isOfType(state, PlayState)
+			&& !Std.isOfType(state, editors.ChartingState)
+			&& !Std.isOfType(state, editors.CharacterEditorState))
+		{
+			Cache.clear();
+		}
+	}
+
+	static function onSubStateClose(substate:FlxSubState)
+	{
+		Cache.clearUnused(true);
+	}
+
+	static function onSwitchEnd()
+	{
+		Cache.clearUnused();
 	}
 }

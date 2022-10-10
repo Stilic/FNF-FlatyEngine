@@ -1,7 +1,6 @@
 package;
 
 import flixel.FlxSprite;
-import flixel.math.FlxMath;
 import ui.PreferencesMenu;
 
 // import shaders.ColorSwap;
@@ -10,14 +9,7 @@ using StringTools;
 class Note extends FlxSprite
 {
 	public static final swagWidth:Float = 160 * 0.7;
-	public static final swagHeight:Float = 0.45;
 
-	inline public static function getDistance(strumTime:Float, downscroll:Bool = false, speed:Float = 1)
-	{
-		return (swagHeight * (downscroll ? 1 : -1)) * (Conductor.songPosition - strumTime) * FlxMath.roundDecimal(speed, 2);
-	}
-
-	// public static var arrowColors = [1, 1, 1, 1];
 	public var strumTime:Float = 0;
 	public var noteData:Int = 0;
 	public var mustPress:Bool = false;
@@ -39,12 +31,11 @@ class Note extends FlxSprite
 			&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset * earlyHitMult;
 	}
 
-	// var colorSwap:ColorSwap;
 	public var offsetX:Float = 0;
 	public var offsetY:Float = 0;
+	public var offsetAngle:Float = 0;
 
 	public var copyAngle:Bool = true;
-	public var offsetAngle:Float = 0;
 
 	public var parentNote(default, null):Note;
 	public var children:Array<Note>;
@@ -122,9 +113,6 @@ class Note extends FlxSprite
 				antialiasing = true;
 		}
 
-		// colorSwap = new ColorSwap();
-		// shader = colorSwap.shader;
-
 		if (!sustainNote)
 		{
 			children = [];
@@ -148,6 +136,8 @@ class Note extends FlxSprite
 				parentNote = parentNote.prevNote;
 			parentNote.children.push(this);
 		}
+
+		alpha = 0.7;
 
 		if (sustainNote && prevNote != null)
 		{
@@ -196,7 +186,7 @@ class Note extends FlxSprite
 						prevNote.animation.play('redhold');
 				}
 
-				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
+				prevNote.scale.y *= (Conductor.stepCrochet / 100 * 1.5) * PlayState.SONG.speed;
 				prevNote.updateHitbox();
 			}
 		}

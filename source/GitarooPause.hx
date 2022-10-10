@@ -52,9 +52,9 @@ class GitarooPause extends MusicBeatState
 		if (controls.ACCEPT)
 		{
 			if (replaySelect)
-				MusicBeatState.switchState(new PlayState());
+				Main.switchState(new PlayState());
 			else
-				MusicBeatState.switchState(new MainMenuState());
+				Main.switchState(new MainMenuState());
 		}
 
 		super.update(elapsed);

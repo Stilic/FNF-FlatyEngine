@@ -155,7 +155,7 @@ class PauseSubState extends MusicBeatSubstate
 					PlayState.SONG = Song.loadFromJson(PlayState.SONG.song.toLowerCase(),
 						Highscore.formatSong(PlayState.SONG.song.toLowerCase(), curSelected));
 					PlayState.storyDifficulty = curSelected;
-					MusicBeatState.switchState(new PlayState());
+					Main.switchState(new PlayState());
 				}
 				catch (_)
 				{
@@ -170,7 +170,7 @@ class PauseSubState extends MusicBeatSubstate
 					case "Resume":
 						close();
 					case "Restart Song":
-						MusicBeatState.resetState();
+						Main.resetState();
 					case "Change Difficulty":
 						menuItems = difficultyChoices;
 						regenMenu();
@@ -181,9 +181,9 @@ class PauseSubState extends MusicBeatSubstate
 						PlayState.seenCutscene = false;
 						PlayState.deathCounter = 0;
 						if (PlayState.isStoryMode)
-							MusicBeatState.switchState(new StoryMenuState());
+							Main.switchState(new StoryMenuState());
 						else
-							MusicBeatState.switchState(new FreeplayState());
+							Main.switchState(new FreeplayState());
 						#if NO_PRELOAD_ALL
 						CoolUtil.resetMusic();
 						#end

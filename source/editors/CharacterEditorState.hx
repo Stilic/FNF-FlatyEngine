@@ -225,7 +225,7 @@ class CharacterEditorState extends MusicBeatState
 			save();
 
 		if (FlxG.keys.justPressed.ESCAPE)
-			MusicBeatState.switchState(new PlayState());
+			Main.switchState(new PlayState());
 
 		super.update(elapsed);
 	}

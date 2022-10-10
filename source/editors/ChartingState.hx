@@ -532,7 +532,7 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.stop();
 			vocals.stop();
 			FlxG.mouse.visible = false;
-			MusicBeatState.switchState(new PlayState());
+			Main.switchState(new PlayState());
 		}
 
 		if (FlxG.keys.justPressed.E)
