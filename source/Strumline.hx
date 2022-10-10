@@ -1,16 +1,18 @@
 package;
 
-import ui.PreferencesMenu;
-import flixel.math.FlxMath;
 import flixel.math.FlxRect;
 import flixel.group.FlxGroup;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxSignal.FlxTypedSignal;
+import ui.PreferencesMenu;
+import modchart.ModManager;
 
 class Strumline extends FlxGroup
 {
-	public var strumsGroup(default, null):FlxTypedGroup<StrumNote>;
+	public var modManager(default, null):ModManager;
+
+	public var receptors(default, null):FlxTypedGroup<Receptor>;
 
 	public var allNotes(default, null):FlxTypedGroup<Note>;
 	public var notesGroup(default, null):FlxTypedGroup<Note>;
@@ -37,6 +39,8 @@ class Strumline extends FlxGroup
 
 		this.botplay = botplay;
 
+		modManager = new ModManager();
+
 		var smClipStyle:Bool = PreferencesMenu.getPref('sm-clip');
 
 		if (smClipStyle)
@@ -45,13 +49,13 @@ class Strumline extends FlxGroup
 			add(holdsGroup);
 		}
 
-		strumsGroup = new FlxTypedGroup<StrumNote>();
-		add(strumsGroup);
+		receptors = new FlxTypedGroup<Receptor>();
+		add(receptors);
 
 		for (i in 0...4)
 		{
-			var babyArrow:StrumNote = new StrumNote(x, y, i, downscroll);
-			strumsGroup.add(babyArrow);
+			var babyArrow:Receptor = new Receptor(x, y, i, downscroll);
+			receptors.add(babyArrow);
 			babyArrow.postAddedToGroup();
 		}
 
@@ -78,66 +82,36 @@ class Strumline extends FlxGroup
 	{
 		super.update(elapsed);
 
-		var roundedSpeed:Float = FlxMath.roundDecimal(PlayState.SONG.speed, 2);
-		var swagCalc:Float = Note.swagWidth / 2;
 		allNotes.forEachAlive(function(daNote:Note)
 		{
 			var shouldRemove:Bool = isOutsideScreen(daNote.strumTime);
 			daNote.active = !shouldRemove;
 			daNote.visible = !shouldRemove;
 
-			var strum:StrumNote = strumsGroup.members[daNote.noteData % strumsGroup.length];
-			var scrollMult:Int = strum.downscroll ? 1 : -1;
-			var distance:Float = (0.45 * scrollMult) * (Conductor.songPosition - daNote.strumTime) * roundedSpeed;
+			var receptor:Receptor = receptors.members[daNote.noteData % receptors.length];
 
-			var angleDir:Float = (strum.direction * Math.PI) / 180;
-			if (daNote.copyX)
-				daNote.x = strum.x + daNote.offsetX + Math.cos(angleDir) * distance;
-			if (daNote.copyY)
-				daNote.y = strum.y + daNote.offsetY + Math.sin(angleDir) * distance;
-			if (daNote.copyAngle)
-				daNote.angle = strum.direction - 90 + strum.angle + daNote.offsetAngle;
-			if (daNote.copyAlpha)
-				daNote.alpha = strum.alpha * daNote.multAlpha;
+			modManager.setPos(daNote, receptor.x, receptor.y, receptor.direction, receptor.downscroll, PlayState.SONG != null ? PlayState.SONG.speed : 1);
 
 			// i am so fucking sorry for these if conditions
 			if (daNote.isSustainNote)
 			{
-				daNote.y += swagCalc;
-				if (!strum.downscroll)
-					daNote.y -= Note.swagWidth / 1.65;
-				if (strum.downscroll && daNote.isSustainEnd && daNote.prevNote != null)
+				if (receptor.sustainReduce && (botplay || daNote.wasGoodHit || (daNote.prevNote != null && daNote.prevNote.wasGoodHit)))
 				{
-					if (daNote.sustainEndOffset == Math.NEGATIVE_INFINITY)
-						daNote.sustainEndOffset = (daNote.prevNote.y - (daNote.y + daNote.height - 1));
-					else
-						daNote.y += daNote.sustainEndOffset;
-					if (!daNote.prevNote.isSustainNote)
-						daNote.y += swagCalc / roundedSpeed;
-				}
-				daNote.flipY = strum.downscroll;
-
-				if (strum.sustainReduce)
-				{
-					var center:Float = strum.y + swagCalc;
-					if (strum.downscroll)
+					var center:Float = receptor.y + Note.swagWidth / 2;
+					if (receptor.downscroll)
 					{
-						if (daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= center
-							&& (!daNote.mustPress
-								|| (daNote.wasGoodHit || (daNote.prevNote != null && daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+						if (daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= center)
 						{
-							var swagRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
+							var swagRect:FlxRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
 							swagRect.height = (center - daNote.y) / daNote.scale.y;
 							swagRect.y = daNote.frameHeight - swagRect.height;
 
 							daNote.clipRect = swagRect;
 						}
 					}
-					else if (daNote.y + daNote.offset.y * daNote.scale.y <= center
-						&& (!daNote.mustPress
-							|| (daNote.wasGoodHit || (daNote.prevNote != null && daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+					else if (daNote.y + daNote.offset.y * daNote.scale.y <= center)
 					{
-						var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
+						var swagRect:FlxRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
 						swagRect.y = (center - daNote.y) / daNote.scale.y;
 						swagRect.height -= swagRect.y;
 
@@ -145,6 +119,8 @@ class Strumline extends FlxGroup
 					}
 				}
 			}
+
+			modManager.updateNote(daNote);
 
 			if (onNoteBotHit != null && botplay && daNote.strumTime <= Conductor.songPosition)
 				onNoteBotHit.dispatch(daNote);
@@ -154,6 +130,8 @@ class Strumline extends FlxGroup
 			if (shouldRemove)
 				removeNote(daNote);
 		});
+
+		receptors.forEachAlive(modManager.updateReceptor);
 	}
 
 	public function addNote(daNote:Note)
@@ -181,19 +159,19 @@ class Strumline extends FlxGroup
 
 	public function tweenStrums()
 	{
-		strumsGroup.forEachAlive(function(strum:StrumNote)
+		receptors.forEachAlive(function(receptor:Receptor)
 		{
-			strum.y -= 10;
-			strum.alpha = 0;
-			FlxTween.tween(strum, {y: strum.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * strum.noteData)});
+			receptor.y -= 10;
+			receptor.alpha = 0;
+			FlxTween.tween(receptor, {y: receptor.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * receptor.noteData)});
 		});
 	}
 
 	public function spawnSplash(noteData:Int)
 	{
-		var strum:StrumNote = strumsGroup.members[noteData];
+		var receptor:Receptor = receptors.members[noteData];
 		var splash:NoteSplash = splashesGroup.recycle(NoteSplash);
-		splash.setupNoteSplash(strum.x, strum.y, noteData);
+		splash.setupNoteSplash(receptor.x, receptor.y, noteData);
 		splashesGroup.add(splash);
 	}
 }

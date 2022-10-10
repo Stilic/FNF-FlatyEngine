@@ -150,19 +150,13 @@ class MainMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		if (FlxG.sound.music.volume < 0.8)
-		{
-			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-		}
+			FlxG.sound.music.volume += 0.5 * elapsed;
 
 		if (_exiting)
-		{
 			menuItems.enabled = false;
-		}
 
 		if (controls.BACK && menuItems.enabled && !menuItems.busy)
-		{
 			MusicBeatState.switchState(new TitleState());
-		}
 
 		super.update(elapsed);
 	}

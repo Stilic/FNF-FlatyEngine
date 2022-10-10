@@ -1,16 +1,23 @@
 package;
 
 import flixel.FlxSprite;
+import flixel.math.FlxMath;
 import ui.PreferencesMenu;
-import shaders.ColorSwap;
 
+// import shaders.ColorSwap;
 using StringTools;
 
 class Note extends FlxSprite
 {
 	public static final swagWidth:Float = 160 * 0.7;
-	public static var arrowColors = [1, 1, 1, 1];
+	public static final swagHeight:Float = 0.45;
 
+	inline public static function getDistance(strumTime:Float, downscroll:Bool = false, speed:Float = 1)
+	{
+		return (swagHeight * (downscroll ? 1 : -1)) * (Conductor.songPosition - strumTime) * FlxMath.roundDecimal(speed, 2);
+	}
+
+	// public static var arrowColors = [1, 1, 1, 1];
 	public var strumTime:Float = 0;
 	public var noteData:Int = 0;
 	public var mustPress:Bool = false;
@@ -18,24 +25,29 @@ class Note extends FlxSprite
 	public var isSustainEnd:Bool = false;
 	public var sustainLength:Float = 0;
 	public var sustainEndOffset:Float = Math.NEGATIVE_INFINITY;
-	public var canBeHit:Bool = false;
+	public var canBeHit(get, never):Bool;
 	public var earlyHitMult:Float = 1;
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var altNote:Bool = false;
-	public var prevNote:Note;
+	public var prevNote(default, null):Note;
 
-	var colorSwap:ColorSwap;
+	inline public function get_canBeHit()
+	{
+		return mustPress
+			&& strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+			&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset * earlyHitMult;
+	}
 
-	public var copyX:Bool = true;
-	public var copyY:Bool = true;
-	public var copyAngle:Bool = true;
-	public var copyAlpha:Bool = false;
-
+	// var colorSwap:ColorSwap;
 	public var offsetX:Float = 0;
 	public var offsetY:Float = 0;
+
+	public var copyAngle:Bool = true;
 	public var offsetAngle:Float = 0;
-	public var multAlpha:Float = 1;
+
+	public var parentNote(default, null):Note;
+	public var children:Array<Note>;
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, sustainNote:Bool = false)
 	{
@@ -110,12 +122,13 @@ class Note extends FlxSprite
 				antialiasing = true;
 		}
 
-		colorSwap = new ColorSwap();
-		shader = colorSwap.shader;
-		updateColors();
+		// colorSwap = new ColorSwap();
+		// shader = colorSwap.shader;
 
 		if (!sustainNote)
 		{
+			children = [];
+
 			switch (noteData)
 			{
 				case 0:
@@ -128,12 +141,19 @@ class Note extends FlxSprite
 					animation.play('redScroll');
 			}
 		}
+		else if (prevNote != null)
+		{
+			parentNote = prevNote;
+			while (parentNote.isSustainNote && parentNote.prevNote != null)
+				parentNote = parentNote.prevNote;
+			parentNote.children.push(this);
+		}
 
 		if (sustainNote && prevNote != null)
 		{
 			isSustainEnd = true;
 
-			alpha = multAlpha = 0.6;
+			alpha = 0.6;
 			copyAngle = false;
 
 			if (PreferencesMenu.getPref('downscroll'))
@@ -182,25 +202,12 @@ class Note extends FlxSprite
 		}
 	}
 
-	function updateColors()
-	{
-		colorSwap.update(arrowColors[noteData]);
-	}
-
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		if (mustPress)
-		{
-			canBeHit = strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-				&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset * earlyHitMult;
-
-			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
-				tooLate = true;
-		}
-		else
-			canBeHit = false;
+		if (!tooLate && !wasGoodHit && strumTime < Conductor.songPosition - Conductor.safeZoneOffset && canBeHit)
+			tooLate = true;
 
 		if (tooLate && alpha > 0.3)
 			alpha = 0.3;

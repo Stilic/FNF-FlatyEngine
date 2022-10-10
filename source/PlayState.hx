@@ -765,13 +765,15 @@ class PlayState extends MusicBeatState
 		strumlines.push(opponentStrumline);
 		strumlines.push(playerStrumline);
 
-		if (!isStoryMode || isFirstStorySong)
+		for (strumline in strumlines)
 		{
-			for (strumline in strumlines)
+			strumline.modManager.registerDefaultMods();
+
+			if (!isStoryMode || isFirstStorySong)
 			{
-				strumline.strumsGroup.forEachAlive(function(strum:StrumNote)
+				strumline.receptors.forEachAlive(function(receptor:Receptor)
 				{
-					strum.alpha = 0;
+					receptor.alpha = 0;
 				});
 			}
 		}
@@ -1336,14 +1338,14 @@ class PlayState extends MusicBeatState
 		{
 			if (startedCountdown)
 			{
-				Conductor.songPosition += FlxG.elapsed * 1000;
+				Conductor.songPosition += elapsed * 1000;
 				if (Conductor.songPosition >= 0)
 					startSong();
 			}
 		}
 		else
 		{
-			Conductor.songPosition += FlxG.elapsed * 1000;
+			Conductor.songPosition += elapsed * 1000;
 
 			if (!paused)
 			{
@@ -1355,7 +1357,7 @@ class PlayState extends MusicBeatState
 				{
 					songTime = (songTime + Conductor.songPosition) / 2;
 					Conductor.lastSongPos = Conductor.songPosition;
-					// Conductor.songPosition += FlxG.elapsed * 1000;
+					// Conductor.songPosition += elapsed * 1000;
 					// trace('MISSED FRAME');
 				}
 			}
@@ -1376,7 +1378,7 @@ class PlayState extends MusicBeatState
 						trainFrameTiming = 0;
 					}
 				}
-				lightFadeShader.update(1.5 * (Conductor.crochet / 1000) * FlxG.elapsed);
+				lightFadeShader.update(1.5 * (Conductor.crochet / 1000) * elapsed);
 			case 'tank':
 				moveTank();
 		}
@@ -1941,7 +1943,7 @@ class PlayState extends MusicBeatState
 				var possibleNotes:Array<Note> = [];
 				playerStrumline.notesGroup.forEachAlive(function(daNote:Note)
 				{
-					if (daNote.noteData == key && !daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
+					if (daNote.noteData == key && !daNote.isSustainNote && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && daNote.canBeHit)
 						possibleNotes.push(daNote);
 				});
 				possibleNotes.sort(sortByTime);
@@ -1972,15 +1974,15 @@ class PlayState extends MusicBeatState
 				Conductor.songPosition = lastTime;
 			}
 
-			var strum:StrumNote = playerStrumline.strumsGroup.members[key];
-			if (strum != null && strum.animation.curAnim.name != 'confirm')
-				strum.playAnim('pressed');
+			var receptor:Receptor = playerStrumline.receptors.members[key];
+			if (receptor != null && receptor.animation.curAnim.name != 'confirm')
+				receptor.playAnim('pressed');
 		}
 		else
 		{
-			var strum:StrumNote = playerStrumline.strumsGroup.members[key];
-			if (strum != null)
-				strum.playAnim('static');
+			var receptor:Receptor = playerStrumline.receptors.members[key];
+			if (receptor != null)
+				receptor.playAnim('static');
 		}
 	}
 
@@ -2020,7 +2022,7 @@ class PlayState extends MusicBeatState
 			{
 				playerStrumline.holdsGroup.forEachAlive(function(daNote:Note)
 				{
-					if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdingArray[daNote.noteData])
+					if (daNote.isSustainNote && daNote.mustPress && holdingArray[daNote.noteData] && daNote.canBeHit)
 						goodNoteHit(playerStrumline, daNote);
 				});
 			}
@@ -2117,21 +2119,19 @@ class PlayState extends MusicBeatState
 				char.holdTimer = 0;
 			}
 
-			strumline.strumsGroup.forEachAlive(function(strum:StrumNote)
+			var receptor:Receptor = strumline.receptors.members[note.noteData];
+			if (receptor != null)
 			{
-				if (Math.abs(note.noteData) == strum.noteData)
+				if (note.mustPress)
+					receptor.playAnim('confirm', true);
+				else
 				{
-					if (note.mustPress)
-						strum.playAnim('confirm', true);
-					else
-					{
-						var time:Float = 0.15;
-						if (note.isSustainNote && !note.isSustainEnd)
-							time += 0.15;
-						strum.autoConfirm(time);
-					}
+					var time:Float = 0.15;
+					if (note.isSustainNote && !note.isSustainEnd)
+						time += 0.15;
+					receptor.autoConfirm(time);
 				}
-			});
+			}
 
 			note.wasGoodHit = true;
 			if (vocals != null)

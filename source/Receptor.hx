@@ -1,11 +1,11 @@
 package;
 
 import flixel.math.FlxPoint;
-import shaders.ColorSwap;
 
+// import shaders.ColorSwap;
 using StringTools;
 
-class StrumNote extends FNFSprite
+class Receptor extends FNFSprite
 {
 	public var noteData:Int;
 
@@ -15,7 +15,7 @@ class StrumNote extends FNFSprite
 
 	var resetAnim:Float = 0;
 
-	var colorSwap:ColorSwap;
+	// var colorSwap:ColorSwap;
 
 	override public function new(x:Float, y:Float, noteData:Int, downscroll:Bool)
 	{
@@ -89,9 +89,9 @@ class StrumNote extends FNFSprite
 
 		updateHitbox();
 
-		colorSwap = new ColorSwap();
-		shader = colorSwap.shader;
-		colorSwap.update(Note.arrowColors[noteData]);
+		// colorSwap = new ColorSwap();
+		// shader = colorSwap.shader;
+		// colorSwap.update(Note.arrowColors[noteData]);
 	}
 
 	override function update(elapsed:Float)

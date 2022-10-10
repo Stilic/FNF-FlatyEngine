@@ -9,7 +9,7 @@ class Paths
 {
 	public static final SOUND_EXT:String = #if web "mp3" #else "ogg" #end;
 
-	static var currentLevel:String;
+	static var currentLevel(default, null):String;
 
 	static public function setCurrentLevel(name:String)
 	{

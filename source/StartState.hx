@@ -36,7 +36,7 @@ class StartState extends FlxState
 				StoryMenuState.weekUnlocked[0] = true;
 		}
 
-		// saves your volume setting
+		// get your volume setting
 		if (FlxG.save.data.volume != null)
 			FlxG.sound.volume = FlxG.save.data.volume;
 		if (FlxG.save.data.mute != null)
