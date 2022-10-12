@@ -213,7 +213,7 @@ class Strumline extends FlxGroup
 
 			var receptor:Receptor = receptors.members[note.noteData % receptors.length];
 			var scrollMult:Int = receptor.downscroll ? 1 : -1;
-			var distance:Float = (0.45 * scrollMult) * (Conductor.songPosition - note.strumTime) * roundedSpeed;
+			var distance:Float = (Conductor.songPosition - note.strumTime) * (0.45 * roundedSpeed) * scrollMult;
 			var angleDir:Float = (receptor.direction * Math.PI) / 180;
 
 			note.x = receptor.x + note.offsetX + Math.cos(angleDir) * distance;
@@ -221,10 +221,10 @@ class Strumline extends FlxGroup
 
 			if (note.isSustainNote)
 			{
-				note.y += (Note.swagWidth / 7.5) * scrollMult;
+				note.y += (Note.swagWidth / 10) * scrollMult;
 				if (receptor.downscroll)
 				{
-					note.y += note.height / 1.65;
+					note.y += note.height / 1.6;
 					if (note.isSustainEnd && note.prevNote != null)
 					{
 						if (note.sustainEndOffset == Math.NEGATIVE_INFINITY)

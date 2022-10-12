@@ -137,8 +137,6 @@ class Note extends FlxSprite
 			parentNote.children.push(this);
 		}
 
-		alpha = 0.7;
-
 		if (sustainNote && prevNote != null)
 		{
 			isSustainEnd = true;
