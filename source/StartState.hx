@@ -59,10 +59,12 @@ class StartState extends FlxState
 		FlxG.switchState(new TitleState());
 	}
 
+	#if discord_rpc
 	static function onExit(exitCode:Int)
 	{
 		DiscordClient.shutdown();
 	}
+	#end
 
 	static function onStateCreate(state:FlxState)
 	{

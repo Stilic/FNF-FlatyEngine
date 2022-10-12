@@ -62,11 +62,14 @@ class GameOverSubstate extends MusicBeatSubstate
 		bf.playAnim('firstDeath');
 
 		// CACHE RANDOM GAMEOVER SOUND
-		var exclude:Array<Int> = [];
-		if (PreferencesMenu.getPref('censor-naughty'))
-			exclude = [1, 3, 8, 13, 17, 21];
-		randomGameover = 'jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, exclude);
-		Paths.sound(randomGameover);
+		if (PlayState.storyWeek == 7) {
+			var exclude:Array<Int> = [];
+			if (PreferencesMenu.getPref('censor-naughty'))
+				exclude = [1, 3, 8, 13, 17, 21];
+			randomGameover = 'jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, exclude);
+			Paths.sound(randomGameover);
+		}
+		
 	}
 
 	override function update(elapsed:Float)

@@ -21,6 +21,8 @@ class ModHandler
 
 	public static var modList(default, null):Array<Mod> = [];
 
+	public static var fs(default, null):IFileSystem;
+
 	static var save:FlxSave;
 
 	public static function init()
@@ -29,6 +31,8 @@ class ModHandler
 		save.bind('mod_list', 'ninjamuffin99');
 		if (save.data.modList == null)
 			save.data.modList = new Map<String, Bool>();
+
+		fs = PolymodFileSystem.makeFileSystem(null, {modRoot: MOD_DIRECTORY});
 
 		#if sys
 		if (!FileSystem.exists(MOD_DIRECTORY))
@@ -77,7 +81,7 @@ class ModHandler
 	public static function reloadPolymod()
 	{
 		var dirs:Array<String> = [];
-		if (PolymodFileSystem.makeFileSystem(null, {modRoot: MOD_DIRECTORY}).exists('$MOD_DIRECTORY/$GLOBAL_MOD_ID'))
+		if (fs.exists('$MOD_DIRECTORY/$GLOBAL_MOD_ID'))
 			dirs.push(GLOBAL_MOD_ID);
 		for (mod in modList)
 		{
@@ -86,7 +90,6 @@ class ModHandler
 		}
 
 		var libs:Map<String, String> = new Map<String, String>();
-		libs.set('default', './preload');
 		libs.set('shared', './');
 		@:privateAccess
 		for (lib in Assets.libraryPaths.keys())
@@ -98,6 +101,7 @@ class ModHandler
 		Polymod.init({
 			modRoot: MOD_DIRECTORY,
 			dirs: dirs,
+			customFilesystem: fs,
 			framework: FLIXEL,
 			frameworkParams: {
 				assetLibraryPaths: libs

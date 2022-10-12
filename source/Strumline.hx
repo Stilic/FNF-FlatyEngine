@@ -224,7 +224,7 @@ class Strumline extends FlxGroup
 				note.y += (Note.swagWidth / 7.5) * scrollMult;
 				if (receptor.downscroll)
 				{
-					note.y += note.height / 1.7;
+					note.y += note.height / 1.65;
 					if (note.isSustainEnd && note.prevNote != null)
 					{
 						if (note.sustainEndOffset == Math.NEGATIVE_INFINITY)

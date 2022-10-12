@@ -1200,19 +1200,24 @@ class PlayState extends MusicBeatState
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
 				swagNote.mustPress = gottaHitNote;
 				swagNote.sustainLength = songNotes[2];
+				if (swagNote.sustainLength > 0)
+					swagNote.sustainLength = Math.round(swagNote.sustainLength / Conductor.stepCrochet) * Conductor.stepCrochet;
 				swagNote.altNote = songNotes[3];
 				swagNote.scrollFactor.set();
 				unspawnNotes.push(swagNote);
 
-				for (susNote in 0...Math.floor(swagNote.sustainLength / Conductor.stepCrochet))
+				if (swagNote.sustainLength > 0)
 				{
-					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+					for (susNote in 0...Math.round(swagNote.sustainLength / Conductor.stepCrochet))
+					{
+						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-					var sustainNote:Note = new Note(daStrumTime + Conductor.stepCrochet * (susNote + 1), daNoteData, oldNote, true);
-					sustainNote.mustPress = gottaHitNote;
-					sustainNote.altNote = songNotes[3];
-					sustainNote.scrollFactor.set();
-					unspawnNotes.push(sustainNote);
+						var sustainNote:Note = new Note(daStrumTime + Conductor.stepCrochet * (susNote + 1), daNoteData, oldNote, true);
+						sustainNote.mustPress = gottaHitNote;
+						sustainNote.altNote = songNotes[3];
+						sustainNote.scrollFactor.set();
+						unspawnNotes.push(sustainNote);
+					}
 				}
 			}
 		}
@@ -1256,9 +1261,7 @@ class PlayState extends MusicBeatState
 		if (paused)
 		{
 			if (FlxG.sound.music != null && !startingSong)
-			{
 				resyncVocals();
-			}
 
 			if (!startTimer.finished)
 				startTimer.active = true;
