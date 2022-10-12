@@ -2,6 +2,7 @@ package;
 
 import ui.PreferencesMenu;
 import flixel.FlxG;
+import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
@@ -17,6 +18,8 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	var randomGameover:String;
 	var playingDeathSound:Bool = false;
+
+	var lossSfx:FlxSound;
 
 	public static function resetVariables()
 	{
@@ -49,7 +52,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		camGame = cast FlxG.camera;
 		camGame.camFollow.copyFrom(bf.getGraphicMidpoint());
 
-		FlxG.sound.play(Paths.sound(lossSound));
+		lossSfx = FlxG.sound.play(Paths.sound(lossSound));
 		Conductor.changeBPM(100);
 
 		// FlxG.camera.followLerp = 1;
@@ -62,14 +65,14 @@ class GameOverSubstate extends MusicBeatSubstate
 		bf.playAnim('firstDeath');
 
 		// CACHE RANDOM GAMEOVER SOUND
-		if (PlayState.storyWeek == 7) {
+		if (PlayState.storyWeek == 7)
+		{
 			var exclude:Array<Int> = [];
 			if (PreferencesMenu.getPref('censor-naughty'))
 				exclude = [1, 3, 8, 13, 17, 21];
 			randomGameover = 'jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, exclude);
 			Paths.sound(randomGameover);
 		}
-		
 	}
 
 	override function update(elapsed:Float)
@@ -77,16 +80,15 @@ class GameOverSubstate extends MusicBeatSubstate
 		super.update(elapsed);
 
 		if (controls.ACCEPT)
-		{
 			endBullshit();
-		}
 
-		if (controls.BACK)
+		if (!isEnding && controls.BACK)
 		{
 			PlayState.deathCounter = 0;
 			PlayState.seenCutscene = false;
 
 			FlxG.sound.music.stop();
+			lossSfx.stop();
 
 			if (PlayState.isStoryMode)
 				Main.switchState(new StoryMenuState());
@@ -95,9 +97,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		}
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
-		{
 			camGame.resetTarget();
-		}
 
 		if (PlayState.storyWeek == 7)
 		{
@@ -119,9 +119,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		}
 
 		if (FlxG.sound.music.playing)
-		{
 			Conductor.songPosition = FlxG.sound.music.time;
-		}
 	}
 
 	function coolStartDeath(startVol:Float = 1)
@@ -145,6 +143,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			isEnding = true;
 			bf.playAnim('deathConfirm', true);
 			FlxG.sound.music.stop();
+			lossSfx.stop();
 			FlxG.sound.play(Paths.music(endMusic));
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{

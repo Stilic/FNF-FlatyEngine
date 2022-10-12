@@ -269,10 +269,9 @@ class Strumline extends FlxGroup
 				}
 			}
 
-			if (onNoteBotHit != null && botplay && note.strumTime <= Conductor.songPosition)
+			if (botplay && ((!note.isSustainNote && note.strumTime <= Conductor.songPosition) || (note.isSustainNote && note.canBeHit)))
 				onNoteBotHit.dispatch(note);
-			if (onNoteUpdate != null)
-				onNoteUpdate.dispatch(note);
+			onNoteUpdate.dispatch(note);
 
 			if (shouldRemove)
 				removeNote(note);
@@ -293,13 +292,16 @@ class Strumline extends FlxGroup
 
 	public function removeNote(note:Note)
 	{
-		note.kill();
-		allNotes.remove(note, true);
-		if (note.isSustainNote)
-			holdsGroup.remove(note, true);
-		else
-			notesGroup.remove(note, true);
-		note.destroy();
+		if (note.alive)
+		{
+			note.kill();
+			allNotes.remove(note, true);
+			if (note.isSustainNote)
+				holdsGroup.remove(note, true);
+			else
+				notesGroup.remove(note, true);
+			note.destroy();
+		}
 	}
 
 	public function tweenStrums()

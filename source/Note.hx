@@ -26,8 +26,7 @@ class Note extends FlxSprite
 
 	inline public function get_canBeHit()
 	{
-		return mustPress
-			&& strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+		return strumTime > Conductor.songPosition - Conductor.safeZoneOffset
 			&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset * earlyHitMult;
 	}
 
@@ -194,7 +193,7 @@ class Note extends FlxSprite
 	{
 		super.update(elapsed);
 
-		if (!tooLate && !wasGoodHit && strumTime < Conductor.songPosition - Conductor.safeZoneOffset && canBeHit)
+		if (mustPress && !tooLate && !wasGoodHit && strumTime < Conductor.songPosition - Conductor.safeZoneOffset && canBeHit)
 			tooLate = true;
 
 		if (tooLate && alpha > 0.3)

@@ -754,7 +754,7 @@ class PlayState extends MusicBeatState
 		});
 		playerStrumline.onNoteUpdate.add(function(daNote:Note)
 		{
-			if (Strumline.isOutsideScreen(daNote.strumTime) && (daNote.tooLate || !daNote.wasGoodHit))
+			if (!playerStrumline.botplay && Strumline.isOutsideScreen(daNote.strumTime) && (daNote.tooLate || !daNote.wasGoodHit))
 				noteMiss(daNote);
 		});
 		playerStrumline.characters = [boyfriend, gf];
@@ -1417,6 +1417,19 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
+		if (FlxG.keys.justPressed.EIGHT)
+		{
+			Main.switchState(new editors.CharacterEditorState());
+
+			#if discord_rpc
+			DiscordClient.changePresence("Character Editor", null, null, true);
+			#end
+		}
+
+		// forever engine moment
+		if (FlxG.keys.justPressed.SIX)
+			playerStrumline.botplay = !playerStrumline.botplay;
+
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
@@ -1436,12 +1449,6 @@ class PlayState extends MusicBeatState
 			iconP2.animation.curAnim.curFrame = 1;
 		else
 			iconP2.animation.curAnim.curFrame = 0;
-
-		/* if (FlxG.keys.justPressed.NINE)
-			Main.switchState(new Charting()); */
-
-		if (FlxG.keys.justPressed.EIGHT)
-			Main.switchState(new editors.CharacterEditorState());
 
 		if (generatedMusic && !endingSong)
 			cameraSection(Std.int(curStep / 16));
@@ -1695,11 +1702,9 @@ class PlayState extends MusicBeatState
 	var totalPlayed:Int = 0;
 	var totalNotesHit:Float = 0;
 
-	private function popUpScore(daNote:Note):Void
+	private function popUpScore(daNote:Note, forceBestRating:Bool = false):Void
 	{
-		vocals.volume = 1;
-
-		var daRating:Rating = Conductor.getRating(Math.abs(daNote.strumTime - Conductor.songPosition));
+		var daRating:Rating = Conductor.getRating(forceBestRating ? 0 : Math.abs(daNote.strumTime - Conductor.songPosition));
 		totalNotesHit += daRating.mod;
 
 		// gets your last rating, then sets the fc rating string accordingly, -gabi
@@ -2045,7 +2050,10 @@ class PlayState extends MusicBeatState
 	function noteMiss(daNote:Note):Void
 	{
 		vocals.volume = 0;
+
 		decreaseCombo(0.0475);
+
+		playMissSound();
 		boyfriend.playAnim(Character.singAnimations[daNote.noteData] + 'miss', true);
 	}
 
@@ -2055,13 +2063,12 @@ class PlayState extends MusicBeatState
 		if (!boyfriend.stunned)
 		{
 			vocals.volume = 0;
-
-			if (combo > 5 && gf.animOffsets.exists('sad'))
+			if (combo > 5 && gf.animation.exists('sad'))
 				gf.playAnim('sad');
 
 			decreaseCombo(0.04);
 
-			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+			playMissSound();
 			boyfriend.playAnim(Character.singAnimations[direction] + 'miss', true);
 		}
 	}
@@ -2078,22 +2085,26 @@ class PlayState extends MusicBeatState
 		recalculateRating();
 	}
 
+	function playMissSound()
+	{
+		FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+	}
+
 	function goodNoteHit(strumline:Strumline, note:Note):Void
 	{
 		if (!note.wasGoodHit)
 		{
+			note.wasGoodHit = true;
+
 			if (note.mustPress)
 			{
 				if (!note.isSustainNote)
 				{
-					popUpScore(note);
+					popUpScore(note, strumline.botplay);
 					combo += 1;
 				}
 
-				if (note.noteData >= 0)
-					health += 0.023;
-				else
-					health += 0.004;
+				health += 0.023;
 			}
 			else if (SONG.song != 'Tutorial')
 				camZooming = true;
@@ -2115,7 +2126,7 @@ class PlayState extends MusicBeatState
 			var receptor = strumline.receptors.members[note.noteData];
 			if (receptor != null)
 			{
-				if (note.mustPress)
+				if (!strumline.botplay)
 					receptor.playAnim('confirm', true);
 				else
 				{
@@ -2126,7 +2137,6 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			note.wasGoodHit = true;
 			if (vocals != null)
 				vocals.volume = 1;
 
