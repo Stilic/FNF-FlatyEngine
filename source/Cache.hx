@@ -5,6 +5,7 @@ import openfl.display.BitmapData;
 import openfl.media.Sound;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.system.FlxSound;
 import flixel.util.FlxDestroyUtil;
 import ui.PreferencesMenu;
@@ -22,32 +23,62 @@ class Cache
 			persistantAssets.push(id);
 	}
 
-	public static function isPersistant(suffix:String)
+	public static function isPersistant(path:String)
 	{
-		for (path in persistantAssets)
+		for (key in persistantAssets)
 		{
-			if (suffix.endsWith(path))
+			if (path.endsWith(key))
 				return true;
 		}
 		return false;
 	}
 
-	static var images:Array<CoolImage> = [];
-	static var sounds:Map<String, Sound> = new Map<String, Sound>();
+	static var images:Map<String, CoolImage> = [];
+	static var atlases:Map<String, CoolAtlas> = [];
+	static var sounds:Map<String, Sound> = [];
 
 	public static function getGraphic(id:String)
 	{
-		for (image in images)
-		{
-			if (image.graphic.key == id)
-				return image.graphic;
-		}
+		if (hasGraphic(id))
+			return images.get(id).graphic;
 
 		if (Assets.exists(id, IMAGE))
 		{
 			var image:CoolImage = new CoolImage(id, #if sys PreferencesMenu.getPref('gpu-rendering') #else false #end);
-			images.push(image);
+			images.set(id, image);
 			return image.graphic;
+		}
+		return null;
+	}
+
+	public static function getAtlas(id:String, type:AtlasType)
+	{
+		if (hasAtlas(id, type))
+			return atlases.get(id).atlas;
+
+		var path:String = id;
+		if (!path.endsWith('.png'))
+			path += '.png';
+		var image:FlxGraphic = getGraphic(path);
+		if (image != null)
+		{
+			path = path.substring(0, path.length - 4);
+			var atlas:FlxAtlasFrames = null;
+			switch (type)
+			{
+				case Sparrow:
+					path += '.xml';
+					atlas = FlxAtlasFrames.fromSparrow(image, path);
+
+				case Packer:
+					path += '.txt';
+					atlas = FlxAtlasFrames.fromSpriteSheetPacker(image, path);
+			}
+			if (atlas != null)
+			{
+				atlases.set(id, {atlas: atlas, type: type});
+				return atlas;
+			}
 		}
 		return null;
 	}
@@ -56,7 +87,7 @@ class Cache
 	// music streaming stuff
 	public static function getMusic(id:String)
 	{
-		if (sounds.exists(id))
+		if (hasSound(id))
 			return sounds.get(id);
 
 		if (Assets.exists(id, SOUND))
@@ -71,7 +102,7 @@ class Cache
 
 	public static function getSound(id:String)
 	{
-		if (sounds.exists(id))
+		if (hasSound(id))
 			return sounds.get(id);
 
 		if (Assets.exists(id, SOUND))
@@ -83,38 +114,43 @@ class Cache
 		return null;
 	}
 
-	public static function hasGraphic(id:String)
+	inline public static function hasGraphic(id:String)
 	{
-		if (id != null)
-		{
-			for (image in images)
-			{
-				if (image.graphic.key == id)
-					return true;
-			}
-		}
-		return false;
+		return images.exists(id);
 	}
 
-	public static function hasSound(id:String)
+	inline public static function hasAtlas(id:String, ?type:AtlasType)
 	{
-		if (id != null)
-			return sounds.exists(id);
-		return false;
+		return atlases.exists(id) && (type == null || atlases.get(id).type == type);
+	}
+
+	inline public static function hasSound(id:String)
+	{
+		return sounds.exists(id);
 	}
 
 	public static function removeGraphic(id:String)
 	{
-		if (id != null)
+		if (hasGraphic(id))
 		{
-			for (image in images)
+			removeAtlas(id);
+			FlxDestroyUtil.destroy(images.get(id));
+			images.remove(id);
+			return true;
+		}
+		return false;
+	}
+
+	public static function removeAtlas(id:String, ?type:AtlasType)
+	{
+		if (hasAtlas(id))
+		{
+			var atlasData = atlases.get(id);
+			if (type == null || atlasData.type == type)
 			{
-				if (image.graphic.key == id)
-				{
-					images.remove(image);
-					FlxDestroyUtil.destroy(image);
-					return true;
-				}
+				FlxDestroyUtil.destroy(atlasData.atlas);
+				atlases.remove(id);
+				return true;
 			}
 		}
 		return false;
@@ -122,7 +158,7 @@ class Cache
 
 	public static function removeSound(id:String)
 	{
-		if (id != null && sounds.exists(id))
+		if (hasSound(id))
 		{
 			sounds.get(id).close();
 			sounds.remove(id);
@@ -136,13 +172,10 @@ class Cache
 	{
 		AtlasText.clearCache();
 
-		for (image in images)
+		for (key in images.keys())
 		{
-			if (!isPersistant(image.graphic.key))
-			{
-				images.remove(image);
-				FlxDestroyUtil.destroy(image);
-			}
+			if (!isPersistant(key))
+				removeGraphic(key);
 		}
 
 		// clear the flixel cache manually since the clearCache function is dumb
@@ -160,13 +193,10 @@ class Cache
 
 	public static function clearUnused(onlyGraphics:Bool = false)
 	{
-		for (image in images)
+		for (key => image in images)
 		{
-			if (image.graphic.useCount <= 0 && !isPersistant(image.graphic.key))
-			{
-				images.remove(image);
-				FlxDestroyUtil.destroy(image);
-			}
+			if (image.graphic.useCount <= 0 && !isPersistant(key))
+				removeGraphic(key);
 		}
 
 		if (!onlyGraphics)
@@ -224,4 +254,16 @@ class CoolImage implements IFlxDestroyable
 	{
 		graphic = CoolUtil.destroyGraphic(graphic);
 	}
+}
+
+typedef CoolAtlas =
+{
+	var atlas:FlxAtlasFrames;
+	var type:AtlasType;
+}
+
+enum AtlasType
+{
+	Sparrow;
+	Packer;
 }

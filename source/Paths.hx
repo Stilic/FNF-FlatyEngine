@@ -3,7 +3,7 @@ package;
 import openfl.utils.Assets;
 import openfl.utils.AssetType;
 import flixel.FlxG;
-import flixel.graphics.frames.FlxAtlasFrames;
+import Cache.AtlasType;
 
 class Paths
 {
@@ -75,9 +75,9 @@ class Paths
 		return sound(key + FlxG.random.int(min, max), library, persist);
 	}
 
-	inline static public function music(key:String, ?library:String, persist:Bool = false)
+	inline static public function music(key:String, ?library:String)
 	{
-		return returnSound('music/$key', library, true, persist);
+		return returnSound('music/$key', library, true);
 	}
 
 	inline static public function voicesPath(song:String)
@@ -90,19 +90,19 @@ class Paths
 		return getLibraryPathForce('${song.toLowerCase()}/Inst.$SOUND_EXT', 'songs');
 	}
 
-	inline static public function voices(song:String, persist:Bool = false)
+	inline static public function voices(song:String)
 	{
-		return returnSound('${song.toLowerCase()}/Voices', 'songs', true, persist);
+		return returnSound('${song.toLowerCase()}/Voices', 'songs', true);
 	}
 
-	inline static public function inst(song:String, persist:Bool = false)
+	inline static public function inst(song:String)
 	{
-		return returnSound('${song.toLowerCase()}/Inst', 'songs', true, persist);
+		return returnSound('${song.toLowerCase()}/Inst', 'songs', true);
 	}
 
-	inline static public function image(key:String, ?library:String, persist:Bool = false)
+	inline static public function image(key:String, ?library:String)
 	{
-		return returnGraphic('images/$key', library, persist);
+		return returnGraphic('images/$key', library);
 	}
 
 	inline static public function font(key:String)
@@ -122,22 +122,17 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
-		return FlxAtlasFrames.fromSparrow(image(key, library), getPath('images/$key.xml', library));
+		return returnAtlas('images/$key', Sparrow, library);
 	}
 
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), getPath('images/$key.txt', library));
+		return returnAtlas('images/$key', Packer, library);
 	}
 
-	public static function returnGraphic(key:String, ?library:String, persist:Bool = false)
+	public static function returnGraphic(key:String, ?library:String)
 	{
-		var path = getPath('$key.png', IMAGE, library);
-
-		if (persist)
-			Cache.persist(path);
-
-		var graphic = Cache.getGraphic(path);
+		var graphic = Cache.getGraphic(getPath('$key.png', IMAGE, library));
 		if (graphic != null)
 			return graphic;
 
@@ -145,13 +140,19 @@ class Paths
 		return null;
 	}
 
-	public static function returnSound(key:String, ?library:String, stream:Bool = false, persist:Bool = false)
+	public static function returnAtlas(key:String, type:AtlasType, ?library:String)
+	{
+		var atlas = Cache.getAtlas(getPath('$key.png', IMAGE, library), type);
+		if (atlas != null)
+			return atlas;
+
+		trace('oh no ${key} is returning null NOOOO');
+		return null;
+	}
+
+	public static function returnSound(key:String, ?library:String, stream:Bool = false)
 	{
 		var path = getPath('$key.$SOUND_EXT', SOUND, library);
-
-		if (persist)
-			Cache.persist(path);
-
 		var sound;
 		#if lime_vorbis
 		if (stream)
