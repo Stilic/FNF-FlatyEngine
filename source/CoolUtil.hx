@@ -51,7 +51,7 @@ class CoolUtil
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 	}
 
-	public static function numberArray(max:Int, ?min = 0):Array<Int>
+	public static function numberArray(max:Int, ?min:Int = 0):Array<Int>
 	{
 		var dumbArray:Array<Int> = [];
 		for (i in min...max)
@@ -102,7 +102,7 @@ class CoolUtil
 		#end
 	}
 
-	inline public static function nativeTrace(data:Dynamic)
+	inline public static function nativeTrace(data:Dynamic):Void
 	{
 		#if sys
 		Sys.println(data);

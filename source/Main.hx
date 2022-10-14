@@ -97,7 +97,10 @@ class Main extends Sprite
 		};
 		if (!FlxTransitionableState.skipNextTransIn)
 		{
-			FlxG.state.openSubState(new FadeSubstate(0.5, false, callback));
+			var state = FlxG.state;
+			while (state.subState != null)
+				state = state.subState;
+			state.openSubState(new FadeSubstate(0.5, false, callback));
 			FlxTransitionableState.skipNextTransIn = false;
 		}
 		else
