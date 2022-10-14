@@ -1874,7 +1874,7 @@ class PlayState extends MusicBeatState
 				case 'limo':
 					camPos.x -= 300;
 				case 'mall':
-					tempY = 200;
+					tempY = -200;
 				case 'school' | 'schoolEvil':
 					tempY = -200;
 					camPos.x += tempY;
