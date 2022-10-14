@@ -3,6 +3,11 @@ package;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
+#if target.threaded
+import sys.thread.Thread;
+import sys.thread.Mutex;
+import openfl.media.Sound;
+#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -17,8 +22,12 @@ class FreeplayState extends MusicBeatState
 
 	var curSelected:Int = 0;
 	var curDifficulty:Int = 1;
-	#if PRELOAD_ALL
+
+	#if target.threaded
 	var curPlaying:Int = -1;
+	var playThread:Thread;
+	var mutex:Mutex;
+	var songToPlay:Sound;
 	#end
 
 	var bg:FlxSprite;
@@ -49,7 +58,8 @@ class FreeplayState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
-		#if PRELOAD_ALL
+		#if target.threaded
+		mutex = new Mutex();
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 		#else
@@ -125,10 +135,39 @@ class FreeplayState extends MusicBeatState
 
 		add(scoreText);
 
+		#if target.threaded
+		playThread = Thread.create(function()
+		{
+			while (true)
+			{
+				var index:Int = cast Thread.readMessage(true);
+				if (index >= 0)
+				{
+					if (index == curSelected && index != curPlaying)
+					{
+						var sound = Paths.inst(songs[index].songName);
+						if (index == curSelected)
+						{
+							mutex.acquire();
+							songToPlay = sound;
+							mutex.release();
+						}
+					}
+				}
+				else
+					break;
+			}
+		});
+		#end
+
 		changeSelection();
 		changeDiff();
 
 		super.create();
+
+		#if target.threaded
+		checkSongChange();
+		#end
 	}
 
 	public function addSong(songName:String, weekNum:Int, songCharacter:String)
@@ -155,11 +194,6 @@ class FreeplayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		#if PRELOAD_ALL
-		if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.7)
-			FlxG.sound.music.volume += 0.5 * elapsed;
-		#end
-
 		lerpScore = CoolUtil.coolLerp(lerpScore, intendedScore, 0.4);
 		bg.color = FlxColor.interpolate(bg.color, coolColors[songs[curSelected].week % coolColors.length], CoolUtil.camLerpShit(0.045));
 
@@ -176,11 +210,15 @@ class FreeplayState extends MusicBeatState
 		if (controls.UI_RIGHT_P)
 			changeDiff(1);
 
+		#if target.threaded
+		checkSongChange();
+		#end
+
 		if (controls.BACK)
 		{
 			FlxG.sound.play(Paths.sound("cancelMenu"));
 			Main.switchState(new MainMenuState());
-			#if PRELOAD_ALL
+			#if target.threaded
 			if (curPlaying > -1)
 				CoolUtil.resetMusic();
 			#end
@@ -196,6 +234,14 @@ class FreeplayState extends MusicBeatState
 			LoadingState.loadAndSwitchState(new PlayState(), true);
 		}
 	}
+
+	#if target.threaded
+	override function destroy()
+	{
+		playThread.sendMessage(-1);
+		super.destroy();
+	}
+	#end
 
 	function changeDiff(change:Int = 0)
 	{
@@ -226,20 +272,12 @@ class FreeplayState extends MusicBeatState
 		if (curSelected >= songs.length)
 			curSelected = 0;
 
-		var songName:String = songs[curSelected].songName;
-
-		#if PRELOAD_ALL
-		if (curPlaying > -1)
-		{
-			FlxG.sound.music.stop();
-			Cache.removeSound(Paths.instPath(songs[curPlaying].songName));
-		}
-		FlxG.sound.playMusic(Paths.inst(songName), 0);
-		curPlaying = curSelected;
+		#if target.threaded
+		playThread.sendMessage(curSelected);
 		#end
 
 		#if !switch
-		intendedScore = Highscore.getScore(songName, curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 		#end
 
 		var bullShit:Int = 0;
@@ -265,6 +303,31 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 	}
+
+	#if target.threaded
+	function checkSongChange()
+	{
+		var changedSong:Bool = false;
+		mutex.acquire();
+		if (songToPlay != null)
+		{
+			FlxG.sound.playMusic(songToPlay);
+			if (curPlaying > -1)
+				Cache.removeSound(Paths.instPath(songs[curPlaying].songName));
+			changedSong = true;
+			curPlaying = curSelected;
+			songToPlay = null;
+		}
+		mutex.release();
+		if (changedSong)
+		{
+			if (FlxG.sound.music.fadeTween != null)
+				FlxG.sound.music.fadeTween.cancel();
+			FlxG.sound.music.volume = 0;
+			FlxG.sound.music.fadeIn();
+		}
+	}
+	#end
 
 	function positionHighscore()
 	{

@@ -29,8 +29,6 @@ class ModHandler
 	{
 		save = new FlxSave();
 		save.bind('mod_list', 'ninjamuffin99');
-		if (save.data.modList == null)
-			save.data.modList = new Map<String, Bool>();
 
 		fs = PolymodFileSystem.makeFileSystem(null, {modRoot: MOD_DIRECTORY});
 
@@ -49,6 +47,11 @@ class ModHandler
 
 		var savedModList:Map<String, Bool> = cast save.data.modList;
 		var doSave:Bool = false;
+		if (savedModList == null)
+		{
+			savedModList = new Map<String, Bool>();
+			doSave = true;
+		}
 		for (modMetadata in Polymod.scan(MOD_DIRECTORY))
 		{
 			if (modMetadata.id == GLOBAL_MOD_ID)
@@ -81,7 +84,8 @@ class ModHandler
 	public static function reloadPolymod()
 	{
 		var dirs:Array<String> = [];
-		if (fs.exists('$MOD_DIRECTORY/$GLOBAL_MOD_ID'))
+		var globalDirPath:String = '$MOD_DIRECTORY/$GLOBAL_MOD_ID';
+		if (fs.exists(globalDirPath) && fs.isDirectory(globalDirPath))
 			dirs.push(GLOBAL_MOD_ID);
 		for (mod in modList)
 		{
