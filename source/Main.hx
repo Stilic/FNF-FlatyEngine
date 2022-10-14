@@ -98,6 +98,9 @@ class Main extends Sprite
 		if (!FlxTransitionableState.skipNextTransIn)
 		{
 			var state = FlxG.state;
+			@:privateAccess
+			if (Std.isOfType(state, FlxTransitionableState))
+				cast(state, FlxTransitionableState)._exiting = true;
 			while (state.subState != null)
 				state = state.subState;
 			state.openSubState(new FadeSubstate(0.5, false, callback));

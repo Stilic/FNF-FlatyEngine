@@ -133,13 +133,9 @@ class MainMenuState extends MusicBeatState
 		menuItems.forEachAlive(function(item:MainMenuItem)
 		{
 			if (menuItems.selectedIndex != item.ID)
-			{
 				FlxTween.tween(item, {alpha: 0}, 0.4, {ease: FlxEase.quadOut});
-			}
 			else
-			{
 				item.visible = false;
-			}
 		});
 		new FlxTimer().start(0.4, function(tmr:FlxTimer)
 		{
