@@ -533,8 +533,18 @@ class Controls extends FlxActionSet
 			removeGamepad(id);
 		else
 			gamepads.push(id);
+		#if (haxe >= "4.0.0")
 		for (k => v in map)
 			bindButtons(k, id, v);
+		#else
+		var keys = map.keys();
+		while (keys.hasNext())
+		{
+			var k = keys.next();
+			var v = map.get(k);
+			bindButtons(k, id, v);
+		}
+		#end
 	}
 
 	public function bindButtons(control:Control, id, buttons:Array<FlxGamepadInputID>)
