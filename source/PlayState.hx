@@ -622,10 +622,7 @@ class PlayState extends MusicBeatState
 				dad.danceSpeed = 2;
 				gf.visible = false;
 				if (isStoryMode)
-				{
 					camPos.x += 600;
-					tweenCamIn();
-				}
 
 			case "spooky":
 				dad.y += 200;
@@ -1230,11 +1227,6 @@ class PlayState extends MusicBeatState
 	function sortByTime(Obj1:Note, Obj2:Note)
 	{
 		return CoolUtil.sortNotes(FlxSort.ASCENDING, Obj1, Obj2);
-	}
-
-	function tweenCamIn():Void
-	{
-		FlxTween.tween(camGame, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
 	}
 
 	override function openSubState(SubState:FlxSubState)
@@ -1853,6 +1845,8 @@ class PlayState extends MusicBeatState
 			});
 	}
 
+	var camZoomTween:FlxTween;
+
 	private function cameraMovement(isDad:Bool, followChar:Bool = false):Void
 	{
 		var char:Character;
@@ -1862,14 +1856,14 @@ class PlayState extends MusicBeatState
 			char = boyfriend;
 
 		var camPos:FlxPoint = char.getMidpoint(FlxPoint.weak());
-		var adjustedY:Bool = false;
+		var tempY:Float = Math.NEGATIVE_INFINITY;
 
 		if (isDad)
 			switch (char.curCharacter)
 			{
 				case 'senpai' | 'senpai-angry':
-					adjustedY = true;
-					camPos.add(-100, -430);
+					camPos.x -= 100;
+					tempY = -430;
 				default:
 					if (char.curCharacter != 'mom')
 						camPos.x += 150;
@@ -1880,28 +1874,32 @@ class PlayState extends MusicBeatState
 				case 'limo':
 					camPos.x -= 300;
 				case 'mall':
-					adjustedY = true;
-					camPos.y -= 200;
+					tempY = 200;
 				case 'school' | 'schoolEvil':
-					adjustedY = true;
-					camPos.add(-200, -200);
+					tempY = -200;
+					camPos.x += tempY;
 				default:
 					camPos.x -= 100;
 			}
-		if (!adjustedY)
+		if (tempY == Math.NEGATIVE_INFINITY)
 			camPos.y -= 100;
+		else
+			camPos.y += tempY;
 
 		if (followChar && char.cameraMove && char.cameraMoveArray != null)
 			camPos.add(char.cameraMoveArray[0], char.cameraMoveArray[1]);
 
 		camGame.camFollow.copyFrom(camPos);
 
-		if (SONG.song.toLowerCase() == 'tutorial')
+		if (camZoomTween == null && SONG.song.toLowerCase() == 'tutorial')
 		{
-			if (isDad)
-				tweenCamIn();
-			else
-				FlxTween.tween(camGame, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
+			camZoomTween = FlxTween.tween(camGame, {zoom: isDad ? 1.3 : 1}, (Conductor.stepCrochet * 4 / 1000), {
+				ease: FlxEase.elasticInOut,
+				onComplete: function(twn:FlxTween)
+				{
+					camZoomTween = null;
+				}
+			});
 		}
 	}
 
@@ -1960,9 +1958,7 @@ class PlayState extends MusicBeatState
 				{
 					for (pressedNote in pressedNotes)
 					{
-						if (Math.abs(pressedNote.strumTime - note.strumTime) < 1.5)
-							playerStrumline.removeNote(pressedNote);
-						else
+						if (Math.abs(pressedNote.strumTime - note.strumTime) >= 1.5)
 							blockPress = true;
 					}
 					if (!blockPress)

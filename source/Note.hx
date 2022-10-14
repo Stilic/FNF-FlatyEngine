@@ -82,7 +82,6 @@ class Note extends FlxSprite
 				}
 
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-				updateHitbox();
 
 			default:
 				frames = Paths.getSparrowAtlas('NOTE_assets');
@@ -108,9 +107,9 @@ class Note extends FlxSprite
 				}
 
 				setGraphicSize(Std.int(width * 0.7));
-				updateHitbox();
 				antialiasing = true;
 		}
+		updateHitbox();
 
 		if (!sustainNote)
 		{
