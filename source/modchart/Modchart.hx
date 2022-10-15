@@ -1,5 +1,0 @@
-package modchart;
-
-class Modchart
-{
-}
