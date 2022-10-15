@@ -94,7 +94,8 @@ class ModHandler
 		}
 
 		var libs:Map<String, String> = new Map<String, String>();
-		libs.set('shared', './');
+		libs.set('default', './');
+		libs.set('shared', './shared');
 		@:privateAccess
 		for (lib in Assets.libraryPaths.keys())
 		{
