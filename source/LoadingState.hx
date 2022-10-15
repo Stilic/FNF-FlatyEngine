@@ -76,6 +76,7 @@ class LoadingState extends MusicBeatState
 			var callback = callbacks.add("song:" + path);
 			OpenFlAssets.loadSound(path).onComplete(function(_)
 			{
+				Cache.persistantAssets.set(path, true);
 				callback();
 			});
 		}
@@ -201,9 +202,7 @@ class LoadingState extends MusicBeatState
 				path += "/library.json";
 			}
 			else
-			{
 				rootPath = Path.directory(path);
-			}
 			@:privateAccess
 			path = LimeAssets.__cacheBreak(path);
 		}

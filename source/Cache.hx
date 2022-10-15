@@ -8,24 +8,23 @@ import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.system.FlxSound;
 import flixel.util.FlxDestroyUtil;
-import ui.PreferencesMenu;
 import ui.AtlasText;
+#if sys
+import ui.PreferencesMenu;
+#end
 
 using StringTools;
 
 class Cache
 {
-	public static var persistantAssets:Array<String> = ['music/freakyMenu.${Paths.SOUND_EXT}', 'music/breakfast.${Paths.SOUND_EXT}'];
-
-	public static function persist(id:String)
-	{
-		if (!persistantAssets.contains(id))
-			persistantAssets.push(id);
-	}
+	public static var persistantAssets:Map<String, Bool> = [
+		'music/freakyMenu.${Paths.SOUND_EXT}' => false,
+		'music/breakfast.${Paths.SOUND_EXT}' => false
+	];
 
 	public static function isPersistant(path:String)
 	{
-		for (key in persistantAssets)
+		for (key in persistantAssets.keys())
 		{
 			if (path.endsWith(key))
 				return true;
@@ -160,7 +159,7 @@ class Cache
 	{
 		if (hasSound(id))
 		{
-			sounds.get(id).close();
+			#if !html5 sounds.get(id).close(); #end
 			sounds.remove(id);
 			Assets.cache.removeSound(id);
 			return true;
@@ -171,6 +170,12 @@ class Cache
 	public static function clear()
 	{
 		AtlasText.clearCache();
+
+		for (key => shoudRemove in persistantAssets)
+		{
+			if (shoudRemove)
+				persistantAssets.remove(key);
+		}
 
 		for (key in images.keys())
 		{
