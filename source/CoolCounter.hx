@@ -104,12 +104,12 @@ class CoolCounter extends TextField
 
 			text = leText;
 
-			var intendedColor:FlxColor;
-			if (mem / 1000000 > 3000 || times.length <= FlxG.updateFramerate / 2)
-				intendedColor = 0xFFFF0000;
-			else
-				intendedColor = 0xFFFFFFFF;
-			textColor = FlxColor.interpolate(textColor, intendedColor, CoolUtil.camLerpShit(0.15));
+			// var intendedColor:FlxColor;
+			// if (mem / 1000000 > 3000 || times.length <= FlxG.updateFramerate / 2)
+			// 	intendedColor = 0xFFFF0000;
+			// else
+			// 	intendedColor = 0xFFFFFFFF;
+			// textColor = FlxColor.interpolate(textColor, intendedColor, CoolUtil.camLerpShit(0.15));
 		}
 	}
 }

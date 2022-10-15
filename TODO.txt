@@ -1,3 +1,2 @@
-- !!!FIX THE MEMORY LEAK!!!
 - unharcode everything and add modding support
 - add modifiers (like itg lol)

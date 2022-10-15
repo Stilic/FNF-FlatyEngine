@@ -3,7 +3,6 @@ package;
 import flixel.FlxSprite;
 import ui.PreferencesMenu;
 
-// import shaders.ColorSwap;
 using StringTools;
 
 class Note extends FlxSprite
@@ -13,16 +12,20 @@ class Note extends FlxSprite
 	public var strumTime:Float = 0;
 	public var noteData:Int = 0;
 	public var mustPress:Bool = false;
+	public var altNote:Bool = false;
+
+	public var hitHealth:Float = 0.023;
+	public var missHealth:Float = 0.073;
+
 	public var isSustainNote:Bool = false;
 	public var isSustainEnd:Bool = false;
 	public var sustainLength:Float = 0;
 	public var sustainEndOffset:Float = Math.NEGATIVE_INFINITY;
-	public var canBeHit(get, never):Bool;
-	public var earlyHitMult:Float = 1;
-	public var tooLate:Bool = false;
-	public var wasGoodHit:Bool = false;
-	public var altNote:Bool = false;
 	public var prevNote(default, null):Note;
+	public var parentNote(default, null):Note;
+	public var children:Array<Note>;
+
+	public var canBeHit(get, never):Bool;
 
 	inline public function get_canBeHit()
 	{
@@ -30,14 +33,15 @@ class Note extends FlxSprite
 			&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset * earlyHitMult;
 	}
 
+	public var earlyHitMult:Float = 1;
+	public var tooLate:Bool = false;
+	public var wasGoodHit:Bool = false;
+
 	public var offsetX:Float = 0;
 	public var offsetY:Float = 0;
 	public var offsetAngle:Float = 0;
 
 	public var copyAngle:Bool = true;
-
-	public var parentNote(default, null):Note;
-	public var children:Array<Note>;
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, sustainNote:Bool = false)
 	{
@@ -127,16 +131,16 @@ class Note extends FlxSprite
 					animation.play('redScroll');
 			}
 		}
-		else if (prevNote != null)
+		else
+			missHealth = 0.04;
+
+		if (sustainNote && prevNote != null)
 		{
 			parentNote = prevNote;
 			while (parentNote.isSustainNote && parentNote.prevNote != null)
 				parentNote = parentNote.prevNote;
 			parentNote.children.push(this);
-		}
 
-		if (sustainNote && prevNote != null)
-		{
 			isSustainEnd = true;
 
 			alpha = 0.6;

@@ -751,8 +751,8 @@ class PlayState extends MusicBeatState
 		});
 		playerStrumline.onNoteUpdate.add(function(daNote:Note)
 		{
-			if (!playerStrumline.botplay && Strumline.isOutsideScreen(daNote.strumTime) && (daNote.tooLate || !daNote.wasGoodHit))
-				noteMiss(daNote);
+			if (!playerStrumline.botplay  && (daNote.tooLate || !daNote.wasGoodHit) && Strumline.isOutsideScreen(daNote.strumTime))
+				noteMiss(daNote.noteData, daNote, false);
 		});
 		playerStrumline.characters = [boyfriend, gf];
 		playerStrumline.singingCharacters = [boyfriend];
@@ -1504,8 +1504,6 @@ class PlayState extends MusicBeatState
 
 			if (health <= 0 && !practiceMode)
 			{
-				boyfriend.stunned = true;
-
 				persistentUpdate = false;
 				persistentDraw = false;
 				paused = true;
@@ -1575,7 +1573,7 @@ class PlayState extends MusicBeatState
 			{
 				if (!ignoredChars.contains(char))
 				{
-					if (beat % char.danceSpeed == 0 && !char.animation.curAnim.name.startsWith('sing') && !char.stunned)
+					if (beat % char.danceSpeed == 0 && !char.animation.curAnim.name.startsWith('sing'))
 						char.dance();
 					ignoredChars.push(char);
 				}
@@ -1937,7 +1935,7 @@ class PlayState extends MusicBeatState
 	{
 		holdingArray[key] = down;
 
-		if (down && generatedMusic && !endingSong && !boyfriend.stunned)
+		if (down && generatedMusic && !endingSong)
 		{
 			// accurate hit moment part one
 			var lastTime:Float = Conductor.songPosition;
@@ -1949,27 +1947,22 @@ class PlayState extends MusicBeatState
 				if (daNote.noteData == key && !daNote.isSustainNote && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && daNote.canBeHit)
 					possibleNotes.push(daNote);
 			});
-			possibleNotes.sort(sortByTime);
 			if (possibleNotes.length > 0)
 			{
-				var pressedNotes:Array<Note> = [];
-				var blockPress:Bool = false;
-				for (note in possibleNotes)
+				// sort notes
+				possibleNotes.sort(sortByTime);
+				// remove nearest/stacked notes
+				for (i in 1...possibleNotes.length)
 				{
-					for (pressedNote in pressedNotes)
-					{
-						if (Math.abs(pressedNote.strumTime - note.strumTime) >= 1.5)
-							blockPress = true;
-					}
-					if (!blockPress)
-					{
-						goodNoteHit(playerStrumline, note);
-						pressedNotes.push(note);
-					}
+					var note:Note = possibleNotes[i];
+					if (note.strumTime - possibleNotes[0].strumTime < 2)
+						playerStrumline.removeNote(note);
 				}
+				// then hit the first note
+				goodNoteHit(playerStrumline, possibleNotes[0]);
 			}
 			else if (!PreferencesMenu.getPref('ghost-tapping'))
-				noteMissPress(key);
+				noteMiss(key);
 
 			// accurate hit moment part two (the old times)
 			Conductor.songPosition = lastTime;
@@ -2042,43 +2035,32 @@ class PlayState extends MusicBeatState
 			boyfriend.noHoldDance = false;
 	}
 
-	// for when you don't hit a note and let it go instead
-	function noteMiss(daNote:Note):Void
+	function noteMiss(direction:Int, ?note:Note, press:Bool = true):Void
 	{
 		vocals.volume = 0;
 
-		decreaseCombo(0.0475);
-
-		playMissSound();
-		boyfriend.playAnim(Character.singAnimations[daNote.noteData] + 'miss', true);
-	}
-
-	// for when you press where there is not any note
-	function noteMissPress(direction:Int):Void
-	{
-		if (!boyfriend.stunned)
+		if (press)
 		{
-			vocals.volume = 0;
 			if (combo > 5 && gf.animation.exists('sad'))
 				gf.playAnim('sad');
-
-			decreaseCombo(0.04);
-
-			playMissSound();
-			boyfriend.playAnim(Character.singAnimations[direction] + 'miss', true);
+			health -= 0.1;
 		}
-	}
+		else if (note != null)
+			health -= note.missHealth;
+		else
+			health -= 0.073;
 
-	function decreaseCombo(damage:Float)
-	{
-		health -= damage;
 		combo = 0;
 		if (!practiceMode)
 			songScore -= 10;
 		songMisses++;
+
 		totalPlayed++;
 		fcString = (songMisses < 10 ? 'SDCB' : '');
 		recalculateRating();
+
+		playMissSound();
+		boyfriend.playAnim(Character.singAnimations[direction] + 'miss', true);
 	}
 
 	function playMissSound()
@@ -2100,7 +2082,7 @@ class PlayState extends MusicBeatState
 					combo += 1;
 				}
 
-				health += 0.023;
+				health += note.hitHealth;
 			}
 			else if (SONG.song != 'Tutorial')
 				camZooming = true;

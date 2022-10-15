@@ -56,8 +56,6 @@ class Character extends FNFSprite
 	public function get_simpleIdle()
 		return !animation.exists('danceLeft') && !animation.exists('danceRight');
 
-	public var stunned:Bool = false;
-
 	public var animationNotes:Array<Dynamic> = [];
 
 	public var iconPath:String = 'face';
