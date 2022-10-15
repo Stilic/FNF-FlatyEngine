@@ -217,13 +217,11 @@ class Strumline extends FlxGroup
 			var angleDir:Float = (receptor.direction * Math.PI) / 180;
 
 			// it looks like i borrowed this from psych bruh
-			var diff:Float = Conductor.songPosition - note.strumTime;
-			if (!receptor.downscroll && note.isSustainNote)
-				diff -= note.strumTime - Conductor.stepCrochet + Conductor.stepCrochet / roundedSpeed;
-			else
-				diff -= note.strumTime;
-			var distance:Float = diff * (0.45 * roundedSpeed) * scrollMult;
-
+			var distance:Float = (Conductor.songPosition
+				- (roundedSpeed != 1
+					&& !receptor.downscroll
+					&& note.isSustainNote ? note.strumTime - Conductor.stepCrochet +
+						Conductor.stepCrochet / roundedSpeed : note.strumTime)) * (0.45 * roundedSpeed) * scrollMult;
 			note.x = receptor.x + note.offsetX + Math.cos(angleDir) * distance;
 			note.y = receptor.y + note.offsetY + Math.sin(angleDir) * distance;
 
@@ -241,7 +239,7 @@ class Strumline extends FlxGroup
 					{
 						note.sustainEndOffset = (note.prevNote.y - (note.y + note.height - 1));
 						if (!note.prevNote.isSustainNote)
-							note.sustainEndOffset += note.height / 1.25;
+							note.sustainEndOffset += note.height / 2;
 					}
 					note.y += note.sustainEndOffset;
 				}
