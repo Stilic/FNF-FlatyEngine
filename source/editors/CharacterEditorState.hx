@@ -1,9 +1,6 @@
 package editors;
 
 import haxe.Json;
-import openfl.events.Event;
-import openfl.events.IOErrorEvent;
-import openfl.net.FileReference;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -16,8 +13,6 @@ using StringTools;
 
 class CharacterEditorState extends MusicBeatState
 {
-	var _file:FileReference;
-
 	var camGame:FlxCamera;
 	var camHUD:FlxCamera;
 
@@ -232,39 +227,6 @@ class CharacterEditorState extends MusicBeatState
 
 	function save()
 	{
-		var data:String = Json.stringify(char.data, '\t');
-
-		if (data != null && data.length > 0)
-		{
-			_file = new FileReference();
-			_file.addEventListener(Event.COMPLETE, onSaveComplete);
-			_file.addEventListener(Event.CANCEL, onSaveCancel);
-			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data, char.curCharacter + ".json");
-		}
-	}
-
-	function onSaveComplete(_)
-	{
-		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
-		_file.removeEventListener(Event.CANCEL, onSaveCancel);
-		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-		_file = null;
-	}
-
-	function onSaveCancel(_)
-	{
-		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
-		_file.removeEventListener(Event.CANCEL, onSaveCancel);
-		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-		_file = null;
-	}
-
-	function onSaveError(_)
-	{
-		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
-		_file.removeEventListener(Event.CANCEL, onSaveCancel);
-		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-		_file = null;
+		CoolUtil.openSavePrompt(Json.stringify(char.data, '\t'), char.curCharacter + ".json");
 	}
 }

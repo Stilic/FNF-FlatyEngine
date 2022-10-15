@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.math.FlxMath;
 import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
@@ -213,8 +214,13 @@ class Strumline extends FlxGroup
 
 			var receptor:Receptor = receptors.members[note.noteData % receptors.length];
 			var scrollMult:Int = receptor.downscroll ? 1 : -1;
-			var distance:Float = (Conductor.songPosition - note.strumTime) * (0.45 * roundedSpeed) * scrollMult;
 			var angleDir:Float = (receptor.direction * Math.PI) / 180;
+
+			// it looks like i borrowed this from psych bruh
+			var diff:Float = Conductor.songPosition - note.strumTime;
+			if (!receptor.downscroll && note.isSustainNote)
+				diff -= Conductor.stepCrochet + Conductor.stepCrochet / roundedSpeed;
+			var distance:Float = diff * (0.45 * roundedSpeed) * scrollMult;
 
 			note.x = receptor.x + note.offsetX + Math.cos(angleDir) * distance;
 			note.y = receptor.y + note.offsetY + Math.sin(angleDir) * distance;

@@ -17,6 +17,9 @@ import sys.FileSystem;
 import js.html.Console;
 #end
 import openfl.utils.Assets;
+import openfl.net.FileReference;
+import openfl.events.Event;
+import openfl.events.IOErrorEvent;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.math.FlxMath;
@@ -31,6 +34,28 @@ class CoolUtil
 	inline public static function difficultyString():String
 	{
 		return difficultyArray[PlayState.storyDifficulty];
+	}
+
+	static var fileRef:FileReference;
+
+	public static function openSavePrompt(data:String, ?defaultFileName:String)
+	{
+		if (data.length > 0)
+		{
+			fileRef = new FileReference();
+			fileRef.addEventListener(Event.COMPLETE, disposeFileRef);
+			fileRef.addEventListener(Event.CANCEL, disposeFileRef);
+			fileRef.addEventListener(IOErrorEvent.IO_ERROR, disposeFileRef);
+			fileRef.save(data, defaultFileName);
+		}
+	}
+
+	static function disposeFileRef(_)
+	{
+		fileRef.removeEventListener(Event.COMPLETE, disposeFileRef);
+		fileRef.removeEventListener(Event.CANCEL, disposeFileRef);
+		fileRef.removeEventListener(IOErrorEvent.IO_ERROR, disposeFileRef);
+		fileRef = null;
 	}
 
 	public static function coolTextFile(path:String):Array<String>
