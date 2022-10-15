@@ -1,2 +1,2 @@
 - unharcode everything and add modding support
-- add modifiers (like itg lol)
+- add modifiers (like itg and andromeda lol)
