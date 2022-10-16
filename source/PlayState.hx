@@ -2073,6 +2073,8 @@ class PlayState extends MusicBeatState
 
 		playMissSound();
 		boyfriend.playAnim(Character.singAnimations[direction] + 'miss', true);
+		if (!note.isSustainNote && note.sustainLength == 0)
+			boyfriend.holding = false;
 	}
 
 	function playMissSound()
@@ -2107,10 +2109,26 @@ class PlayState extends MusicBeatState
 					animSuffix = '-alt';
 			}
 
+			var canHold:Bool = true;
+			if (!note.isSustainNote)
+			{
+				canHold = false;
+				for (susNote in note.children)
+				{
+					if (susNote.wasGoodHit)
+					{
+						canHold = true;
+						break;
+					}
+				}
+			}
+			else if (note.isSustainEnd)
+				canHold = false;
 			for (char in strumline.singingCharacters)
 			{
 				char.playAnim(Character.singAnimations[note.noteData] + animSuffix, true);
 				char.holdTimer = 0;
+				char.holding = canHold;
 			}
 
 			var receptor = strumline.receptors.members[note.noteData];

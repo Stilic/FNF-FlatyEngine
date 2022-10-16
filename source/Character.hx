@@ -50,6 +50,7 @@ class Character extends FNFSprite
 
 	public var holdTimer:Float = 0;
 	public var noHoldDance:Bool = false;
+	public var holding:Bool = false;
 
 	public var simpleIdle(get, never):Bool;
 
@@ -668,6 +669,16 @@ class Character extends FNFSprite
 		}
 
 		super.update(elapsed);
+
+		// make sure everything is updated before the holding
+		if (!debugMode
+			&& holding
+			&& animation.curAnim.name.startsWith('sing')
+			&& !animation.curAnim.name.endsWith('miss')
+			&& animation.curAnim.numFrames > 1
+			&& animation.curAnim.curFrame > 1
+			&& !animation.curAnim.finished)
+			animation.curAnim.curFrame = 0;
 	}
 
 	private var danced:Bool = false;
@@ -679,6 +690,8 @@ class Character extends FNFSprite
 	{
 		if (!debugMode)
 		{
+			holding = false;
+
 			// TODO: unharcode this
 			switch (curCharacter)
 			{

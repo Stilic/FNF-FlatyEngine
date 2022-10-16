@@ -32,7 +32,7 @@ class ChartingState extends MusicBeatState
 	 */
 	var curSection:Int = 0;
 
-	public static var lastSection:Int = 0;
+	static var lastSection:Int = 0;
 
 	var bpmTxt:FlxText;
 
@@ -111,7 +111,6 @@ class ChartingState extends MusicBeatState
 		}
 
 		FlxG.mouse.visible = true;
-		FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		tempBpm = _song.bpm;
 
@@ -135,13 +134,11 @@ class ChartingState extends MusicBeatState
 		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
 		add(dummyArrow);
 
-		var tabs = [
+		UI_box = new FlxUITabMenu(null, null, [
 			{name: "Song", label: 'Song Data'},
 			{name: "Section", label: 'Section Data'},
 			{name: "Note", label: 'Note Data'}
-		];
-
-		UI_box = new FlxUITabMenu(null, null, tabs, null, true);
+		], null, true);
 
 		UI_box.resize(300, 400);
 		UI_box.x = FlxG.width / 2;

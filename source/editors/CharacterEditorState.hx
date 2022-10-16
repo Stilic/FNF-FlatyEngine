@@ -125,7 +125,7 @@ class CharacterEditorState extends MusicBeatState
 
 	function playCurAnim(updateTextAnim:Bool = true)
 	{
-		var name:String = char.data.animations[curAnim].name;
+		var name = char.data.animations[curAnim].name;
 
 		char.playAnim(name, true);
 
@@ -140,7 +140,7 @@ class CharacterEditorState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		var holdShift:Bool = FlxG.keys.pressed.SHIFT;
+		var holdShift = FlxG.keys.pressed.SHIFT;
 
 		if (FlxG.keys.justPressed.R)
 			FlxG.camera.zoom = 1;
