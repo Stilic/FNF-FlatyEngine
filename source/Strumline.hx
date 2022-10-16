@@ -216,12 +216,12 @@ class Strumline extends FlxGroup
 			var scrollMult:Int = receptor.downscroll ? 1 : -1;
 			var angleDir:Float = (receptor.direction * Math.PI) / 180;
 
-			// it looks like i borrowed this from psych bruh
-			var distance:Float = (Conductor.songPosition
-				- (roundedSpeed != 1
-					&& !receptor.downscroll
-					&& note.isSustainNote ? note.strumTime - Conductor.stepCrochet +
-						Conductor.stepCrochet / roundedSpeed : note.strumTime)) * (0.45 * roundedSpeed) * scrollMult;
+			var distance:Float = Conductor.songPosition;
+			if (roundedSpeed != 1 && !receptor.downscroll && note.isSustainNote)
+				distance -= note.strumTime - Conductor.stepCrochet + Conductor.stepCrochet / roundedSpeed;
+			else
+				distance -= note.strumTime;
+			distance *= 0.45 * roundedSpeed * scrollMult;
 			note.x = receptor.x + note.offsetX + Math.cos(angleDir) * distance;
 			note.y = receptor.y + note.offsetY + Math.sin(angleDir) * distance;
 
@@ -230,19 +230,20 @@ class Strumline extends FlxGroup
 				var yFix:Float = Note.swagWidth / 10;
 				if (receptor.downscroll)
 					yFix += note.height / 1.6;
+				if (!receptor.downscroll && note.isSustainEnd && note.prevNote != null && !note.prevNote.isSustainNote)
+					note.sustainEndOffset += note.height;
 				yFix /= roundedSpeed;
 				note.y += yFix * scrollMult;
 
-				if (note.isSustainEnd && note.prevNote != null)
+				if (receptor.downscroll && note.isSustainEnd && note.prevNote != null)
 				{
-					if (receptor.downscroll)
+					if (note.sustainEndOffset == Math.NEGATIVE_INFINITY)
 					{
-						if (note.sustainEndOffset == Math.NEGATIVE_INFINITY)
-							note.sustainEndOffset = note.prevNote.y - (note.y + note.height - 1);
-						note.y += note.sustainEndOffset;
+						note.sustainEndOffset = note.prevNote.y - (note.y + note.height - 1);
+						if (!note.prevNote.isSustainNote)
+							note.sustainEndOffset += note.height / 1.75;
 					}
-					if (!note.prevNote.isSustainNote)
-						note.y += note.height / (receptor.downscroll ? 1.75 : 1.25);
+					note.y += note.sustainEndOffset;
 				}
 			}
 

@@ -13,7 +13,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	public static var startMusic:String = 'gameOver';
 	public static var endMusic:String = 'gameOverEnd';
 
-	var bf:Boyfriend;
+	var bf:Character;
 	var camGame:FNFCamera;
 
 	var randomGameover:String;
@@ -46,7 +46,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		Conductor.songPosition = 0;
 
-		bf = new Boyfriend(x, y, character);
+		bf = new Character(x, y, character, true);
 		add(bf);
 
 		camGame = cast FlxG.camera;

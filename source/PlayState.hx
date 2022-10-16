@@ -53,7 +53,7 @@ class PlayState extends MusicBeatState
 
 	private var dad:Character;
 	private var gf:Character;
-	private var boyfriend:Boyfriend;
+	private var boyfriend:Character;
 
 	private var unspawnNotes:Array<Note> = [];
 
@@ -78,8 +78,12 @@ class PlayState extends MusicBeatState
 
 	private var iconP1:HealthIcon;
 	private var iconP2:HealthIcon;
-	private var camHUD:FlxCamera;
+
 	private var camGame:FNFCamera;
+	private var camRating:FlxCamera;
+	private var camHUD:FlxCamera;
+	private var camOther:FlxCamera;
+	private var bumpinCams:Array<FlxCamera> = [];
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
@@ -145,18 +149,21 @@ class PlayState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		// CACHE MUSIC
-		Paths.inst(SONG.song.toLowerCase());
-		if (SONG.needsVoices)
-			Paths.voices(SONG.song.toLowerCase());
-
-		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FNFCamera(0.04);
+		camRating = new FlxCamera();
+		camRating.bgColor.alpha = 0;
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
+		camOther = new FlxCamera();
+		camOther.bgColor.alpha = 0;
 
 		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camRating, false);
 		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.add(camOther, false);
+
+		bumpinCams.push(camRating);
+		bumpinCams.push(camHUD);
 
 		persistentUpdate = persistentDraw = true;
 
@@ -653,7 +660,7 @@ class PlayState extends MusicBeatState
 				dad.y += 180;
 		}
 
-		boyfriend = new Boyfriend(770, 450, SONG.player1);
+		boyfriend = new Character(770, 450, SONG.player1, true);
 
 		// REPOSITIONING PER STAGE
 		switch (curStage)
@@ -751,7 +758,7 @@ class PlayState extends MusicBeatState
 		});
 		playerStrumline.onNoteUpdate.add(function(daNote:Note)
 		{
-			if (!playerStrumline.botplay  && (daNote.tooLate || !daNote.wasGoodHit) && Strumline.isOutsideScreen(daNote.strumTime))
+			if (!playerStrumline.botplay && (daNote.tooLate || !daNote.wasGoodHit) && Strumline.isOutsideScreen(daNote.strumTime))
 				noteMiss(daNote.noteData, daNote, false);
 		});
 		playerStrumline.characters = [boyfriend, gf];
@@ -901,6 +908,11 @@ class PlayState extends MusicBeatState
 			keysArray.push(controls.getInputsFor(dir, Keys));
 
 		super.create();
+
+		// CACHE MUSIC AND IMAGES
+		Paths.inst(SONG.song.toLowerCase());
+		if (SONG.needsVoices)
+			Paths.voices(SONG.song.toLowerCase());
 
 		Paths.image('alphabet');
 		// Paths.image('characters/' + GameOverSubstate.character);
@@ -1140,14 +1152,9 @@ class PlayState extends MusicBeatState
 		}, 4);
 	}
 
-	var previousFrameTime:Int = 0;
-	var songTime:Float = 0;
-
 	function startSong():Void
 	{
 		startingSong = false;
-
-		previousFrameTime = FlxG.game.ticks;
 
 		if (!paused)
 			FlxG.sound.playMusic(Paths.inst(SONG.song), 1, false);
@@ -1257,6 +1264,16 @@ class PlayState extends MusicBeatState
 
 			if (!startTimer.finished)
 				startTimer.active = true;
+			FlxTimer.globalManager.forEach(function(tmr:FlxTimer)
+			{
+				if (!tmr.finished)
+					tmr.active = true;
+			});
+			FlxTween.globalManager.forEach(function(twn:FlxTween)
+			{
+				if (!twn.finished)
+					twn.active = true;
+			});
 
 			camGame.resetTarget();
 
@@ -1282,26 +1299,18 @@ class PlayState extends MusicBeatState
 	{
 		if (health > 0 && !paused)
 		{
-			if (Conductor.songPosition > 0.0)
-			{
+			if (Conductor.songPosition > 0)
 				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
-			}
 			else
-			{
 				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
-			}
 		}
-
 		super.onFocus();
 	}
 
 	override public function onFocusLost():Void
 	{
 		if (health > 0 && !paused)
-		{
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
-		}
-
 		super.onFocusLost();
 	}
 	#end
@@ -1328,36 +1337,9 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		if (startingSong)
-		{
-			if (startedCountdown)
-			{
-				Conductor.songPosition += elapsed * 1000;
-				if (Conductor.songPosition >= 0)
-					startSong();
-			}
-		}
-		else
-		{
-			Conductor.songPosition += elapsed * 1000;
-
-			if (!paused)
-			{
-				songTime += FlxG.game.ticks - previousFrameTime;
-				previousFrameTime = FlxG.game.ticks;
-
-				// Interpolation type beat
-				if (Conductor.lastSongPos != Conductor.songPosition)
-				{
-					songTime = (songTime + Conductor.songPosition) / 2;
-					Conductor.lastSongPos = Conductor.songPosition;
-					// Conductor.songPosition += elapsed * 1000;
-					// trace('MISSED FRAME');
-				}
-			}
-
-			// Conductor.lastSongPos = FlxG.sound.music.time;
-		}
+		Conductor.songPosition += elapsed * 1000;
+		if (startingSong && startedCountdown && Conductor.songPosition >= 0)
+			startSong();
 
 		switch (curStage)
 		{
@@ -1390,9 +1372,20 @@ class PlayState extends MusicBeatState
 				Main.switchState(new GitarooPause());
 			else
 			{
+				FlxTimer.globalManager.forEach(function(tmr:FlxTimer)
+				{
+					if (!tmr.finished)
+						tmr.active = false;
+				});
+				FlxTween.globalManager.forEach(function(twn:FlxTween)
+				{
+					if (!twn.finished)
+						twn.active = false;
+				});
+
 				var pauseMenu:PauseSubState = new PauseSubState();
 				openSubState(pauseMenu);
-				pauseMenu.camera = camHUD;
+				pauseMenu.camera = camOther;
 			}
 
 			#if discord_rpc
@@ -1449,7 +1442,8 @@ class PlayState extends MusicBeatState
 		{
 			var lerpVal:Float = 0.052;
 			camGame.zoom = CoolUtil.coolLerp(defaultCamZoom, camGame.zoom, lerpVal, true);
-			camHUD.zoom = CoolUtil.coolLerp(1, camHUD.zoom, lerpVal, true);
+			for (cam in bumpinCams)
+				cam.zoom = CoolUtil.coolLerp(1, cam.zoom, lerpVal, true);
 		}
 
 		FlxG.watch.addQuick("beatShit", curBeat);
@@ -1731,49 +1725,47 @@ class PlayState extends MusicBeatState
 
 		var coolX:Float = FlxG.width * 0.35;
 
-		var rating:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + daRating.name + pixelShitPart2));
+		var rating:FlxSprite = new FlxSprite(coolX - 40, 0).loadGraphic(Paths.image(pixelShitPart1 + daRating.name + pixelShitPart2));
 		rating.screenCenter(Y);
-		rating.x = coolX - 40;
 		rating.y -= 60;
 		rating.acceleration.y = 550;
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
-		rating.cameras = [camHUD];
+		rating.cameras = [camRating];
 		insert(members.indexOf(opponentStrumline), rating);
 
-		var comboSpr:FlxSprite = null;
-		if (combo >= 10)
-		{
-			comboSpr = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
-			comboSpr.screenCenter(Y);
-			comboSpr.x = coolX;
-			comboSpr.acceleration.y = 600;
-			comboSpr.velocity.y -= 150;
-			comboSpr.cameras = [camHUD];
-			comboSpr.velocity.x += FlxG.random.int(1, 10);
-			insert(members.indexOf(opponentStrumline), comboSpr);
-		}
+		// var comboSpr:FlxSprite = null;
+		// if (combo >= 10)
+		// {
+		// 	comboSpr = new FlxSprite(coolX, 0).loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
+		// 	comboSpr.screenCenter(Y);
+		// 	comboSpr.acceleration.y = 600;
+		// 	comboSpr.velocity.y -= 150;
+		// 	comboSpr.cameras = [camRating];
+		// 	comboSpr.velocity.x += FlxG.random.int(1, 10);
+		// 	insert(members.indexOf(opponentStrumline), comboSpr);
+		// }
 
 		if (!curStage.startsWith('school'))
 		{
 			rating.setGraphicSize(Std.int(rating.width * 0.7));
 			rating.antialiasing = true;
-			if (comboSpr != null)
-			{
-				comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-				comboSpr.antialiasing = true;
-			}
+			// if (comboSpr != null)
+			// {
+			// 	comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
+			// 	comboSpr.antialiasing = true;
+			// }
 		}
 		else
 		{
 			rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7));
-			if (comboSpr != null)
-				comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
+			// if (comboSpr != null)
+			// 	comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
 		}
 
 		rating.updateHitbox();
-		if (comboSpr != null)
-			comboSpr.updateHitbox();
+		// if (comboSpr != null)
+		// 	comboSpr.updateHitbox();
 
 		if (combo >= 10)
 		{
@@ -1785,9 +1777,9 @@ class PlayState extends MusicBeatState
 			var daLoop:Int = 0;
 			for (i in seperatedScore)
 			{
-				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
+				var numScore:FlxSprite = new FlxSprite(coolX + 43 * daLoop - 90,
+					0).loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
 				numScore.screenCenter(Y);
-				numScore.x = coolX + (43 * daLoop) - 90;
 				numScore.y += 80;
 
 				if (!curStage.startsWith('school'))
@@ -1802,7 +1794,7 @@ class PlayState extends MusicBeatState
 				numScore.acceleration.y = FlxG.random.int(200, 300);
 				numScore.velocity.y -= FlxG.random.int(140, 160);
 				numScore.velocity.x = FlxG.random.float(-5, 5);
-				numScore.cameras = [camHUD];
+				numScore.cameras = [camRating];
 
 				if (combo >= 10)
 					insert(members.indexOf(opponentStrumline), numScore);
@@ -1827,20 +1819,16 @@ class PlayState extends MusicBeatState
 				rating.kill();
 				remove(rating, true);
 				rating.destroy();
-				if (comboSpr != null)
-				{
-					comboSpr.kill();
-					remove(comboSpr, true);
-					comboSpr.destroy();
-				}
+				// if (comboSpr != null)
+				// 	comboSpr.kill();
 			},
 			startDelay: Conductor.crochet * 0.001
 		});
 
-		if (comboSpr != null)
-			FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
-				startDelay: Conductor.crochet * 0.001
-			});
+		// if (comboSpr != null)
+		// 	FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
+		// 		startDelay: Conductor.crochet * 0.001
+		// 	});
 	}
 
 	var camZoomTween:FlxTween;
@@ -1947,19 +1935,37 @@ class PlayState extends MusicBeatState
 				if (daNote.noteData == key && !daNote.isSustainNote && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && daNote.canBeHit)
 					possibleNotes.push(daNote);
 			});
+
 			if (possibleNotes.length > 0)
 			{
-				// sort notes
-				possibleNotes.sort(sortByTime);
-				// remove nearest/stacked notes
-				for (i in 1...possibleNotes.length)
+				if (possibleNotes.length == 1)
+					goodNoteHit(playerStrumline, possibleNotes[0]);
+				else
 				{
-					var note:Note = possibleNotes[i];
-					if (note.strumTime - possibleNotes[0].strumTime < 2)
-						playerStrumline.removeNote(note);
+					possibleNotes.sort(sortByTime);
+
+					var pressedNotes:Array<Note> = [];
+					for (note in possibleNotes)
+					{
+						var finishLoop:Bool = false;
+						for (noteDouble in pressedNotes)
+						{
+							if (Math.abs(noteDouble.strumTime - note.strumTime) >= 0.1)
+							{
+								finishLoop = true;
+								break;
+							}
+						}
+
+						if (!finishLoop)
+						{
+							goodNoteHit(playerStrumline, note);
+							pressedNotes.push(note);
+						}
+						else
+							break;
+					}
 				}
-				// then hit the first note
-				goodNoteHit(playerStrumline, possibleNotes[0]);
 			}
 			else if (!PreferencesMenu.getPref('ghost-tapping'))
 				noteMiss(key);
@@ -2043,12 +2049,12 @@ class PlayState extends MusicBeatState
 		{
 			if (combo > 5 && gf.animation.exists('sad'))
 				gf.playAnim('sad');
-			health -= 0.1;
+			health -= Note.defaultMissHealth - 0.0075;
 		}
 		else if (note != null)
 			health -= note.missHealth;
 		else
-			health -= 0.073;
+			health -= Note.defaultMissHealth;
 
 		combo = 0;
 		if (!practiceMode)
@@ -2236,6 +2242,16 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	function bumpCams()
+	{
+		if (camZooming && camGame.zoom < 1.35)
+		{
+			camGame.zoom += 0.015;
+			for (cam in bumpinCams)
+				cam.zoom += 0.03;
+		}
+	}
+
 	var lightningStrikeBeat:Int = 0;
 	var lightningOffset:Int = 8;
 
@@ -2253,17 +2269,11 @@ class PlayState extends MusicBeatState
 		if (PreferencesMenu.getPref('camera-zoom'))
 		{
 			// HARDCODING FOR MILF ZOOMS!
-			if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && camGame.zoom < 1.35)
-			{
-				camGame.zoom += 0.015;
-				camHUD.zoom += 0.03;
-			}
+			if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200)
+				bumpCams();
 
-			if (camZooming && camGame.zoom < 1.35 && curBeat % 4 == 0)
-			{
-				camGame.zoom += 0.015;
-				camHUD.zoom += 0.03;
-			}
+			if (curBeat % 4 == 0)
+				bumpCams();
 		}
 
 		iconP1.bounce();

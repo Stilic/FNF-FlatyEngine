@@ -8,6 +8,7 @@ using StringTools;
 class Note extends FlxSprite
 {
 	public static final swagWidth:Float = 160 * 0.7;
+	public static final defaultMissHealth:Float = 0.0475;
 
 	public var strumTime:Float = 0;
 	public var noteData:Int = 0;
@@ -15,7 +16,7 @@ class Note extends FlxSprite
 	public var altNote:Bool = false;
 
 	public var hitHealth:Float = 0.023;
-	public var missHealth:Float = 0.073;
+	public var missHealth:Float = defaultMissHealth;
 
 	public var isSustainNote:Bool = false;
 	public var isSustainEnd:Bool = false;
@@ -131,8 +132,6 @@ class Note extends FlxSprite
 					animation.play('redScroll');
 			}
 		}
-		else
-			missHealth = 0.04;
 
 		if (sustainNote && prevNote != null)
 		{

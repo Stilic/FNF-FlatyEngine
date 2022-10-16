@@ -65,6 +65,8 @@ class Character extends FNFSprite
 	public var cameraMoveAdd:Float = 15;
 	public var cameraMoveArray:Array<Float>;
 
+	public var startedDeath:Bool = false;
+
 	public function new(x:Float, y:Float, character:String = "bf", isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -621,37 +623,48 @@ class Character extends FNFSprite
 
 	override function update(elapsed:Float)
 	{
-		if (animation.curAnim.name.startsWith('sing'))
-			holdTimer += elapsed;
-
-		if (!noHoldDance && holdTimer >= Conductor.stepCrochet * singDuration * 0.0011)
+		if (!debugMode)
 		{
-			dance();
-			holdTimer = 0;
-		}
+			if (isPlayer && animation.curAnim.finished)
+			{
+				if (animation.curAnim.name.endsWith('miss'))
+					playAnim('idle', true, false, 10);
+				if (animation.curAnim.name == 'firstDeath')
+					playAnim('deathLoop');
+			}
 
-		if (curCharacter.endsWith('-car') && !animation.curAnim.name.startsWith('sing') && animation.curAnim.finished)
-			playAnim('idleHair');
+			if (animation.curAnim.name.startsWith('sing'))
+				holdTimer += elapsed;
 
-		switch (curCharacter)
-		{
-			case 'gf':
-				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
-					playAnim('danceRight');
-			case 'pico-speaker':
-				if (animationNotes.length > 0 && Conductor.songPosition > animationNotes[0][0])
-				{
-					// trace("played shoot anim" + animationNotes[0][1]);
-					var shotDirection:Int = 1;
-					if (animationNotes[0][1] >= 2)
-						shotDirection = 3;
-					shotDirection += FlxG.random.int(0, 1);
+			if (!noHoldDance && holdTimer >= Conductor.stepCrochet * singDuration * 0.0011)
+			{
+				dance();
+				holdTimer = 0;
+			}
 
-					playAnim('shoot' + shotDirection, true);
-					animationNotes.shift();
-				}
-				if (animation.curAnim.finished)
-					playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
+			if (curCharacter.endsWith('-car') && !animation.curAnim.name.startsWith('sing') && animation.curAnim.finished)
+				playAnim('idleHair');
+
+			switch (curCharacter)
+			{
+				case 'gf':
+					if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
+						playAnim('danceRight');
+				case 'pico-speaker':
+					if (animationNotes.length > 0 && Conductor.songPosition > animationNotes[0][0])
+					{
+						// trace("played shoot anim" + animationNotes[0][1]);
+						var shotDirection:Int = 1;
+						if (animationNotes[0][1] >= 2)
+							shotDirection = 3;
+						shotDirection += FlxG.random.int(0, 1);
+
+						playAnim('shoot' + shotDirection, true);
+						animationNotes.shift();
+					}
+					if (animation.curAnim.finished)
+						playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
+			}
 		}
 
 		super.update(elapsed);
