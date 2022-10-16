@@ -1257,6 +1257,8 @@ class PlayState extends MusicBeatState
 
 	override function closeSubState()
 	{
+		persistentUpdate = persistentDraw = true;
+
 		if (paused)
 		{
 			if (FlxG.sound.music != null && !startingSong)
@@ -1264,6 +1266,7 @@ class PlayState extends MusicBeatState
 
 			if (!startTimer.finished)
 				startTimer.active = true;
+
 			FlxTimer.globalManager.forEach(function(tmr:FlxTimer)
 			{
 				if (!tmr.finished)
