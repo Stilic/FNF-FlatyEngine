@@ -231,18 +231,12 @@ class Strumline extends FlxGroup
 				if (receptor.downscroll)
 					yFix += note.height / 1.6;
 				yFix /= roundedSpeed;
-				if (!receptor.downscroll && note.isSustainEnd && note.prevNote != null && !note.prevNote.isSustainNote)
-					yFix -= (note.height / 1.5) * roundedSpeed;
 				note.y += yFix * scrollMult;
 
 				if (receptor.downscroll && note.isSustainEnd && note.prevNote != null)
 				{
 					if (note.sustainEndOffset == Math.NEGATIVE_INFINITY)
-					{
 						note.sustainEndOffset = note.prevNote.y - (note.y + note.height - 1);
-						if (!note.prevNote.isSustainNote)
-							note.sustainEndOffset += note.height / 2;
-					}
 					note.y += note.sustainEndOffset;
 				}
 			}
