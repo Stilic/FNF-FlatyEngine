@@ -7,6 +7,7 @@ import Discord.DiscordClient;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.FlxSubState;
+import flixel.addons.transition.FlxTransitionableState;
 
 class StartState extends FlxState
 {
@@ -56,6 +57,7 @@ class StartState extends FlxState
 
 		super.create();
 
+		FlxTransitionableState.skipNextTransOut = true;
 		FlxG.switchState(new TitleState());
 	}
 
