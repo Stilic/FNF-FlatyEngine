@@ -104,10 +104,12 @@ class Main extends Sprite
 			while (state.subState != null)
 				state = state.subState;
 			state.openSubState(new FadeSubstate(0.5, false, callback));
-			FlxTransitionableState.skipNextTransIn = false;
 		}
 		else
+		{
+			FlxTransitionableState.skipNextTransIn = false;
 			callback();
+		}
 	}
 
 	inline public static function resetState()
