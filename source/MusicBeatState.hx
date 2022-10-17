@@ -21,10 +21,9 @@ class MusicBeatState extends FlxUIState
 		super.create();
 
 		if (!skip)
-		{
 			openSubState(new FadeSubstate(0.6, true));
+		else
 			FlxTransitionableState.skipNextTransOut = false;
-		}
 	}
 
 	override function update(elapsed:Float)
