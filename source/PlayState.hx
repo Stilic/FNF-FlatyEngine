@@ -1057,7 +1057,7 @@ class PlayState extends MusicBeatState
 		if (!isStoryMode || isFirstStorySong)
 		{
 			for (strumline in strumlines)
-				strumline.tweenStrums();
+				strumline.tweenReceptors();
 		}
 
 		startedCountdown = true;
