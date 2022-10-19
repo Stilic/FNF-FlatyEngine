@@ -133,6 +133,8 @@
 
 	<!--Enable HScript fine error reporting at parsing time-->
 	<haxedef name="hscriptPos" if="hscript" />
+	
+	<haxedef name="no-deprecation-warnings" />
 
 	<!-- _________________________________ Custom _______________________________ -->
 
