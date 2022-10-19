@@ -307,7 +307,7 @@ class Strumline extends FlxGroup
 		}
 	}
 
-	public function tweenStrums()
+	public function tweenReceptors()
 	{
 		receptors.forEachAlive(function(receptor:Receptor)
 		{
