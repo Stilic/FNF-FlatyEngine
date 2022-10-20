@@ -55,7 +55,6 @@ class Note extends FlxSprite
 		if (sustainNote)
 			earlyHitMult = 0.5;
 
-		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 
@@ -136,7 +135,7 @@ class Note extends FlxSprite
 		if (sustainNote && prevNote != null)
 		{
 			parentNote = prevNote;
-			while (parentNote.isSustainNote && parentNote.prevNote != null)
+			while (parentNote.prevNote != null)
 				parentNote = parentNote.prevNote;
 			parentNote.children.push(this);
 
