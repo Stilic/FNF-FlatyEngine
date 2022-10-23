@@ -8,6 +8,7 @@ using StringTools;
 class Note extends FlxSprite
 {
 	public static final swagWidth:Float = 160 * 0.7;
+	public static final defaultHitHealth:Float = 0.023;
 	public static final defaultMissHealth:Float = 0.0475;
 
 	public var strumTime:Float = 0;
@@ -15,7 +16,7 @@ class Note extends FlxSprite
 	public var mustPress:Bool = false;
 	public var altNote:Bool = false;
 
-	public var hitHealth:Float = 0.023;
+	public var hitHealth:Float = defaultHitHealth;
 	public var missHealth:Float = defaultMissHealth;
 
 	public var isSustainNote:Bool = false;
@@ -24,7 +25,7 @@ class Note extends FlxSprite
 	public var sustainEndOffset:Float = Math.NEGATIVE_INFINITY;
 	public var prevNote(default, null):Note;
 	public var parentNote(default, null):Note;
-	public var children:Array<Note>;
+	public var children:Array<Note> = [];
 
 	public var canBeHit(get, never):Bool;
 
@@ -117,7 +118,7 @@ class Note extends FlxSprite
 
 		if (!sustainNote)
 		{
-			children = [];
+			alpha = 0.7;
 
 			switch (noteData)
 			{

@@ -70,7 +70,7 @@ class Receptor extends FNFSprite
 					animation.addByPrefix('pressed', 'left press', 24, false);
 					animation.addByPrefix('confirm', 'left confirm', 24, false);
 
-					addOffset('confirm', -1, -4);
+					addOffset('confirm', -1, -4.5);
 				case 1:
 					animation.addByPrefix('static', 'arrowDOWN', 24);
 					animation.addByPrefix('pressed', 'down press', 24, false);
@@ -216,59 +216,43 @@ class Strumline extends FlxGroup
 			var scrollMult:Int = receptor.downscroll ? 1 : -1;
 			var angleDir:Float = (receptor.direction * Math.PI) / 180;
 
-			var distance:Float = Conductor.songPosition;
-			if (roundedSpeed != 1 && !receptor.downscroll && note.isSustainNote)
-				distance -= note.strumTime - Conductor.stepCrochet + Conductor.stepCrochet / roundedSpeed;
-			else
-				distance -= note.strumTime;
-			distance *= 0.45 * roundedSpeed * scrollMult;
+			var distance:Float = (0.45 * scrollMult) * (Conductor.songPosition - note.strumTime) * roundedSpeed;
 			note.x = receptor.x + note.offsetX + Math.cos(angleDir) * distance;
 			note.y = receptor.y + note.offsetY + Math.sin(angleDir) * distance;
-
-			if (note.isSustainNote)
-			{
-				var yFix:Float = Note.swagWidth / 10;
-				if (receptor.downscroll)
-					yFix += note.height / 1.6;
-				yFix /= roundedSpeed;
-				note.y += yFix * scrollMult;
-
-				if (receptor.downscroll && note.isSustainEnd && note.prevNote != null)
-				{
-					if (note.sustainEndOffset == Math.NEGATIVE_INFINITY)
-						note.sustainEndOffset = note.prevNote.y - (note.y + note.height - 1);
-					note.y += note.sustainEndOffset;
-				}
-			}
 
 			if (note.copyAngle)
 				note.angle = receptor.direction - 90 + receptor.angle + note.offsetAngle;
 
-			// i am so fucking sorry for these if conditions
 			if (note.isSustainNote)
 			{
+				var yFix:Float = Note.swagWidth;
+				if (receptor.downscroll)
+					yFix /= 2 * roundedSpeed;
+				else
+					yFix /= 10;
+				note.y += (yFix * roundedSpeed) * scrollMult;
+
+				if (receptor.downscroll && note.isSustainEnd && note.prevNote != null)
+				{
+					if (note.sustainEndOffset == Math.NEGATIVE_INFINITY)
+						note.sustainEndOffset = note.prevNote.y - (note.y + note.height);
+					note.y += note.sustainEndOffset + FlxMath.bound(roundedSpeed, 1);
+				}
+
 				if (receptor.sustainReduce && (botplay || note.wasGoodHit || (note.prevNote != null && note.prevNote.wasGoodHit)))
 				{
 					var center:Float = receptor.y + Note.swagWidth / 2;
+					var vert:Float = (center - note.y) / note.scale.y;
+					var swagRect:FlxRect = null;
 					if (receptor.downscroll)
 					{
 						if (note.y - note.offset.y * note.scale.y + note.height >= center)
-						{
-							var swagRect:FlxRect = new FlxRect(0, 0, note.frameWidth, note.frameHeight);
-							swagRect.height = (center - note.y) / note.scale.y;
-							swagRect.y = note.frameHeight - swagRect.height;
-
-							note.clipRect = swagRect;
-						}
+							swagRect = new FlxRect(0, note.frameHeight - vert, note.frameWidth, vert);
 					}
 					else if (note.y + note.offset.y * note.scale.y <= center)
-					{
-						var swagRect:FlxRect = new FlxRect(0, 0, note.width / note.scale.x, note.height / note.scale.y);
-						swagRect.y = (center - note.y) / note.scale.y;
-						swagRect.height -= swagRect.y;
-
+						swagRect = new FlxRect(0, vert, note.width / note.scale.x, note.height / note.scale.y - vert);
+					if (swagRect != null)
 						note.clipRect = swagRect;
-					}
 				}
 			}
 

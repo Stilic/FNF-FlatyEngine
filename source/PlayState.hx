@@ -1213,17 +1213,20 @@ class PlayState extends MusicBeatState
 				if (swagNote.sustainLength > 0)
 				{
 					var floorSus:Int = Math.round(swagNote.sustainLength / Conductor.stepCrochet);
-					if (floorSus <= 1)
-						floorSus++;
-					for (susNote in 0...floorSus)
+					if (floorSus > 0)
 					{
-						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+						if (floorSus == 1)
+							floorSus++;
+						for (susNote in 0...floorSus)
+						{
+							oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-						var sustainNote:Note = new Note(daStrumTime + Conductor.stepCrochet * (susNote + 1), daNoteData, oldNote, true);
-						sustainNote.mustPress = gottaHitNote;
-						sustainNote.altNote = songNotes[3];
-						sustainNote.scrollFactor.set();
-						unspawnNotes.push(sustainNote);
+							var sustainNote:Note = new Note(daStrumTime + Conductor.stepCrochet * (susNote + 1), daNoteData, oldNote, true);
+							sustainNote.mustPress = gottaHitNote;
+							sustainNote.altNote = songNotes[3];
+							sustainNote.scrollFactor.set();
+							unspawnNotes.push(sustainNote);
+						}
 					}
 				}
 			}

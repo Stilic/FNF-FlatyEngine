@@ -670,14 +670,15 @@ class Character extends FNFSprite
 
 		super.update(elapsed);
 
-		// make sure everything is updated before the holding
+		// make sure everything is updated before doing the hold thingy
 		if (!debugMode
 			&& holding
-			&& animation.curAnim.name.startsWith('sing')
-			&& !animation.curAnim.name.endsWith('miss')
-			&& animation.curAnim.numFrames > 1
+			&& animation.curAnim != null
+			&& !animation.curAnim.finished
+			&& animation.curAnim.frames.length > 2
 			&& animation.curAnim.curFrame > 1
-			&& !animation.curAnim.finished)
+			&& animation.curAnim.name.startsWith('sing')
+			&& !animation.curAnim.name.endsWith('miss'))
 			animation.curAnim.curFrame = 0;
 	}
 
