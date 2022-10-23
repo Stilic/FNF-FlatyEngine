@@ -216,7 +216,15 @@ class Strumline extends FlxGroup
 			var scrollMult:Int = receptor.downscroll ? 1 : -1;
 			var angleDir:Float = (receptor.direction * Math.PI) / 180;
 
-			var distance:Float = (0.45 * scrollMult) * (Conductor.songPosition - note.strumTime) * roundedSpeed;
+			var diff:Float = note.strumTime;
+			// unoptimized thing for high upscroll speeds -stilic
+			if (!receptor.downscroll && note.isSustainNote && roundedSpeed != 1)
+			{
+				diff -= Conductor.stepCrochet;
+				diff += Conductor.stepCrochet / roundedSpeed;
+			}
+			diff = Conductor.songPosition - diff;
+			var distance:Float = (0.45 * scrollMult) * diff * roundedSpeed;
 			note.x = receptor.x + note.offsetX + Math.cos(angleDir) * distance;
 			note.y = receptor.y + note.offsetY + Math.sin(angleDir) * distance;
 
@@ -225,12 +233,8 @@ class Strumline extends FlxGroup
 
 			if (note.isSustainNote)
 			{
-				var yFix:Float = Note.swagWidth;
-				if (receptor.downscroll)
-					yFix /= 2 * roundedSpeed;
-				else
-					yFix /= 10;
-				note.y += (yFix * roundedSpeed) * scrollMult;
+				// uuhhh why i did that to make the shit working?? -stilic
+				note.y += (Note.swagWidth / ((receptor.downscroll ? 2 : 10) * roundedSpeed)) * roundedSpeed * scrollMult;
 
 				if (receptor.downscroll && note.isSustainEnd && note.prevNote != null)
 				{
