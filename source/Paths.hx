@@ -65,19 +65,19 @@ class Paths
 		return getPath('data/$key.json', TEXT, library);
 	}
 
-	static public function sound(key:String, ?library:String, persist:Bool = false)
+	static public function sound(key:String, ?library:String, persistUntilClear:Bool = false)
 	{
-		return returnSound('sounds/$key', library, persist);
+		return returnSound('sounds/$key', library, false, persistUntilClear);
 	}
 
-	inline static public function soundRandom(key:String, min:Int, max:Int, ?library:String, persist:Bool = false)
+	inline static public function soundRandom(key:String, min:Int, max:Int, ?library:String, persistUntilClear:Bool = false)
 	{
-		return sound(key + FlxG.random.int(min, max), library, persist);
+		return sound(key + FlxG.random.int(min, max), library, persistUntilClear);
 	}
 
-	inline static public function music(key:String, ?library:String)
+	inline static public function music(key:String, ?library:String, persistUntilClear:Bool = false)
 	{
-		return returnSound('music/$key', library, true);
+		return returnSound('music/$key', library, true, persistUntilClear);
 	}
 
 	inline static public function voicesPath(song:String)
@@ -90,19 +90,19 @@ class Paths
 		return getLibraryPathForce('${song.toLowerCase()}/Inst.$SOUND_EXT', 'songs');
 	}
 
-	inline static public function voices(song:String)
+	inline static public function voices(song:String, persistUntilClear:Bool = false)
 	{
-		return returnSound('${song.toLowerCase()}/Voices', 'songs', true);
+		return returnSound('${song.toLowerCase()}/Voices', 'songs', true, persistUntilClear);
 	}
 
-	inline static public function inst(song:String)
+	inline static public function inst(song:String, persistUntilClear:Bool = false)
 	{
-		return returnSound('${song.toLowerCase()}/Inst', 'songs', true);
+		return returnSound('${song.toLowerCase()}/Inst', 'songs', true, persistUntilClear);
 	}
 
-	inline static public function image(key:String, ?library:String)
+	inline static public function image(key:String, ?library:String, persistUntilClear:Bool = false)
 	{
-		return returnGraphic('images/$key', library);
+		return returnGraphic('images/$key', library, persistUntilClear);
 	}
 
 	inline static public function font(key:String)
@@ -120,37 +120,47 @@ class Paths
 		return getPath('videos/$key.mp4', BINARY, library);
 	}
 
-	inline static public function getSparrowAtlas(key:String, ?library:String)
+	inline static public function getSparrowAtlas(key:String, ?library:String, persistUntilClear:Bool = false)
 	{
-		return returnAtlas('images/$key', Sparrow, library);
+		return returnAtlas('images/$key', Sparrow, library, persistUntilClear);
 	}
 
-	inline static public function getPackerAtlas(key:String, ?library:String)
+	inline static public function getPackerAtlas(key:String, ?library:String, persistUntilClear:Bool = false)
 	{
-		return returnAtlas('images/$key', Packer, library);
+		return returnAtlas('images/$key', Packer, library, persistUntilClear);
 	}
 
-	public static function returnGraphic(key:String, ?library:String)
+	public static function returnGraphic(key:String, ?library:String, persistUntilClear:Bool = false)
 	{
-		var graphic = Cache.getGraphic(getPath('$key.png', IMAGE, library));
+		var path = getPath('$key.png', IMAGE, library);
+		var graphic = Cache.getGraphic(path);
 		if (graphic != null)
+		{
+			if (persistUntilClear)
+				Cache.persistantAssets.set(path, true);
 			return graphic;
+		}
 
 		trace('oh no ${key} is returning null NOOOO');
 		return null;
 	}
 
-	public static function returnAtlas(key:String, type:AtlasType, ?library:String)
+	public static function returnAtlas(key:String, type:AtlasType, ?library:String, persistUntilClear:Bool = false)
 	{
-		var atlas = Cache.getAtlas(getPath('$key.png', IMAGE, library), type);
+		var path = getPath('$key.png', IMAGE, library);
+		var atlas = Cache.getAtlas(path, type);
 		if (atlas != null)
+		{
+			if (persistUntilClear)
+				Cache.persistantAssets.set(path, true);
 			return atlas;
+		}
 
 		trace('oh no ${key} is returning null NOOOO');
 		return null;
 	}
 
-	public static function returnSound(key:String, ?library:String, stream:Bool = false)
+	public static function returnSound(key:String, ?library:String, stream:Bool = false, persistUntilClear:Bool = false)
 	{
 		var path = getPath('$key.$SOUND_EXT', SOUND, library);
 		var sound;
@@ -161,7 +171,11 @@ class Paths
 		#end
 		sound = Cache.getSound(path);
 		if (sound != null)
+		{
+			if (persistUntilClear)
+				Cache.persistantAssets.set(path, true);
 			return sound;
+		}
 
 		trace('oh no ${key} is returning null NOOOO');
 		return null;

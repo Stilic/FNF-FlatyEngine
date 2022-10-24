@@ -843,6 +843,14 @@ class PlayState extends MusicBeatState
 		// FlxG.camera.alpha = 0.7;
 		// UI_camera.zoom = 1;
 
+		// CACHE IMAGES AND SOUNDS
+		Paths.image('alphabet', null, true);
+		// Paths.image('characters/' + GameOverSubstate.character);
+
+		Paths.music('breakfast', null, true);
+		for (i in 1...3)
+			Paths.sound('missnote' + i, null, true);
+
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 
@@ -908,18 +916,6 @@ class PlayState extends MusicBeatState
 			keysArray.push(controls.getInputsFor(dir, Keys));
 
 		super.create();
-
-		// CACHE MUSIC AND IMAGES
-		Paths.inst(SONG.song.toLowerCase());
-		if (SONG.needsVoices)
-			Paths.voices(SONG.song.toLowerCase());
-
-		Paths.image('alphabet');
-		// Paths.image('characters/' + GameOverSubstate.character);
-
-		Paths.music('breakfast');
-		for (i in 1...3)
-			Paths.sound('missnote' + i);
 	}
 
 	function playCutscene(name:String, atEndOfSong:Bool = false, ?callback:Void->Void)
@@ -936,7 +932,7 @@ class PlayState extends MusicBeatState
 		#if hxCodec
 		inCutscene = true;
 
-		var video:MP4Handler = new MP4Handler();
+		var video = new MP4Handler();
 		video.finishCallback = endShit;
 		video.playVideo(Paths.video(name));
 		#else

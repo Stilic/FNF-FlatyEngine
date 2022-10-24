@@ -196,7 +196,7 @@ class Cache
 		CoolUtil.runGC();
 	}
 
-	public static function clearUnused(onlyGraphics:Bool = false)
+	public static function clearUnused()
 	{
 		for (key => image in images)
 		{
@@ -204,8 +204,7 @@ class Cache
 				removeGraphic(key);
 		}
 
-		if (!onlyGraphics)
-			clearUnusedSounds();
+		clearUnusedSounds();
 
 		CoolUtil.runGC();
 	}

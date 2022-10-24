@@ -83,7 +83,7 @@ class StartState extends FlxState
 
 	static function onSubStateClose(substate:FlxSubState)
 	{
-		Cache.clearUnused(true);
+		onSwitchEnd();
 	}
 
 	static function onSwitchEnd()

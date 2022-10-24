@@ -1,6 +1,5 @@
 package;
 
-import flixel.FlxG;
 import flixel.math.FlxMath;
 import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
