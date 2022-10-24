@@ -26,6 +26,8 @@ class StartState extends FlxState
 		FlxG.game.focusLostFramerate = 60;
 		FlxG.sound.muteKeys = [ZERO];
 		FlxG.keys.preventDefaultKeys = [TAB];
+		FlxG.mouse.visible = false;
+		FlxG.mouse.useSystemCursor = true;
 
 		// WEEK UNLOCK PROGRESSION!!
 		if (FlxG.save.data.weekUnlocked != null)
@@ -57,8 +59,9 @@ class StartState extends FlxState
 
 		super.create();
 
-		FlxTransitionableState.skipNextTransOut = true;
-		FlxG.switchState(new TitleState());
+		// FlxTransitionableState.skipNextTransOut = true;
+		// FlxG.switchState(new TitleState());
+		LoadingState.loadAndSwitchState(new editors.CharacterEditorState());
 	}
 
 	#if discord_rpc

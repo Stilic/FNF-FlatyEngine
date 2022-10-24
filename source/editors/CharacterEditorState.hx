@@ -5,9 +5,12 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
-import flixel.addons.display.FlxGridOverlay;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.addons.display.FlxGridOverlay;
+import flixel.addons.ui.FlxUI;
+import flixel.addons.ui.FlxUITabMenu;
+import flixel.addons.ui.FlxUIDropDownMenu;
 
 using StringTools;
 
@@ -23,6 +26,8 @@ class CharacterEditorState extends MusicBeatState
 	var textAnim:FlxText;
 	var curAnim:Int = 0;
 
+	var UI_box:FlxUITabMenu;
+
 	override function create()
 	{
 		if (FlxG.sound.music != null)
@@ -35,6 +40,8 @@ class CharacterEditorState extends MusicBeatState
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD, false);
+
+		FlxG.mouse.visible = true;
 
 		var gridBG:FlxSprite = FlxGridOverlay.create(10, 10, -1, -1, true, FlxColor.fromRGB(48, 48, 48), FlxColor.fromRGB(78, 78, 78));
 		gridBG.scrollFactor.set();
@@ -61,20 +68,46 @@ class CharacterEditorState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 1, 1);
 		camFollow.screenCenter();
 		add(camFollow);
-
 		FlxG.camera.follow(camFollow);
+
+		UI_box = new FlxUITabMenu(null, null, CoolUtil.makeUITabs(['Character', 'Animations']), null, true);
+		UI_box.resize(300, 400);
+		UI_box.x = FlxG.width / 1.35;
+		UI_box.y = 20;
+		UI_box.scrollFactor.set();
+		add(UI_box);
+
+		addCharacterUI();
+		addAnimationsUI();
 
 		super.create();
 	}
 
-	function loadChar(?daAnim:String)
+	function addCharacterUI()
 	{
-		if (daAnim == null)
+		var charDropDown = new FlxUIDropDownMenu(10, 10, FlxUIDropDownMenu.makeStrIdLabelArray(CoolUtil.coolTextFile(Paths.txt('characterList')), true),
+			loadChar);
+		charDropDown.selectedLabel = char.curCharacter;
+
+		var tab_group_character = new FlxUI(null, UI_box);
+		tab_group_character.name = 'Character';
+		tab_group_character.add(charDropDown);
+
+		UI_box.addGroup(tab_group_character);
+	}
+
+	function addAnimationsUI()
+	{
+	}
+
+	function loadChar(?name:String)
+	{
+		if (name == null)
 		{
 			// if (PlayState.SONG != null)
 			// 	daAnim = PlayState.SONG.player2;
 			// else
-			daAnim = 'bf';
+			name = 'bf';
 		}
 
 		var index:Int = -1;
@@ -85,7 +118,7 @@ class CharacterEditorState extends MusicBeatState
 			remove(char, true);
 			char.destroy();
 		}
-		char = new Character(0, 0, daAnim, daAnim.startsWith('bf'));
+		char = new Character(0, 0, name, name.startsWith('bf'));
 		char.screenCenter();
 		char.debugMode = true;
 		if (index < 0)
@@ -220,7 +253,10 @@ class CharacterEditorState extends MusicBeatState
 			save();
 
 		if (FlxG.keys.justPressed.ESCAPE)
+		{
+			FlxG.mouse.visible = false;
 			Main.switchState(new PlayState());
+		}
 
 		super.update(elapsed);
 	}

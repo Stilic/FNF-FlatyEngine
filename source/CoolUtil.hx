@@ -115,6 +115,14 @@ class CoolUtil
 		return null;
 	}
 
+	public static function makeUITabs(tabs:Array<String>)
+	{
+		var returnArray = [];
+		for (tab in tabs)
+			returnArray.push({name: tab, label: tab});
+		return returnArray;
+	}
+
 	inline public static function runGC():Void
 	{
 		#if cpp

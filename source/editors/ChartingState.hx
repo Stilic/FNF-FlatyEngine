@@ -4,7 +4,6 @@ import haxe.Json;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
-import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUIDropDownMenu;
@@ -54,7 +53,7 @@ class ChartingState extends MusicBeatState
 
 	var _song:SwagSong;
 
-	var typingShit:FlxInputText;
+	var UI_songTitle:FlxUIInputText;
 	/*
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
@@ -130,19 +129,16 @@ class ChartingState extends MusicBeatState
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(FlxG.width / 2), 4);
 		add(strumLine);
+		FlxG.camera.follow(strumLine);
 
 		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
 		add(dummyArrow);
 
-		UI_box = new FlxUITabMenu(null, null, [
-			{name: "Song", label: 'Song Data'},
-			{name: "Section", label: 'Section Data'},
-			{name: "Note", label: 'Note Data'}
-		], null, true);
-
+		UI_box = new FlxUITabMenu(null, null, CoolUtil.makeUITabs(['Song', 'Section', 'Note']), null, true);
 		UI_box.resize(300, 400);
-		UI_box.x = FlxG.width / 2;
+		UI_box.x = FlxG.width / 1.35;
 		UI_box.y = 20;
+		UI_box.scrollFactor.set();
 		add(UI_box);
 
 		addSongUI();
@@ -153,13 +149,13 @@ class ChartingState extends MusicBeatState
 		add(curRenderedSustains);
 
 		changeSection();
+
 		super.create();
 	}
 
 	function addSongUI():Void
 	{
-		var UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
-		typingShit = UI_songTitle;
+		UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
 
 		var check_voices = new FlxUICheckBox(10, 25, null, null, "Has voice track", 100);
 		check_voices.checked = _song.needsVoices;
@@ -246,9 +242,6 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(player1DropDown);
 
 		UI_box.addGroup(tab_group_song);
-		UI_box.scrollFactor.set();
-
-		FlxG.camera.follow(strumLine);
 	}
 
 	var stepperLength:FlxUINumericStepper;
@@ -447,7 +440,7 @@ class ChartingState extends MusicBeatState
 		curStep = recalculateSteps();
 
 		Conductor.songPosition = FlxG.sound.music.time;
-		_song.song = typingShit.text;
+		_song.song = UI_songTitle.text;
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 
@@ -552,7 +545,7 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
-		if (!typingShit.hasFocus)
+		if (!UI_songTitle.hasFocus)
 		{
 			if (FlxG.keys.justPressed.SPACE)
 			{
