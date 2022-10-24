@@ -59,9 +59,9 @@ class StartState extends FlxState
 
 		super.create();
 
-		// FlxTransitionableState.skipNextTransOut = true;
-		// FlxG.switchState(new TitleState());
-		LoadingState.loadAndSwitchState(new editors.CharacterEditorState());
+		FlxTransitionableState.skipNextTransOut = true;
+		FlxG.switchState(new TitleState());
+		// LoadingState.loadAndSwitchState(new editors.CharacterEditorState());
 	}
 
 	#if discord_rpc

@@ -9,9 +9,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.system.FlxSound;
 import flixel.util.FlxDestroyUtil;
 import ui.AtlasText;
-#if sys
 import ui.PreferencesMenu;
-#end
 
 using StringTools;
 
@@ -43,7 +41,7 @@ class Cache
 
 		if (Assets.exists(id, IMAGE))
 		{
-			var image:CoolImage = new CoolImage(id, #if sys PreferencesMenu.getPref('gpu-rendering') #else false #end);
+			var image:CoolImage = new CoolImage(id, PreferencesMenu.getPref('gpu-rendering'));
 			images.set(id, image);
 			return image.graphic;
 		}

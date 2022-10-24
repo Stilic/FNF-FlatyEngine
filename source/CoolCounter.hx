@@ -49,7 +49,7 @@ class CoolCounter extends TextField
 		autoSize = LEFT;
 		multiline = true;
 
-		alpha = 0.7;
+		alpha = 0.8;
 
 		addEventListener(Event.ENTER_FRAME, function(_)
 		{
@@ -74,11 +74,7 @@ class CoolCounter extends TextField
 			if (showFPS)
 				leText += 'FPS: ${FlxMath.bound(Math.round(times.length + cacheCount), 0, FlxG.updateFramerate)}\n';
 
-			#if cpp
-			var mem:Float = cpp.vm.Gc.memInfo64(3);
-			#else
-			var mem:Int = openfl.system.System.totalMemory;
-			#end
+			var mem:Float = #if cpp cpp.vm.Gc.memInfo64(3) #else openfl.system.System.totalMemory #end;
 			if (mem > memoryPeak)
 				memoryPeak = mem;
 

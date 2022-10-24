@@ -1704,7 +1704,7 @@ class PlayState extends MusicBeatState
 				smallestRatingIndex = leIndex;
 			fcString = null;
 			var smallestRating:Rating = Conductor.ratings[smallestRatingIndex];
-			if (smallestRating.fc != null)
+			if (smallestRating != null && smallestRating.fc != null)
 				fcString = smallestRating.fc;
 		}
 
