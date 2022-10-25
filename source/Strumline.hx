@@ -81,7 +81,7 @@ class Receptor extends FNFSprite
 					animation.addByPrefix('pressed', 'up press', 24, false);
 					animation.addByPrefix('confirm', 'up confirm', 24, false);
 
-					addOffset('confirm', -1.5, -1);
+					addOffset('confirm', -1.25, -1.5);
 				case 3:
 					animation.addByPrefix('static', 'arrowRIGHT', 24);
 					animation.addByPrefix('pressed', 'right press', 24, false);
@@ -216,12 +216,12 @@ class Strumline extends FlxGroup
 			var angleDir:Float = (receptor.direction * Math.PI) / 180;
 
 			var diff:Float = note.strumTime;
-			// unoptimized thing for high upscroll speeds -stilic
-			if (!receptor.downscroll && note.isSustainNote && roundedSpeed != 1)
-			{
-				diff -= Conductor.stepCrochet;
-				diff += Conductor.stepCrochet / roundedSpeed;
-			}
+			// unoptimized thing for high speed bullshit -stilic
+			// if (note.isSustainNote && roundedSpeed != 1)
+			// {
+			// 	diff -= Conductor.stepCrochet;
+			// 	diff += Conductor.stepCrochet / roundedSpeed;
+			// }
 			diff = Conductor.songPosition - diff;
 			var distance:Float = (0.45 * scrollMult) * diff * roundedSpeed;
 			note.x = receptor.x + note.offsetX + Math.cos(angleDir) * distance;
@@ -232,8 +232,7 @@ class Strumline extends FlxGroup
 
 			if (note.isSustainNote)
 			{
-				// uuhhh why i did that to make the shit working?? -stilic
-				note.y += (Note.swagWidth / ((receptor.downscroll ? 2 : 10) * roundedSpeed)) * roundedSpeed * scrollMult;
+				note.y -= (Note.swagWidth * (Conductor.stepCrochet * roundedSpeed / 200) / 8) * (roundedSpeed * roundedSpeed);
 
 				if (receptor.downscroll && note.isSustainEnd && note.prevNote != null)
 				{

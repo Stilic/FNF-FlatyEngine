@@ -118,6 +118,7 @@ class Note extends FlxSprite
 
 		if (!sustainNote)
 		{
+			alpha = 0.7;
 			switch (noteData)
 			{
 				case 0:
