@@ -749,7 +749,7 @@ class PlayState extends MusicBeatState
 		{
 			goodNoteHit(opponentStrumline, daNote);
 		});
-		opponentStrumline.characters = [dad, gf];
+		opponentStrumline.characters = [dad];
 		opponentStrumline.singingCharacters = [dad];
 
 		playerStrumline = new Strumline(baseX * (baseXShit / 1.75), baseY, PreferencesMenu.getPref('downscroll'));
@@ -762,7 +762,7 @@ class PlayState extends MusicBeatState
 			if (!playerStrumline.botplay && (daNote.tooLate || !daNote.wasGoodHit) && Strumline.isOutsideScreen(daNote.strumTime))
 				noteMiss(daNote.noteData, daNote, false);
 		});
-		playerStrumline.characters = [boyfriend, gf];
+		playerStrumline.characters = [boyfriend];
 		playerStrumline.singingCharacters = [boyfriend];
 
 		add(opponentStrumline);
@@ -1569,7 +1569,10 @@ class PlayState extends MusicBeatState
 		var ignoredChars:Array<Character> = [];
 		for (strumline in strumlines)
 		{
-			for (char in strumline.characters)
+			var chars:Array<Character> = strumline.characters.copy();
+			if (!ignoredChars.contains(gf) && !chars.contains(gf))
+				chars.push(gf);
+			for (char in chars)
 			{
 				if (!ignoredChars.contains(char))
 				{
