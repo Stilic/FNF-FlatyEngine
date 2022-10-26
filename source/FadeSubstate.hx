@@ -13,8 +13,7 @@ import flixel.util.FlxDestroyUtil;
 class FadeSubstate extends FlxSubState
 {
 	public var finishCallback:Void->Void;
-
-	var isTransIn:Bool;
+	public var isTransIn(default, null):Bool;
 
 	var leTween:FlxTween;
 	var transBlack:FlxSprite;
