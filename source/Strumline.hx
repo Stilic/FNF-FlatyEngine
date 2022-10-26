@@ -19,7 +19,7 @@ class Receptor extends FNFSprite
 	public var downscroll:Bool = false;
 	public var sustainReduce:Bool = true;
 
-	var resetAnim:Float = 0;
+	var resetTimer:Float = 0;
 
 	override public function new(x:Float, y:Float, noteData:Int, downscroll:Bool)
 	{
@@ -69,19 +69,19 @@ class Receptor extends FNFSprite
 					animation.addByPrefix('pressed', 'left press', 24, false);
 					animation.addByPrefix('confirm', 'left confirm', 24, false);
 
-					addOffset('confirm', -1, -4.5);
+					addOffset('confirm', -0.75, -4.75);
 				case 1:
 					animation.addByPrefix('static', 'arrowDOWN', 24);
 					animation.addByPrefix('pressed', 'down press', 24, false);
 					animation.addByPrefix('confirm', 'down confirm', 24, false);
 
-					addOffset('confirm', -3, -1.5);
+					addOffset('confirm', -2.85, -1.5);
 				case 2:
 					animation.addByPrefix('static', 'arrowUP', 24);
 					animation.addByPrefix('pressed', 'up press', 24, false);
 					animation.addByPrefix('confirm', 'up confirm', 24, false);
 
-					addOffset('confirm', -1.25, -1.5);
+					addOffset('confirm', -1.45, -1.5);
 				case 3:
 					animation.addByPrefix('static', 'arrowRIGHT', 24);
 					animation.addByPrefix('pressed', 'right press', 24, false);
@@ -96,13 +96,13 @@ class Receptor extends FNFSprite
 
 	override function update(elapsed:Float)
 	{
-		if (resetAnim > 0)
+		if (resetTimer > 0)
 		{
-			resetAnim -= elapsed;
-			if (resetAnim <= 0)
+			resetTimer -= elapsed;
+			if (resetTimer <= 0)
 			{
 				playAnim('static');
-				resetAnim = 0;
+				resetTimer = 0;
 			}
 		}
 
@@ -112,18 +112,18 @@ class Receptor extends FNFSprite
 	override function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0)
 	{
 		super.playAnim(AnimName, Force, Reversed, Frame);
-
-		var leOffset:FlxPoint = offset.copyTo();
+		var leOffset:FlxPoint = offset.copyTo(FlxPoint.weak());
 		centerOffsets();
 		offset.addPoint(leOffset);
 		centerOrigin();
 		origin.addPoint(leOffset);
+		leOffset.put();
 	}
 
 	public function autoConfirm(time:Float)
 	{
 		playAnim('confirm', true);
-		resetAnim = time;
+		resetTimer = time;
 	}
 
 	public function postAddedToGroup()
@@ -212,18 +212,17 @@ class Strumline extends FlxGroup
 			note.visible = !shouldRemove;
 
 			var receptor:Receptor = receptors.members[note.noteData % receptors.length];
-			var scrollMult:Int = receptor.downscroll ? 1 : -1;
-			var angleDir:Float = (receptor.direction * Math.PI) / 180;
+			var scrollMult:Int = (receptor.downscroll ? 1 : -1) * FlxMath.signOf(roundedSpeed);
 
 			var diff:Float = note.strumTime;
-			// unoptimized thing for high speed bullshit -stilic
-			// if (note.isSustainNote && roundedSpeed != 1)
-			// {
-			// 	diff -= Conductor.stepCrochet;
-			// 	diff += Conductor.stepCrochet / roundedSpeed;
-			// }
+			if (note.isSustainNote && roundedSpeed != 1)
+			{
+				diff -= Conductor.stepCrochet;
+				diff += Conductor.stepCrochet / roundedSpeed;
+			}
 			diff = Conductor.songPosition - diff;
 			var distance:Float = (0.45 * scrollMult) * diff * roundedSpeed;
+			var angleDir:Float = (receptor.direction * Math.PI) / 180;
 			note.x = receptor.x + note.offsetX + Math.cos(angleDir) * distance;
 			note.y = receptor.y + note.offsetY + Math.sin(angleDir) * distance;
 
@@ -232,7 +231,7 @@ class Strumline extends FlxGroup
 
 			if (note.isSustainNote)
 			{
-				note.y -= (Note.swagWidth * (Conductor.stepCrochet * roundedSpeed / 200) / 8) * (roundedSpeed * roundedSpeed);
+				note.y += (Note.swagWidth / (receptor.downscroll ? 2 : 10)) * scrollMult;
 
 				if (receptor.downscroll && note.isSustainEnd && note.prevNote != null)
 				{

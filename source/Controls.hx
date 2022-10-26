@@ -480,15 +480,13 @@ class Controls extends FlxActionSet
 					action.remove(input);
 			}
 		}
+
+		gamepads.remove(id);
 	}
 
 	function onGamepadDisconnection(pad:FlxGamepad)
 	{
-		if (gamepads.contains(pad.id))
-		{
-			removeGamepad(pad.id);
-			gamepads.remove(pad.id);
-		}
+		removeGamepad(pad.id);
 	}
 
 	public function addGamepadWithSaveData(id:Int, data)

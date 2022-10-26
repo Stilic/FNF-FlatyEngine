@@ -6,7 +6,6 @@ import Discord.DiscordClient;
 #end
 import flixel.FlxG;
 import flixel.FlxState;
-import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 
 class StartState extends FlxState
@@ -26,7 +25,6 @@ class StartState extends FlxState
 		FlxG.game.focusLostFramerate = 60;
 		FlxG.sound.muteKeys = [ZERO];
 		FlxG.keys.preventDefaultKeys = [TAB];
-		FlxG.mouse.visible = false;
 		FlxG.mouse.useSystemCursor = true;
 
 		// WEEK UNLOCK PROGRESSION!!
@@ -40,7 +38,7 @@ class StartState extends FlxState
 				StoryMenuState.weekUnlocked[0] = true;
 		}
 
-		// get your volume setting
+		// gets your volume setting
 		if (FlxG.save.data.volume != null)
 			FlxG.sound.volume = FlxG.save.data.volume;
 		if (FlxG.save.data.mute != null)
@@ -54,14 +52,14 @@ class StartState extends FlxState
 
 		if (!FlxG.signals.preStateCreate.has(onStateCreate))
 			FlxG.signals.preStateCreate.add(onStateCreate);
-		if (!FlxG.signals.postStateSwitch.has(onSwitchEnd))
-			FlxG.signals.postStateSwitch.add(onSwitchEnd);
 
 		super.create();
 
 		FlxTransitionableState.skipNextTransOut = true;
 		FlxG.switchState(new TitleState());
 		// LoadingState.loadAndSwitchState(new editors.CharacterEditorState());
+
+		FlxG.mouse.visible = false;
 	}
 
 	#if discord_rpc
@@ -73,24 +71,11 @@ class StartState extends FlxState
 
 	static function onStateCreate(state:FlxState)
 	{
-		if (!state.subStateClosed.has(onSubStateClose))
-			state.subStateClosed.add(onSubStateClose);
-
 		if (!Std.isOfType(state, PlayState)
 			&& !Std.isOfType(state, editors.ChartingState)
 			&& !Std.isOfType(state, editors.CharacterEditorState))
 		{
 			Cache.clear();
 		}
-	}
-
-	static function onSubStateClose(substate:FlxSubState)
-	{
-		onSwitchEnd();
-	}
-
-	static function onSwitchEnd()
-	{
-		Cache.clearUnused();
 	}
 }

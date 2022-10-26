@@ -55,7 +55,7 @@ class StoryMenuState extends MusicBeatState
 
 	var txtTracklist:FlxText;
 
-	var grpWeekText:FlxTypedGroup<MenuItem>;
+	var grpWeekText:FlxTypedGroup<WeekItem>;
 	var grpWeekCharacters:FlxTypedGroup<MenuCharacter>;
 
 	var grpLocks:FlxTypedGroup<FlxSprite>;
@@ -87,7 +87,7 @@ class StoryMenuState extends MusicBeatState
 		var ui_tex = Paths.getSparrowAtlas('campaign_menu_UI_assets');
 		var yellowBG:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
 
-		grpWeekText = new FlxTypedGroup<MenuItem>();
+		grpWeekText = new FlxTypedGroup<WeekItem>();
 		add(grpWeekText);
 
 		var blackBarThingie:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 56, FlxColor.BLACK);
@@ -107,7 +107,7 @@ class StoryMenuState extends MusicBeatState
 
 		for (i in 0...weekData.length)
 		{
-			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, i);
+			var weekThing:WeekItem = new WeekItem(0, yellowBG.y + yellowBG.height + 10, i);
 			weekThing.y += ((weekThing.height + 20) * i);
 			weekThing.targetY = i;
 			grpWeekText.add(weekThing);

@@ -15,17 +15,17 @@ class Note extends FlxSprite
 	public var noteData:Int = 0;
 	public var mustPress:Bool = false;
 	public var altNote:Bool = false;
-
-	public var hitHealth:Float = defaultHitHealth;
-	public var missHealth:Float = defaultMissHealth;
-
 	public var isSustainNote:Bool = false;
 	public var isSustainEnd:Bool = false;
 	public var sustainLength:Float = 0;
 	public var sustainEndOffset:Float = Math.NEGATIVE_INFINITY;
+
 	public var prevNote(default, null):Note;
 	public var parentNote(default, null):Note;
-	public var children:Array<Note> = [];
+	public var children(default, null):Array<Note> = [];
+
+	public var hitHealth:Float = defaultHitHealth;
+	public var missHealth:Float = defaultMissHealth;
 
 	public var canBeHit(get, never):Bool;
 
@@ -53,8 +53,6 @@ class Note extends FlxSprite
 		this.noteData = noteData;
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
-		if (sustainNote)
-			earlyHitMult = 0.5;
 
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
@@ -131,18 +129,16 @@ class Note extends FlxSprite
 					animation.play('redScroll');
 			}
 		}
-
-		if (sustainNote && prevNote != null)
+		else if (prevNote != null)
 		{
+			isSustainEnd = true;
+			earlyHitMult = 0.5;
+			copyAngle = false;
+
 			parentNote = prevNote;
 			while (parentNote.prevNote != null)
 				parentNote = parentNote.prevNote;
 			parentNote.children.push(this);
-
-			isSustainEnd = true;
-
-			alpha = 0.6;
-			copyAngle = false;
 
 			if (PreferencesMenu.getPref('downscroll'))
 				flipY = true;
@@ -184,7 +180,7 @@ class Note extends FlxSprite
 						prevNote.animation.play('redhold');
 				}
 
-				prevNote.scale.y *= (Conductor.stepCrochet / 100 * 1.5) * PlayState.SONG.speed;
+				prevNote.scale.y = (prevNote.width / prevNote.frameWidth) * ((Conductor.stepCrochet / 100) * (1.07 / 0.715)) * PlayState.SONG.speed;
 				prevNote.updateHitbox();
 			}
 		}

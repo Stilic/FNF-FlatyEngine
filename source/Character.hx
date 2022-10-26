@@ -674,11 +674,8 @@ class Character extends FNFSprite
 		if (!debugMode
 			&& holding
 			&& animation.curAnim != null
-			&& !animation.curAnim.finished
 			&& animation.curAnim.frames.length > 2
-			&& animation.curAnim.curFrame > 1
-			&& animation.curAnim.name.startsWith('sing')
-			&& !animation.curAnim.name.endsWith('miss'))
+			&& animation.curAnim.curFrame > 1)
 			animation.curAnim.curFrame = 0;
 	}
 
