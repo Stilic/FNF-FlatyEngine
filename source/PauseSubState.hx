@@ -17,7 +17,6 @@ class PauseSubState extends MusicBeatSubstate
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
 	var difficultyChoices:Array<String> = [];
-	var gameDifficulties:Array<Array<String>> = [];
 
 	var menuItems:Array<String> = [];
 	var curSelected:Int = 0;
@@ -41,7 +40,6 @@ class PauseSubState extends MusicBeatSubstate
 			if (difficultyChoices.length > 1) // no need to show the button if there's only a single difficulty;
 			{
 				menuItems.insert(2, 'Change Difficulty');
-				gameDifficulties.push(difficultyChoices);
 				difficultyChoices.push('BACK');
 			}
 
@@ -107,13 +105,12 @@ class PauseSubState extends MusicBeatSubstate
 	private function regenMenu()
 	{
 		// kill and destroy all the existing items inside the item group;
-		for (i in 0...grpMenuShit.members.length)
+		grpMenuShit.forEachAlive(function(item:Alphabet)
 		{
-			var existingItem = grpMenuShit.members[0];
-			existingItem.kill();
-			grpMenuShit.remove(existingItem, true);
-			existingItem.destroy();
-		}
+			item.kill();
+			grpMenuShit.remove(item, true);
+			item.destroy();
+		});
 
 		// generate the new menu items;
 		for (i in 0...menuItems.length)
