@@ -107,7 +107,8 @@
 	<haxelib name="polymod" if="desktop" unless="neko" />
 	<haxelib name="discord_rpc" if="desktop" unless="neko" />
 	<haxelib name="hxCodec" if="html5 || windows" unless="32bits" />
-	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
+
+	<haxelib name="hxcpp-debug-server" if="debug"/>
 
 	<!-- ________________________________ Defines _______________________________ -->
 
