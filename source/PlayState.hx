@@ -42,11 +42,12 @@ class PlayState extends MusicBeatState
 	public static var isStoryMode:Bool = false;
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist(default, set):Array<String> = [];
-	public static var isFirstStorySong:Bool = true;
 	public static var storyDifficulty:Int = 1;
 	public static var deathCounter:Int = 0;
 	public static var practiceMode:Bool = false;
 	public static var seenCutscene:Bool = false;
+
+	static var isFirstStorySong:Bool = true;
 
 	private var vocals:FlxSound;
 	private var vocalsFinished = false;
