@@ -1184,6 +1184,7 @@ class PlayState extends MusicBeatState
 		};
 		FlxG.sound.list.add(vocals);
 
+		var roundedSpeed:Float = FlxMath.roundDecimal(SONG.speed, 2);
 		for (section in SONG.notes)
 		{
 			for (songNotes in section.sectionNotes)
@@ -1218,7 +1219,8 @@ class PlayState extends MusicBeatState
 						{
 							oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-							var sustainNote:Note = new Note(daStrumTime + Conductor.stepCrochet * (susNote + 1), daNoteData, oldNote, true);
+							var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + (Conductor.stepCrochet / roundedSpeed),
+								daNoteData, oldNote, true);
 							sustainNote.mustPress = gottaHitNote;
 							sustainNote.altNote = swagNote.altNote;
 							sustainNote.scrollFactor.set();
