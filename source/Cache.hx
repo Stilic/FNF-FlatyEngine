@@ -142,7 +142,8 @@ class Cache
 	{
 		if (hasAtlas(id, type))
 		{
-			FlxDestroyUtil.destroy(atlases.get(id).atlas);
+			var atlasData = atlases.get(id);
+			atlasData.atlas = FlxDestroyUtil.destroy(atlasData.atlas);
 			atlases.remove(id);
 			return true;
 		}
