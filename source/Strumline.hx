@@ -232,17 +232,20 @@ class Strumline extends FlxGroup
 
 			if (note.isSustainNote)
 			{
-				if (receptor.downscroll) // peak code from psych engine!!
+				if (receptor.downscroll)
+				{
+					// peak code from psych engine!
 					note.y += Note.swagWidth / 2 - (60.5 * (roundedSpeed - 1)) + 27.5 * (PlayState.SONG.bpm / 100 - 1) * (roundedSpeed - 1);
+
+					if (note.isSustainEnd && note.prevNote != null)
+					{
+						if (note.sustainEndOffset == Math.NEGATIVE_INFINITY)
+							note.sustainEndOffset = note.prevNote.y - (note.y + note.height);
+						note.y += note.sustainEndOffset + FlxMath.bound(roundedSpeed, 1);
+					}
+				}
 				else
 					note.y -= Note.swagWidth / 10;
-
-				if (receptor.downscroll && note.isSustainEnd && note.prevNote != null)
-				{
-					if (note.sustainEndOffset == Math.NEGATIVE_INFINITY)
-						note.sustainEndOffset = note.prevNote.y - (note.y + note.height);
-					note.y += note.sustainEndOffset + FlxMath.bound(roundedSpeed, 1);
-				}
 
 				if (receptor.sustainReduce && (botplay || note.wasGoodHit || (note.prevNote != null && note.prevNote.wasGoodHit)))
 				{
