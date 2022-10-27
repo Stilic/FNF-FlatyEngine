@@ -28,7 +28,8 @@ class PreferencesMenu extends Page
 
 	static var save:FlxSave;
 
-	// first string: name of the section - the rest: content of the section
+	// first item: title of the section;
+	// other items: options below the section;
 	final sections:Array<Array<String>> = [
 		[
 			'visuals',
