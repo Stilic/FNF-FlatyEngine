@@ -140,15 +140,11 @@ class Cache
 
 	public static function removeAtlas(id:String, ?type:AtlasType)
 	{
-		if (hasAtlas(id))
+		if (hasAtlas(id, type))
 		{
-			var atlasData = atlases.get(id);
-			if (type == null || atlasData.type == type)
-			{
-				FlxDestroyUtil.destroy(atlasData.atlas);
-				atlases.remove(id);
-				return true;
-			}
+			FlxDestroyUtil.destroy(atlases.get(id).atlas);
+			atlases.remove(id);
+			return true;
 		}
 		return false;
 	}
