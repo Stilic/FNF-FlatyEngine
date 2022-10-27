@@ -30,12 +30,12 @@ class ModHandler
 		save = new FlxSave();
 		save.bind('mod_list', 'ninjamuffin99');
 
-		fs = PolymodFileSystem.makeFileSystem(null, {modRoot: MOD_DIRECTORY});
-
 		#if sys
 		if (!FileSystem.exists(MOD_DIRECTORY))
 			FileSystem.createDirectory(MOD_DIRECTORY);
 		#end
+
+		fs = PolymodFileSystem.makeFileSystem(null, {modRoot: MOD_DIRECTORY});
 
 		reloadModList();
 		reloadPolymod();
