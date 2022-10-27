@@ -93,7 +93,8 @@ class ModHandler
 				dirs.push(mod.metadata.id);
 		}
 
-		var libs:Map<String, String> = ['default' => './preload', 'shared' => './'];
+		// ADD YOUR CUSTOM LIBRARY PATHS HERE!!
+		var libs:Map<String, String> = ['shared' => './'];
 		@:privateAccess
 		for (lib in Assets.libraryPaths.keys())
 		{
