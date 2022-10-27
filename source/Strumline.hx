@@ -69,7 +69,7 @@ class Receptor extends FNFSprite
 					animation.addByPrefix('pressed', 'left press', 24, false);
 					animation.addByPrefix('confirm', 'left confirm', 24, false);
 
-					addOffset('confirm', -0.75, -4.75);
+					addOffset('confirm', -0.9, -4.75);
 				case 1:
 					animation.addByPrefix('static', 'arrowDOWN', 24);
 					animation.addByPrefix('pressed', 'down press', 24, false);
@@ -204,6 +204,8 @@ class Strumline extends FlxGroup
 	{
 		super.update(elapsed);
 
+		// had to do this because of the change bpm stuff -stilic
+		var fakeStepCrochet:Float = ((60 / PlayState.SONG.bpm) * 1000) / 4;
 		var roundedSpeed:Float = FlxMath.roundDecimal(PlayState.SONG.speed, 2);
 		allNotes.forEachAlive(function(note:Note)
 		{
@@ -211,10 +213,16 @@ class Strumline extends FlxGroup
 			note.active = !shouldRemove;
 			note.visible = !shouldRemove;
 
-			var receptor:Receptor = receptors.members[note.noteData % receptors.length];
-			var scrollMult:Int = (receptor.downscroll ? 1 : -1) * FlxMath.signOf(roundedSpeed);
+			var receptor:Receptor = receptors.members[note.noteData % receptors.members.length];
 
-			var distance:Float = (0.45 * scrollMult) * (Conductor.songPosition - note.strumTime) * roundedSpeed;
+			var distance:Float = note.strumTime;
+			// overengineered bullshit bruh -stilic
+			if (note.isSustainNote && roundedSpeed != 1)
+			{
+				distance -= fakeStepCrochet;
+				distance += fakeStepCrochet / roundedSpeed;
+			}
+			distance = (0.45 * (receptor.downscroll ? 1 : -1)) * (Conductor.songPosition - distance) * roundedSpeed;
 			var angleDir:Float = (receptor.direction * Math.PI) / 180;
 			note.x = receptor.x + note.offsetX + Math.cos(angleDir) * distance;
 			note.y = receptor.y + note.offsetY + Math.sin(angleDir) * distance;
@@ -224,7 +232,10 @@ class Strumline extends FlxGroup
 
 			if (note.isSustainNote)
 			{
-				note.y += (Note.swagWidth / (receptor.downscroll ? 2 : 10)) * scrollMult;
+				if (receptor.downscroll) // peak code from psych engine!!
+					note.y += Note.swagWidth / 2 - (60.5 * (roundedSpeed - 1)) + 27.5 * (PlayState.SONG.bpm / 100 - 1) * (roundedSpeed - 1);
+				else
+					note.y -= Note.swagWidth / 10;
 
 				if (receptor.downscroll && note.isSustainEnd && note.prevNote != null)
 				{

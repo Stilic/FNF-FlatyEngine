@@ -27,15 +27,16 @@ class Note extends FlxSprite
 	public var hitHealth:Float = defaultHitHealth;
 	public var missHealth:Float = defaultMissHealth;
 
+	public var lateHitMult:Float = 1;
+	public var earlyHitMult:Float = 1;
 	public var canBeHit(get, never):Bool;
 
 	inline public function get_canBeHit()
 	{
-		return strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+		return strumTime > Conductor.songPosition - Conductor.safeZoneOffset * lateHitMult
 			&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset * earlyHitMult;
 	}
 
-	public var earlyHitMult:Float = 1;
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 
@@ -132,6 +133,8 @@ class Note extends FlxSprite
 		{
 			isSustainEnd = true;
 			earlyHitMult = 0.5;
+
+			alpha = 0.6;
 			copyAngle = false;
 
 			parentNote = prevNote;
@@ -179,7 +182,7 @@ class Note extends FlxSprite
 						prevNote.animation.play('redhold');
 				}
 
-				prevNote.scale.y = (prevNote.width / prevNote.frameWidth) * ((Conductor.stepCrochet / 100) * (1.07 / 0.715)) * PlayState.SONG.speed;
+				prevNote.scale.y = (prevNote.width / prevNote.frameWidth) * ((Conductor.stepCrochet / 100) * (1.07 / 0.71)) * PlayState.SONG.speed;
 				prevNote.updateHitbox();
 			}
 		}
