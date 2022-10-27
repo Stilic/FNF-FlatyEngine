@@ -2108,7 +2108,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	function playMissSound()
+	inline function playMissSound()
 	{
 		FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 	}

@@ -69,25 +69,25 @@ class Receptor extends FNFSprite
 					animation.addByPrefix('pressed', 'left press', 24, false);
 					animation.addByPrefix('confirm', 'left confirm', 24, false);
 
-					addOffset('confirm', -0.9, -4.75);
+					addOffset('confirm', -0.9, -4);
 				case 1:
 					animation.addByPrefix('static', 'arrowDOWN', 24);
 					animation.addByPrefix('pressed', 'down press', 24, false);
 					animation.addByPrefix('confirm', 'down confirm', 24, false);
 
-					addOffset('confirm', -2.85, -1.5);
+					addOffset('confirm', -2.85, -1.7);
 				case 2:
 					animation.addByPrefix('static', 'arrowUP', 24);
 					animation.addByPrefix('pressed', 'up press', 24, false);
 					animation.addByPrefix('confirm', 'up confirm', 24, false);
 
-					addOffset('confirm', -1.45, -1.5);
+					addOffset('confirm', -1.5, -1);
 				case 3:
 					animation.addByPrefix('static', 'arrowRIGHT', 24);
 					animation.addByPrefix('pressed', 'right press', 24, false);
 					animation.addByPrefix('confirm', 'right confirm', 24, false);
 
-					addOffset('confirm', -3, 0);
+					addOffset('confirm', -3, 0.5);
 			}
 		}
 
@@ -154,7 +154,7 @@ class Strumline extends FlxGroup
 
 	inline public static function isOutsideScreen(strumTime:Float)
 	{
-		return Conductor.songPosition > 350 / PlayState.SONG.speed + strumTime;
+		return Conductor.songPosition > strumTime + 350 / PlayState.SONG.speed;
 	}
 
 	public function new(x:Float, y:Float, downscroll:Bool, botplay:Bool = false)
@@ -204,7 +204,7 @@ class Strumline extends FlxGroup
 	{
 		super.update(elapsed);
 
-		// had to do this because of the change bpm stuff -stilic
+		// i had to do this because of the change bpm stuff -stilic
 		var fakeStepCrochet:Float = ((60 / PlayState.SONG.bpm) * 1000) / 4;
 		var roundedSpeed:Float = FlxMath.roundDecimal(PlayState.SONG.speed, 2);
 		allNotes.forEachAlive(function(note:Note)
@@ -240,8 +240,8 @@ class Strumline extends FlxGroup
 					if (note.isSustainEnd && note.prevNote != null)
 					{
 						if (note.sustainEndOffset == Math.NEGATIVE_INFINITY)
-							note.sustainEndOffset = note.prevNote.y - (note.y + note.height);
-						note.y += note.sustainEndOffset + FlxMath.bound(roundedSpeed, 1);
+							note.sustainEndOffset = note.prevNote.y - (note.y + note.height - 1);
+						note.y += note.sustainEndOffset;
 					}
 				}
 				else
