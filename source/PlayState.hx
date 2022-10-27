@@ -1932,52 +1932,60 @@ class PlayState extends MusicBeatState
 	{
 		holdingArray[key] = down;
 
-		if (down && generatedMusic && !endingSong)
+		if (down)
 		{
-			// accurate hit moment part one
-			var lastTime:Float = Conductor.songPosition;
-			Conductor.songPosition = FlxG.sound.music.time;
+			if (generatedMusic && !endingSong)
+			{
+				// accurate hit moment part one
+				var lastTime:Float = Conductor.songPosition;
+				Conductor.songPosition = FlxG.sound.music.time;
 
-			var possibleNotes:Array<Note> = [];
-			playerStrumline.notesGroup.forEachAlive(function(note:Note)
-			{
-				if (note.noteData == key && !note.isSustainNote && note.mustPress && !note.tooLate && !note.wasGoodHit && note.canBeHit)
-					possibleNotes.push(note);
-			});
-			if (possibleNotes.length > 0)
-			{
-				if (possibleNotes.length == 1)
-					goodNoteHit(playerStrumline, possibleNotes[0]);
-				else
+				var possibleNotes:Array<Note> = [];
+				playerStrumline.notesGroup.forEachAlive(function(note:Note)
 				{
-					possibleNotes.sort(sortByTime);
-					var pressedNotes:Array<Note> = [];
-					for (note in possibleNotes)
+					if (note.noteData == key && !note.isSustainNote && note.mustPress && !note.tooLate && !note.wasGoodHit && note.canBeHit)
+						possibleNotes.push(note);
+				});
+				if (possibleNotes.length > 0)
+				{
+					if (possibleNotes.length == 1)
+						goodNoteHit(playerStrumline, possibleNotes[0]);
+					else
 					{
-						var finishLoop:Bool = false;
-						for (noteDouble in pressedNotes)
+						possibleNotes.sort(sortByTime);
+						var pressedNotes:Array<Note> = [];
+						for (note in possibleNotes)
 						{
-							if (Math.abs(noteDouble.strumTime - note.strumTime) >= 0.1)
+							var finishLoop:Bool = false;
+							for (noteDouble in pressedNotes)
 							{
-								finishLoop = true;
-								break;
+								if (Math.abs(noteDouble.strumTime - note.strumTime) >= 0.1)
+								{
+									finishLoop = true;
+									break;
+								}
 							}
+							if (!finishLoop)
+							{
+								goodNoteHit(playerStrumline, note);
+								pressedNotes.push(note);
+							}
+							else
+								break;
 						}
-						if (!finishLoop)
-						{
-							goodNoteHit(playerStrumline, note);
-							pressedNotes.push(note);
-						}
-						else
-							break;
 					}
 				}
-			}
-			else if (!PreferencesMenu.getPref('ghost-tapping'))
-				noteMiss(key, playerStrumline);
+				else if (!PreferencesMenu.getPref('ghost-tapping'))
+					noteMiss(key, playerStrumline);
 
-			// accurate hit moment part two (the old times)
-			Conductor.songPosition = lastTime;
+				// accurate hit moment part two (the old times)
+				Conductor.songPosition = lastTime;
+			}
+		}
+		else
+		{
+			for (char in playerStrumline.singingCharacters)
+				char.holding = false;
 		}
 
 		var receptor = playerStrumline.receptors.members[key];
