@@ -1375,7 +1375,12 @@ class PlayState extends MusicBeatState
 
 			// 1 / 1000 chance for Gitaroo Man easter egg
 			if (FlxG.random.bool(0.1))
+			{
+				persistentUpdate = false;
+				persistentDraw = true;
+
 				Main.switchState(new GitarooPause());
+			}
 			else
 			{
 				FlxTimer.globalManager.forEach(function(tmr:FlxTimer)
@@ -1401,6 +1406,9 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
+			persistentUpdate = false;
+			persistentDraw = true;
+
 			Main.switchState(new editors.ChartingState());
 
 			#if discord_rpc
@@ -1410,6 +1418,9 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.EIGHT)
 		{
+			persistentUpdate = false;
+			persistentDraw = true;
+
 			Main.switchState(new editors.CharacterEditorState());
 
 			#if discord_rpc
@@ -1612,6 +1623,9 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
+		persistentUpdate = false;
+		persistentDraw = true;
+
 		seenCutscene = false;
 		deathCounter = 0;
 		canPause = false;
