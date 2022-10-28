@@ -1,0 +1,79 @@
+{
+    "imagePath": "characters/BOYFRIEND",
+    "iconPath": "bf",
+    "flipX": true,
+    "animations": [
+        {
+            "name": "idle",
+            "prefix": "BF idle dance",
+            "offset": [-5, 0]
+        },
+        {
+            "name": "singUP",
+            "prefix": "BF NOTE UP0",
+            "offset": [-29, 27]
+        },
+        {
+            "name": "singLEFT",
+            "prefix": "BF NOTE LEFT0",
+            "offset": [12, -6]
+        },
+        {
+            "name": "singRIGHT",
+            "prefix": "BF NOTE RIGHT0",
+            "offset": [-38, -7]
+        },
+        {
+            "name": "singDOWN",
+            "prefix": "BF NOTE DOWN0",
+            "offset": [-10, -50]
+        },
+        {
+            "name": "singUPmiss",
+            "prefix": "BF NOTE UP MISS",
+            "offset": [-29, 27]
+        },
+        {
+            "name": "singLEFTmiss",
+            "prefix": "BF NOTE LEFT MISS",
+            "offset": [12, 24]
+        },
+        {
+            "name": "singRIGHTmiss",
+            "prefix": "BF NOTE RIGHT MISS",
+            "offset": [-30, 21]
+        },
+        {
+            "name": "singDOWNmiss",
+            "prefix": "BF NOTE DOWN MISS",
+            "offset": [-11, -19]
+        },
+        {
+            "name": "hey",
+            "prefix": "BF HEY",
+            "offset": [7, 4]
+        },
+        {
+            "name": "firstDeath",
+            "prefix": "BF dies",
+            "offset": [37, 11]
+        },
+        {
+            "name": "deathLoop",
+            "prefix": "BF Dead Loop",
+            "loop": true,
+            "offset": [37, 5]
+        },
+        {
+            "name": "deathConfirm",
+            "prefix": "BF Dead confirm",
+            "offset": [37, 69]
+        },
+        {
+            "name": "scared",
+            "prefix": "BF idle shaking",
+            "loop": true,
+            "offset": [-4, 0]
+        }
+    ]
+}

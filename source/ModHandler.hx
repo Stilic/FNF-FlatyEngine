@@ -94,12 +94,12 @@ class ModHandler
 		}
 
 		// ADD YOUR CUSTOM LIBRARY PATHS HERE!!
-		var libs:Map<String, String> = ['shared' => './'];
+		var libs:Map<String, String> = ['shared' => ''];
 		@:privateAccess
 		for (lib in Assets.libraryPaths.keys())
 		{
 			if (!libs.exists(lib))
-				libs.set(lib, './$lib');
+				libs.set(lib, lib);
 		}
 
 		Polymod.init({

@@ -38,12 +38,12 @@ class Character extends FNFSprite
 {
 	public static final singAnimations:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
 
-	public var data:CharacterData;
+	public var data(default, null):CharacterData;
 
 	public var debugMode:Bool = false;
 
-	public var isPlayer:Bool;
-	public var curCharacter:String;
+	public var isPlayer(default, null):Bool;
+	public var curCharacter(default, null):String;
 
 	public var singDuration:Float = 4;
 	public var danceSpeed:Int;
@@ -57,10 +57,7 @@ class Character extends FNFSprite
 	public function get_simpleIdle()
 		return !animation.exists('danceLeft') && !animation.exists('danceRight');
 
-	public var animationNotes:Array<Dynamic> = [];
-
-	public var iconPath:String = 'face';
-	public var iconColor:FlxColor = FlxColor.fromRGB(161, 161, 161);
+	var animationNotes:Array<Dynamic> = [];
 
 	public var cameraMove:Bool;
 	public var cameraMoveAdd:Float = 15;
@@ -529,11 +526,6 @@ class Character extends FNFSprite
 
 				if (data != null)
 				{
-					if (Assets.exists(Paths.getPath('images/${data.imagePath}.xml')))
-						frames = Paths.getSparrowAtlas(data.imagePath);
-					else if (Assets.exists(Paths.getPath('images/${data.imagePath}.txt')))
-						frames = Paths.getPackerAtlas(data.imagePath);
-
 					if (data.antialiasing != null)
 						antialiasing = data.antialiasing;
 
@@ -545,35 +537,43 @@ class Character extends FNFSprite
 					if (data.singDuration != null)
 						singDuration = data.singDuration;
 
-					if (data.iconPath != null)
-						iconPath = data.iconPath;
-					if (data.iconColor != null)
-						iconColor = FlxColor.fromRGB(data.iconColor[0], data.iconColor[1], data.iconColor[2]);
+					if (data.iconPath == null)
+						data.iconPath = 'face';
+					if (data.iconColor == null)
+						data.iconColor = [161, 161, 161];
 
-					for (anim in data.animations)
+					if (Assets.exists(Paths.getPath('images/${data.imagePath}.xml', TEXT)))
+						frames = Paths.getSparrowAtlas(data.imagePath);
+					else if (Assets.exists(Paths.getPath('images/${data.imagePath}.txt', TEXT)))
+						frames = Paths.getPackerAtlas(data.imagePath);
+
+					if (frames != null)
 					{
-						var fps:Int = 24;
-						if (anim.fps != null)
-							fps = anim.fps;
+						for (anim in data.animations)
+						{
+							var fps:Int = 24;
+							if (anim.fps != null)
+								fps = anim.fps;
 
-						var loop:Bool = false;
-						if (anim.loop != null)
-							loop = anim.loop;
+							var loop:Bool = false;
+							if (anim.loop != null)
+								loop = anim.loop;
 
-						var shitX:Bool = false;
-						if (anim.flipX != null)
-							shitX = anim.flipX;
-						var shitY:Bool = false;
-						if (anim.flipY != null)
-							shitY = anim.flipY;
+							var shitX:Bool = false;
+							if (anim.flipX != null)
+								shitX = anim.flipX;
+							var shitY:Bool = false;
+							if (anim.flipY != null)
+								shitY = anim.flipY;
 
-						if (anim.indices == null)
-							animation.addByPrefix(anim.name, anim.prefix, fps, loop, shitX, shitY);
-						else
-							animation.addByIndices(anim.name, anim.prefix, anim.indices, '', fps, loop, shitX, shitY);
+							if (anim.indices == null)
+								animation.addByPrefix(anim.name, anim.prefix, fps, loop, shitX, shitY);
+							else
+								animation.addByIndices(anim.name, anim.prefix, anim.indices, '', fps, loop, shitX, shitY);
 
-						if (anim.offset != null)
-							addOffset(anim.name, anim.offset[0], anim.offset[1]);
+							if (anim.offset != null)
+								addOffset(anim.name, anim.offset[0], anim.offset[1]);
+						}
 					}
 				}
 		}
@@ -614,7 +614,7 @@ class Character extends FNFSprite
 
 	function loadOffsetFile(char:String)
 	{
-		var offsets:Array<String> = CoolUtil.coolTextFile(Paths.getPath('images/characters/' + char + 'Offsets.txt', TEXT, null));
+		var offsets:Array<String> = CoolUtil.coolTextFile(Paths.getPath('images/characters/' + char + 'Offsets.txt', TEXT));
 		for (i in offsets)
 		{
 			var split = i.split(' ');

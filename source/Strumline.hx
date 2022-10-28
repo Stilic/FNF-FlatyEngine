@@ -154,7 +154,7 @@ class Strumline extends FlxGroup
 
 	inline public static function isOutsideScreen(strumTime:Float)
 	{
-		return Conductor.songPosition > strumTime + 350 / PlayState.SONG.speed;
+		return Conductor.songPosition > strumTime + 300 / PlayState.SONG.speed;
 	}
 
 	public function new(x:Float, y:Float, downscroll:Bool, botplay:Bool = false)
@@ -247,7 +247,8 @@ class Strumline extends FlxGroup
 				else
 					note.y -= Note.swagWidth / 10;
 
-				if (receptor.sustainReduce && (botplay || note.wasGoodHit || (note.prevNote != null && note.prevNote.wasGoodHit)))
+				if (receptor.sustainReduce
+					&& (botplay || (note.wasGoodHit || (note.prevNote != null && note.prevNote.wasGoodHit && !note.canBeHit))))
 				{
 					var center:Float = receptor.y + Note.swagWidth / 2;
 					var vert:Float = (center - note.y) / note.scale.y;

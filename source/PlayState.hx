@@ -1184,7 +1184,6 @@ class PlayState extends MusicBeatState
 		};
 		FlxG.sound.list.add(vocals);
 
-		var roundedSpeed:Float = FlxMath.roundDecimal(SONG.speed, 2);
 		for (section in SONG.notes)
 		{
 			for (songNotes in section.sectionNotes)
@@ -1210,16 +1209,14 @@ class PlayState extends MusicBeatState
 
 				if (swagNote.sustainLength > 0)
 				{
-					var floorSus:Int = Math.round(swagNote.sustainLength / Conductor.stepCrochet);
-					if (floorSus > 0)
+					var susLength:Int = Math.round(swagNote.sustainLength / Conductor.stepCrochet);
+					if (susLength > 0)
 					{
-						if (floorSus <= 1)
-							floorSus = 2;
-						for (susNote in 0...floorSus)
+						for (susNote in 0...Std.int(Math.max(susLength, 2)))
 						{
 							oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-							var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * (susNote + 1)), daNoteData, oldNote, true);
+							var sustainNote:Note = new Note(daStrumTime + Conductor.stepCrochet * (susNote + 1), daNoteData, oldNote, true);
 							sustainNote.mustPress = gottaHitNote;
 							sustainNote.altNote = swagNote.altNote;
 							sustainNote.scrollFactor.set();
@@ -2140,39 +2137,42 @@ class PlayState extends MusicBeatState
 					animSuffix = '-alt';
 			}
 
-			var canHold:Bool = true;
-			if (!note.isSustainNote)
+			if (!note.isSustainNote || !note.isSustainEnd || note.prevNote.isSustainNote)
 			{
-				canHold = false;
-				for (susNote in note.children)
+				var canHold:Bool = true;
+				if (!note.isSustainNote)
 				{
-					if (susNote.wasGoodHit)
+					canHold = false;
+					for (susNote in note.children)
 					{
-						canHold = true;
-						break;
+						if (susNote.wasGoodHit)
+						{
+							canHold = true;
+							break;
+						}
 					}
 				}
-			}
-			else if (note.isSustainEnd)
-				canHold = false;
-			for (char in strumline.singingCharacters)
-			{
-				char.playAnim(Character.singAnimations[note.noteData] + animSuffix, true);
-				char.holdTimer = 0;
-				char.holding = canHold;
-			}
-
-			var receptor = strumline.receptors.members[note.noteData];
-			if (receptor != null)
-			{
-				if (!strumline.botplay)
-					receptor.playAnim('confirm', true);
-				else
+				else if (note.isSustainEnd)
+					canHold = false;
+				for (char in strumline.singingCharacters)
 				{
-					var time:Float = 0.15;
-					if (note.isSustainNote && !note.isSustainEnd)
-						time += 0.15;
-					receptor.autoConfirm(time);
+					char.playAnim(Character.singAnimations[note.noteData] + animSuffix, true);
+					char.holdTimer = 0;
+					char.holding = canHold;
+				}
+
+				var receptor = strumline.receptors.members[note.noteData];
+				if (receptor != null)
+				{
+					if (!strumline.botplay)
+						receptor.playAnim('confirm', true);
+					else
+					{
+						var time:Float = 0.15;
+						if (note.isSustainNote && !note.isSustainEnd)
+							time += 0.15;
+						receptor.autoConfirm(time);
+					}
 				}
 			}
 
