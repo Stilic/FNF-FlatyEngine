@@ -154,7 +154,10 @@ class Strumline extends FlxGroup
 
 	inline public static function isOutsideScreen(strumTime:Float)
 	{
-		return Conductor.songPosition > strumTime + 300 / PlayState.SONG.speed;
+		var limit:Float = 300;
+		if (PlayState.instance != null)
+			limit /= PlayState.instance.songSpeed;
+		return Conductor.songPosition > strumTime + limit;
 	}
 
 	public function new(x:Float, y:Float, downscroll:Bool, botplay:Bool = false)
@@ -193,10 +196,10 @@ class Strumline extends FlxGroup
 		add(notesGroup);
 
 		splashesGroup = new FlxTypedGroup<NoteSplash>();
+		add(splashesGroup);
+
 		var splash:NoteSplash = new NoteSplash(100, 100, 0);
 		splash.alpha = 0.00001;
-
-		add(splashesGroup);
 		splashesGroup.add(splash);
 	}
 
@@ -206,7 +209,7 @@ class Strumline extends FlxGroup
 
 		// i had to do this because of the change bpm stuff -stilic
 		var fakeStepCrochet:Float = ((60 / PlayState.SONG.bpm) * 1000) / 4;
-		var roundedSpeed:Float = FlxMath.roundDecimal(PlayState.SONG.speed, 2);
+		var roundedSpeed:Float = PlayState.instance != null ? FlxMath.roundDecimal(PlayState.instance.songSpeed, 2) : 1;
 		allNotes.forEachAlive(function(note:Note)
 		{
 			var shouldRemove:Bool = isOutsideScreen(note.strumTime);

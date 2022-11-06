@@ -117,6 +117,7 @@ class Note extends FlxSprite
 
 		if (!sustainNote)
 		{
+			alpha = 0.7;
 			switch (noteData)
 			{
 				case 0:
@@ -182,8 +183,7 @@ class Note extends FlxSprite
 						prevNote.animation.play('redhold');
 				}
 
-				prevNote.scale.y = (prevNote.width / prevNote.frameWidth) * ((Conductor.stepCrochet / 100) * 1.5) * PlayState.SONG.speed;
-				prevNote.updateHitbox();
+				prevNote.updateScale();
 			}
 		}
 	}
@@ -197,5 +197,16 @@ class Note extends FlxSprite
 
 		if (tooLate && alpha > 0.3)
 			alpha = 0.3;
+	}
+
+	public function updateScale()
+	{
+		if (isSustainNote && !isSustainEnd)
+		{
+			scale.y = (width / frameWidth) * ((Conductor.stepCrochet / 100) * 1.5);
+			if (PlayState.instance != null)
+				scale.y /= PlayState.instance.songSpeed;
+			updateHitbox();
+		}
 	}
 }

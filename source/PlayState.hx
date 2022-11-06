@@ -37,6 +37,8 @@ using StringTools;
 
 class PlayState extends MusicBeatState
 {
+	public static var instance(default, null):PlayState;
+
 	public static var curStage:String = '';
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
@@ -48,6 +50,33 @@ class PlayState extends MusicBeatState
 	public static var seenCutscene:Bool = false;
 
 	static var isFirstStorySong:Bool = true;
+
+	public static function set_storyPlaylist(playlist:Array<String>)
+	{
+		isFirstStorySong = true;
+		storyPlaylist = playlist;
+		return playlist;
+	}
+
+	public var songSpeed(default, set):Float;
+
+	public function set_songSpeed(speed:Float)
+	{
+		songSpeed = speed;
+
+		for (note in unspawnNotes)
+			note.updateScale();
+
+		for (strumline in strumlines)
+		{
+			strumline.notesGroup.forEachAlive(function(note:Note)
+			{
+				note.updateScale();
+			});
+		}
+
+		return speed;
+	}
 
 	private var vocals:FlxSound;
 	private var vocalsFinished = false;
@@ -138,15 +167,10 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
-	public static function set_storyPlaylist(playlist:Array<String>)
-	{
-		isFirstStorySong = true;
-		storyPlaylist = playlist;
-		return playlist;
-	}
-
 	override public function create()
 	{
+		instance = this;
+
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
@@ -170,9 +194,6 @@ class PlayState extends MusicBeatState
 
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
-
-		Conductor.mapBPMChanges(SONG);
-		Conductor.changeBPM(SONG.bpm);
 
 		foregroundSprites = new FlxTypedGroup<BGSprite>();
 
@@ -1172,6 +1193,8 @@ class PlayState extends MusicBeatState
 	private function generateSong():Void
 	{
 		curSong = SONG.song;
+		songSpeed = SONG.speed;
+		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
 
 		vocals = new FlxSound();
@@ -1535,8 +1558,8 @@ class PlayState extends MusicBeatState
 		if (unspawnNotes[0] != null)
 		{
 			var time:Float = 2000;
-			if (SONG.speed < 1)
-				time /= SONG.speed;
+			if (songSpeed < 1)
+				time /= songSpeed;
 
 			while (unspawnNotes[0] != null)
 			{
