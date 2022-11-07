@@ -205,7 +205,7 @@ class Note extends FlxSprite
 		{
 			scale.y = (width / frameWidth) * ((Conductor.stepCrochet / 100) * 1.5);
 			if (PlayState.instance != null)
-				scale.y /= PlayState.instance.songSpeed;
+				scale.y *= PlayState.instance.songSpeed;
 			updateHitbox();
 		}
 	}
