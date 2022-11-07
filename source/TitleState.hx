@@ -250,9 +250,9 @@ class TitleState extends MusicBeatState
 							deleteCoolText();
 						case 5:
 							engineLogo.visible = true;
-							createCoolText(['peak engine'], 180);
+							createCoolText(['by stilic'], 180);
 						case 7:
-							addMoreText('by some people', 180);
+							addMoreText('and other people', 180);
 						case 8:
 							deleteCoolText();
 							engineLogo.visible = false;
