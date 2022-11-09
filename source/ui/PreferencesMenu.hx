@@ -16,6 +16,7 @@ class PreferencesMenu extends Page
 		['stepmania clip style', 'sm-clip', false],
 		['downscroll', 'downscroll', false],
 		['ghost tapping', 'ghost-tapping', true],
+		['opaque notes', 'opaque-notes', false],
 		#if (desktop || web)
 		['auto pause', 'auto-pause', #if web false #else true #end],
 		#end
@@ -38,7 +39,8 @@ class PreferencesMenu extends Page
 			'note-splashes',
 			'camera-zoom',
 			'camera-follow-char',
-			'sm-clip'
+			'sm-clip',
+			'opaque-notes'
 		],
 		['gameplay', 'downscroll', 'ghost-tapping'],
 		[

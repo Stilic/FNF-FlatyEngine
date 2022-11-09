@@ -26,7 +26,7 @@ class NoteSplash extends FlxSprite
 		setPosition(x, y);
 		alpha = 0.6;
 		animation.play('note' + notedata + '-' + FlxG.random.int(0, 1), true);
-		// animation.curAnim.frameRate += FlxG.random.int(-2, 2);
+		// animation.curAnim.frameRate = 24 + FlxG.random.int(-2, 2); // this is actual week 7 code btw, provided by M&M
 		updateHitbox();
 		offset.set(width * 0.3, height * 0.3);
 	}
