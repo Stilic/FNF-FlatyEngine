@@ -199,23 +199,6 @@ class PlayState extends MusicBeatState
 
 		switch (SONG.song.toLowerCase())
 		{
-			// case 'tutorial':
-			// 	dialogue = ["Hey you're pretty cute.", 'Use the arrow keys to keep up \nwith me singing.'];
-			// case 'bopeebo':
-			// 	dialogue = [
-			// 		'HEY!',
-			// 		"You think you can just sing\nwith my daughter like that?",
-			// 		"If you want to date her...",
-			// 		"You're going to have to go \nthrough ME first!"
-			// 	];
-			// case 'fresh':
-			// 	dialogue = ["Not too shabby boy.", ""];
-			// case 'dadbattle':
-			// 	dialogue = [
-			// 		"gah you think you're hot stuff?",
-			// 		"If you can beat me here...",
-			// 		"Only then I will even CONSIDER letting you\ndate my daughter!"
-			// 	];
 			case 'senpai':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('senpai/senpaiDialogue'));
 			case 'roses':
@@ -320,8 +303,6 @@ class PlayState extends MusicBeatState
 
 					trainSound = new FlxSound().loadEmbedded(Paths.sound('train_passes'));
 					FlxG.sound.list.add(trainSound);
-
-					// var cityLights:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.win0.png);
 
 					var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image('philly/street'));
 					add(street);
@@ -861,10 +842,6 @@ class PlayState extends MusicBeatState
 		if (doof != null)
 			doof.cameras = [camHUD];
 
-		// if (SONG.song == 'South')
-		// FlxG.camera.alpha = 0.7;
-		// UI_camera.zoom = 1;
-
 		// CACHE IMAGES AND SOUNDS
 		Paths.image('alphabet', null, true);
 		// Paths.image('characters/' + GameOverSubstate.character);
@@ -873,7 +850,6 @@ class PlayState extends MusicBeatState
 		for (i in 1...3)
 			Paths.sound('missnote' + i, null, true);
 
-		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 
 		if (isStoryMode && !seenCutscene)
@@ -1168,7 +1144,7 @@ class PlayState extends MusicBeatState
 					FlxG.sound.play(Paths.sound('introGo' + altSuffix), 0.6);
 			}
 
-			swagCounter += 1;
+			swagCounter++;
 		}, 4);
 	}
 
@@ -1499,9 +1475,6 @@ class PlayState extends MusicBeatState
 					gf.danceSpeed = 2;
 				case 112:
 					gf.danceSpeed = 1;
-					// case 163:
-					// FlxG.sound.music.stop();
-					// Main.switchState(new TitleState());
 			}
 		}
 
@@ -1511,8 +1484,6 @@ class PlayState extends MusicBeatState
 			{
 				case 128, 129, 130:
 					vocals.volume = 0;
-					// FlxG.sound.music.stop();
-					// Main.switchState(new PlayState());
 			}
 		}
 		// better streaming of shit
@@ -1526,13 +1497,6 @@ class PlayState extends MusicBeatState
 				// trace("RESET = True");
 			}
 
-			// CHEAT = brandon's a pussy
-			// if (controls.CHEAT)
-			// {
-			// 	health += 1;
-			// 	trace("User is cheating!");
-			// }
-
 			if (health <= 0 && !practiceMode)
 			{
 				persistentUpdate = false;
@@ -1542,11 +1506,9 @@ class PlayState extends MusicBeatState
 				vocals.stop();
 				FlxG.sound.music.stop();
 
-				deathCounter += 1;
+				deathCounter++;
 
 				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
-
-				// Main.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 				#if discord_rpc
 				// Game Over doesn't get his own variable because it's only used here
