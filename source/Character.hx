@@ -51,6 +51,7 @@ class Character extends FNFSprite
 	public var holdTimer:Float = 0;
 	public var noHoldDance:Bool = false;
 	public var holding:Bool = false;
+	public var canDance:Bool = true;
 
 	public var simpleIdle(get, never):Bool;
 
@@ -639,7 +640,14 @@ class Character extends FNFSprite
 
 			if (!noHoldDance && holdTimer >= Conductor.stepCrochet * singDuration * 0.0011)
 			{
-				dance();
+				/*if (canDance && animation.curAnim.name == 'hairBlow'){
+					canDance = false;
+				} else {
+					canDance = true;
+					dance();
+				}*/
+				if (canDance)
+					dance();
 				holdTimer = 0;
 			}
 
@@ -697,7 +705,8 @@ class Character extends FNFSprite
 				// do nothing LOL
 				default:
 					if ((!curCharacter.startsWith('gf') || !animation.curAnim.name.startsWith('hair'))
-						|| (curCharacter != 'tankman' || !animation.curAnim.name.endsWith('DOWN-alt')))
+						|| (curCharacter != 'tankman' || !animation.curAnim.name.endsWith('DOWN-alt')
+						&& canDance))
 					{
 						if (simpleIdle)
 							playAnim('idle');
