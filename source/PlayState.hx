@@ -2292,7 +2292,7 @@ class PlayState extends MusicBeatState
 		gf.playAnim('hairFall');
 		phillyTrain.x = FlxG.width + 200;
 		trainMoving = false;
-		gf.danceSpeed = 2;
+		gf.danceSpeed = 1;
 		// trainSound.stop();
 		// trainSound.time = 0;
 		trainCars = 8;
