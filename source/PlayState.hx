@@ -2266,7 +2266,6 @@ class PlayState extends MusicBeatState
 		{
 			startedMoving = true;
 			gf.playAnim('hairBlow');
-			gf.canDance = false;
 		}
 
 		if (startedMoving)
@@ -2290,7 +2289,6 @@ class PlayState extends MusicBeatState
 	function trainReset():Void
 	{
 		gf.playAnim('hairFall');
-		gf.canDance = true;
 		phillyTrain.x = FlxG.width + 200;
 		trainMoving = false;
 		// trainSound.stop();
