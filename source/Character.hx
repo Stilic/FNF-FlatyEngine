@@ -65,6 +65,8 @@ class Character extends FNFSprite
 
 	public var startedDeath:Bool = false;
 
+	public var blockDance:Bool = false;
+
 	public function new(x:Float, y:Float, character:String = "bf", isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -701,7 +703,7 @@ class Character extends FNFSprite
 					{
 						if (simpleIdle)
 							playAnim('idle');
-						else
+						else if (!blockDance)
 						{
 							danced = !danced;
 
