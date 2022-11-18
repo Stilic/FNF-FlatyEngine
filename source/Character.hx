@@ -688,7 +688,7 @@ class Character extends FNFSprite
 	 */
 	public function dance()
 	{
-		if (!debugMode)
+		if (!debugMode && !blockDance)
 		{
 			holding = false;
 
@@ -703,7 +703,7 @@ class Character extends FNFSprite
 					{
 						if (simpleIdle)
 							playAnim('idle');
-						else if (!blockDance)
+						else
 						{
 							danced = !danced;
 
