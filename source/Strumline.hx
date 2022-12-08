@@ -28,7 +28,7 @@ class Receptor extends FNFSprite
 		this.noteData = noteData;
 		this.downscroll = downscroll;
 
-		if (PlayState.curStage.startsWith('school'))
+		if (PlayState.isPixelStage)
 		{
 			loadGraphic(Paths.image('pixelUI/arrows-pixels'), true, 17, 17);
 
@@ -208,7 +208,7 @@ class Strumline extends FlxGroup
 		super.update(elapsed);
 
 		// i had to do this because of the change bpm stuff -stilic
-		var fakeStepCrochet:Float = ((60 / PlayState.SONG.bpm) * 1000) / 4;
+		var fakeCrochet:Float = (60 / PlayState.SONG.bpm) * 1000;
 		var roundedSpeed:Float = PlayState.instance != null ? FlxMath.roundDecimal(PlayState.instance.songSpeed, 2) : 1;
 		allNotes.forEachAlive(function(note:Note)
 		{
@@ -222,33 +222,37 @@ class Strumline extends FlxGroup
 			// overengineered bullshit bruh -stilic
 			if (note.isSustainNote && roundedSpeed != 1)
 			{
+				var fakeStepCrochet:Float = fakeCrochet / 4;
 				distance -= fakeStepCrochet;
 				distance += fakeStepCrochet / roundedSpeed;
 			}
 			distance = (0.45 * (receptor.downscroll ? 1 : -1)) * (Conductor.songPosition - distance) * roundedSpeed;
 			var angleDir:Float = (receptor.direction * Math.PI) / 180;
-			note.x = receptor.x + note.offsetX + Math.cos(angleDir) * distance;
-			note.y = receptor.y + note.offsetY + Math.sin(angleDir) * distance;
+			if (note.copyX)
+				note.x = receptor.x + note.offsetX + FlxMath.fastCos(angleDir) * distance;
+			if (note.copyY)
+				note.y = receptor.y + note.offsetY + FlxMath.fastSin(angleDir) * distance;
 
 			if (note.copyAngle)
-				note.angle = receptor.direction - 90 + receptor.angle + note.offsetAngle;
+			{
+				note.angle = receptor.direction - 90;
+				if (!note.isSustainNote)
+					note.angle += receptor.angle;
+				note.angle += note.offsetAngle;
+			}
 
 			if (note.isSustainNote)
 			{
 				if (receptor.downscroll)
 				{
-					// peak code from psych engine!
-					note.y += Note.swagWidth / 2 - (60.5 * (roundedSpeed - 1)) + 27.5 * (PlayState.SONG.bpm / 100 - 1) * (roundedSpeed - 1);
-
-					if (note.isSustainEnd && note.prevNote != null)
+					if (note.isSustainEnd)
 					{
-						if (note.sustainEndOffset == Math.NEGATIVE_INFINITY)
-							note.sustainEndOffset = note.prevNote.y - (note.y + note.height - 1);
-						note.y += note.sustainEndOffset;
+						note.y += 10.75 * (fakeCrochet / 400) * 1.5 * roundedSpeed + 46 * (roundedSpeed - 1) - 46 * (1 - fakeCrochet / 600) * roundedSpeed;
+						if (PlayState.isPixelStage)
+							note.y += 8;
 					}
+					note.y += Note.swagWidth / 2 - 60.5 * (roundedSpeed - 1) + 27.5 * (PlayState.SONG.bpm / 100 - 1) * (roundedSpeed - 1);
 				}
-				else
-					note.y -= Note.swagWidth / 10;
 
 				if (receptor.sustainReduce
 					&& (botplay || (note.wasGoodHit || (note.prevNote != null && note.prevNote.wasGoodHit && !note.canBeHit))))

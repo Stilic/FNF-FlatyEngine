@@ -18,7 +18,6 @@ class Note extends FlxSprite
 	public var isSustainNote:Bool = false;
 	public var isSustainEnd:Bool = false;
 	public var sustainLength:Float = 0;
-	public var sustainEndOffset:Float = Math.NEGATIVE_INFINITY;
 
 	public var prevNote(default, null):Note;
 	public var parentNote(default, null):Note;
@@ -44,6 +43,8 @@ class Note extends FlxSprite
 	public var offsetY:Float = 0;
 	public var offsetAngle:Float = 0;
 
+	public var copyX:Bool = true;
+	public var copyY:Bool = true;
 	public var copyAngle:Bool = true;
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, sustainNote:Bool = false)
@@ -164,7 +165,7 @@ class Note extends FlxSprite
 
 			offsetX -= width / 2;
 
-			if (PlayState.curStage.startsWith('school'))
+			if (PlayState.isPixelStage)
 				offsetX += 30;
 
 			if (prevNote.isSustainNote)

@@ -40,6 +40,7 @@ class PlayState extends MusicBeatState
 	public static var instance(default, null):PlayState;
 
 	public static var curStage:String = '';
+	public static var isPixelStage:Bool = false;
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
 	public static var storyWeek:Int = 0;
@@ -440,6 +441,7 @@ class PlayState extends MusicBeatState
 			case 'senpai' | 'roses':
 				{
 					curStage = 'school';
+					isPixelStage = true;
 
 					var bgSky = new FlxSprite().loadGraphic(Paths.image('weeb/weebSky'));
 					bgSky.scrollFactor.set(0.1, 0.1);
@@ -505,6 +507,7 @@ class PlayState extends MusicBeatState
 			case 'thorns':
 				{
 					curStage = 'schoolEvil';
+					isPixelStage = true;
 
 					var bg:FlxSprite = new FlxSprite(400, 200);
 					bg.frames = Paths.getSparrowAtlas('weeb/animatedEvilSchool');
@@ -750,7 +753,7 @@ class PlayState extends MusicBeatState
 		add(foregroundSprites);
 
 		var doof:DialogueBox = null;
-		if (curStage.startsWith('school'))
+		if (isPixelStage)
 		{
 			doof = new DialogueBox(false, dialogue);
 			// doof.x += 70;
@@ -1117,7 +1120,7 @@ class PlayState extends MusicBeatState
 					ready.scrollFactor.set();
 					ready.updateHitbox();
 
-					if (curStage.startsWith('school'))
+					if (isPixelStage)
 						ready.setGraphicSize(Std.int(ready.width * daPixelZoom));
 
 					ready.screenCenter();
@@ -1134,7 +1137,7 @@ class PlayState extends MusicBeatState
 					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
 					set.scrollFactor.set();
 
-					if (curStage.startsWith('school'))
+					if (isPixelStage)
 						set.setGraphicSize(Std.int(set.width * daPixelZoom));
 
 					set.screenCenter();
@@ -1151,7 +1154,7 @@ class PlayState extends MusicBeatState
 					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
 					go.scrollFactor.set();
 
-					if (curStage.startsWith('school'))
+					if (isPixelStage)
 						go.setGraphicSize(Std.int(go.width * daPixelZoom));
 
 					go.updateHitbox();
@@ -1760,7 +1763,7 @@ class PlayState extends MusicBeatState
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
 
-		if (curStage.startsWith('school'))
+		if (isPixelStage)
 		{
 			pixelShitPart1 = 'pixelUI/';
 			pixelShitPart2 = '-pixel';
@@ -1789,7 +1792,7 @@ class PlayState extends MusicBeatState
 		// 	insert(members.indexOf(opponentStrumline), comboSpr);
 		// }
 
-		if (!curStage.startsWith('school'))
+		if (!isPixelStage)
 		{
 			rating.setGraphicSize(Std.int(rating.width * 0.7));
 			rating.antialiasing = true;
@@ -1825,7 +1828,7 @@ class PlayState extends MusicBeatState
 				numScore.screenCenter(Y);
 				numScore.y += 80;
 
-				if (!curStage.startsWith('school'))
+				if (!isPixelStage)
 				{
 					numScore.antialiasing = true;
 					numScore.setGraphicSize(Std.int(numScore.width * 0.5));
@@ -2241,8 +2244,8 @@ class PlayState extends MusicBeatState
 		{
 			tankAngle += tankSpeed * FlxG.elapsed;
 			tankGround.angle = (tankAngle - 90 + 15);
-			tankGround.x = tankX + 1500 * Math.cos(Math.PI / 180 * (1 * tankAngle + 180));
-			tankGround.y = 1300 + 1100 * Math.sin(Math.PI / 180 * (1 * tankAngle + 180));
+			tankGround.x = tankX + 1500 * FlxMath.fastCos(Math.PI / 180 * (1 * tankAngle + 180));
+			tankGround.y = 1300 + 1100 * FlxMath.fastSin(Math.PI / 180 * (1 * tankAngle + 180));
 		}
 	}
 
