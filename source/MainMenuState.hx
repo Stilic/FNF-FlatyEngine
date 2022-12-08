@@ -21,7 +21,6 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import lime.app.Application;
 
 using StringTools;
 
@@ -114,7 +113,8 @@ class MainMenuState extends MusicBeatState
 			item.y = pos + (160 * i);
 		}
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "FNF v" + Application.current.meta.get('version') + " - Flaty Engine v" + version, 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "FNF v" + FlxG.stage.application.meta.get('version') + " - Flaty Engine v" + version,
+			12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);

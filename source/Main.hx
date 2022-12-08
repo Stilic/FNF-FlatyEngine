@@ -61,15 +61,20 @@ class Main extends Sprite
 		if (hasEventListener(Event.ADDED_TO_STAGE))
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 
+		FlxG.save.bind('funkin', CoolUtil.getSavePath());
+
 		#if polymod
 		ModHandler.init();
 		#end
 
+		#if (flixel < "5.0.0")
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
 		var zoom:Float = Math.min(stageWidth / gameWidth, stageHeight / gameHeight);
-		addChild(new FlxGame(Math.ceil(stageWidth / zoom), Math.ceil(stageHeight / zoom), initialState, zoom, framerate, framerate, skipSplash,
-			startFullscreen));
+		#end
+		addChild(new FlxGame(#if (flixel < "5.0.0") Math.ceil(stageWidth / zoom) #else gameWidth #end,
+			#if (flixel < "5.0.0") Math.ceil(stageHeight / zoom) #else gameHeight #end, initialState, #if (flixel < "5.0.0") zoom, #end framerate, framerate,
+			skipSplash, startFullscreen));
 
 		FlxG.mouse.visible = false;
 

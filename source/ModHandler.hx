@@ -28,7 +28,7 @@ class ModHandler
 	public static function init()
 	{
 		save = new FlxSave();
-		save.bind('mod_list', 'ninjamuffin99');
+		save.bind('mod_list', CoolUtil.getSavePath());
 
 		#if sys
 		if (!FileSystem.exists(MOD_DIRECTORY))

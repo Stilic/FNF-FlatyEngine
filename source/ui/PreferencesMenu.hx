@@ -110,7 +110,7 @@ class PreferencesMenu extends Page
 	public static function initPrefs()
 	{
 		save = new FlxSave();
-		save.bind('preferences', 'ninjamuffin99');
+		save.bind('preferences', CoolUtil.getSavePath());
 		if (save.data.preferences != null)
 			preferences = cast save.data.preferences;
 		for (pref in defaultPreferences)

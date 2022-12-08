@@ -10,13 +10,13 @@ import flixel.addons.transition.FlxTransitionableState;
 
 class StartState extends FlxState
 {
+	static var discordInitialized:Bool = false;
+
 	override function create()
 	{
 		#if windows
 		NativeUtil.enableDarkMode();
 		#end
-
-		FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		PlayerSettings.init();
 		Highscore.load();
@@ -38,16 +38,10 @@ class StartState extends FlxState
 				StoryMenuState.weekUnlocked[0] = true;
 		}
 
-		// gets your volume setting
-		if (FlxG.save.data.volume != null)
-			FlxG.sound.volume = FlxG.save.data.volume;
-		if (FlxG.save.data.mute != null)
-			FlxG.sound.muted = FlxG.save.data.mute;
-
 		#if discord_rpc
 		DiscordClient.initialize();
-		if (!Application.current.onExit.has(onExit))
-			Application.current.onExit.add(onExit);
+		if (!Application.current.window.onClose.has(DiscordClient.shutdown))
+			Application.current.window.onClose.add(DiscordClient.shutdown);
 		#end
 
 		if (!FlxG.signals.preStateCreate.has(onStateCreate))
@@ -57,17 +51,9 @@ class StartState extends FlxState
 
 		FlxTransitionableState.skipNextTransOut = true;
 		FlxG.switchState(new TitleState());
-		// LoadingState.loadAndSwitchState(new editors.CharacterEditorState());
 
 		FlxG.mouse.visible = false;
 	}
-
-	#if discord_rpc
-	static function onExit(exitCode:Int)
-	{
-		DiscordClient.shutdown();
-	}
-	#end
 
 	static function onStateCreate(state:FlxState)
 	{

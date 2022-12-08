@@ -7,6 +7,8 @@ using StringTools;
 
 class DiscordClient
 {
+	static var initialized:Bool = false;
+
 	public function new()
 	{
 		trace("Discord Client starting...");
@@ -55,11 +57,15 @@ class DiscordClient
 
 	public static function initialize()
 	{
-		var DiscordDaemon = sys.thread.Thread.create(() ->
+		if (!initialized)
 		{
-			new DiscordClient();
-		});
-		trace("Discord Client initialized");
+			sys.thread.Thread.create(() ->
+			{
+				new DiscordClient();
+			});
+			initialized = true;
+			trace("Discord Client initialized");
+		}
 	}
 
 	public static function changePresence(details:String, state:Null<String>, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float)
@@ -67,9 +73,7 @@ class DiscordClient
 		var startTimestamp:Float = if (hasStartTimestamp) Date.now().getTime() else 0;
 
 		if (endTimestamp > 0)
-		{
 			endTimestamp = startTimestamp + endTimestamp;
-		}
 
 		DiscordRpc.presence({
 			details: details,
