@@ -21,6 +21,7 @@ class OutdatedSubState extends MusicBeatState
 			+ "! Press Space to go to itch.io, or ESCAPE to ignore this!!", 32);
 		txt.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, CENTER);
 		txt.screenCenter();
+		txt.antialiasing = PreferencesMenu.getPref('antialiasing');
 		add(txt);
 		super.create();
 	}

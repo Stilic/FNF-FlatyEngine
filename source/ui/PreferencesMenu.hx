@@ -20,6 +20,7 @@ class PreferencesMenu extends Page
 		['auto pause', 'auto-pause', #if web false #else true #end],
 		#end
 		['gpu rendering', 'gpu-rendering', false],
+		['antialiasing', 'antialiasing', true],
 		#if !mobile
 		['fps counter', 'fps-counter', true], ['memory counter', 'mem-counter', true], ['memory peak counter', 'mem-peak-counter', true],
 		['objects counter', 'obj-counter', false]
@@ -47,6 +48,7 @@ class PreferencesMenu extends Page
 			'auto-pause',
 			#end
 			'gpu-rendering',
+			'antialiasing',
 			#if !mobile 'fps-counter', 'mem-counter', 'mem-peak-counter', 'obj-counter' #end
 		]
 	];

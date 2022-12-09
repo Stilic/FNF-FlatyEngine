@@ -62,7 +62,7 @@ class TitleState extends MusicBeatState
 		persistentUpdate = true;
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		// bg.antialiasing = true;
+		// bg.antialiasing = PreferencesMenu.getPref('antialiasing');
 		// bg.setGraphicSize(Std.int(bg.width * 0.6));
 		// bg.updateHitbox();
 		#if !html5
@@ -72,7 +72,7 @@ class TitleState extends MusicBeatState
 
 		logoBl = new FlxSprite(-150, -100);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
-		logoBl.antialiasing = true;
+		logoBl.antialiasing = PreferencesMenu.getPref('antialiasing');
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logoBl.animation.play('bump');
 		logoBl.updateHitbox();
@@ -84,7 +84,7 @@ class TitleState extends MusicBeatState
 		gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
 		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-		gfDance.antialiasing = true;
+		gfDance.antialiasing = PreferencesMenu.getPref('antialiasing');
 		add(gfDance);
 		gfDance.shader = swagShader.shader;
 		add(logoBl);
@@ -93,7 +93,7 @@ class TitleState extends MusicBeatState
 		titleText.frames = Paths.getSparrowAtlas('titleEnter');
 		titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
 		titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
-		titleText.antialiasing = true;
+		titleText.antialiasing = PreferencesMenu.getPref('antialiasing');
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
 		// titleText.screenCenter(X);
@@ -109,7 +109,7 @@ class TitleState extends MusicBeatState
 		engineLogo = new FlxSprite(0, 140).loadGraphic(Paths.image('engine_logo'));
 		engineLogo.screenCenter(X);
 		engineLogo.visible = false;
-		engineLogo.antialiasing = true;
+		engineLogo.antialiasing = PreferencesMenu.getPref('antialiasing');
 		add(engineLogo);
 
 		FlxG.mouse.visible = false;

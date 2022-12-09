@@ -59,7 +59,7 @@ class Receptor extends FNFSprite
 		{
 			frames = Paths.getSparrowAtlas('NOTE_assets');
 
-			antialiasing = true;
+			antialiasing = PreferencesMenu.getPref('antialiasing');
 			setGraphicSize(Std.int(width * 0.7));
 
 			switch (noteData)

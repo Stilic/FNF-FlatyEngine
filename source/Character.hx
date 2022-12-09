@@ -77,7 +77,7 @@ class Character extends FNFSprite
 		cameraMove = PreferencesMenu.getPref('camera-follow-char');
 
 		var tex:FlxAtlasFrames;
-		antialiasing = true;
+		antialiasing = PreferencesMenu.getPref('antialiasing');
 
 		switch (curCharacter)
 		{

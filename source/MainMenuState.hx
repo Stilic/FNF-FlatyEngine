@@ -54,7 +54,7 @@ class MainMenuState extends MusicBeatState
 		bg.setGraphicSize(Std.int(bg.width * 1.2));
 		bg.updateHitbox();
 		bg.screenCenter();
-		bg.antialiasing = true;
+		bg.antialiasing = PreferencesMenu.getPref('antialiasing');
 		add(bg);
 
 		magenta = new FlxSprite(null, null, Paths.image('menuDesat'));
@@ -65,7 +65,7 @@ class MainMenuState extends MusicBeatState
 		magenta.x = bg.x;
 		magenta.y = bg.y;
 		magenta.visible = false;
-		magenta.antialiasing = true;
+		magenta.antialiasing = PreferencesMenu.getPref('antialiasing');
 		magenta.color = 0xFFFD719B;
 		if (PreferencesMenu.getPref('flashing-menu'))
 		{

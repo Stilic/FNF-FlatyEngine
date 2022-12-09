@@ -11,7 +11,7 @@ class WeekItem extends FlxSprite
 	{
 		super(x, y);
 		loadGraphic(Paths.image('storymenu/week' + weekNum));
-		antialiasing = true;
+		antialiasing = PreferencesMenu.getPref('antialiasing');
 	}
 
 	private var isFlashing:Bool = false;
