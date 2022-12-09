@@ -15,7 +15,7 @@ class MenuItem extends FlxSprite
 	public function new(?x:Float = 0, ?y:Float = 0, name:String, ?callback:Void->Void)
 	{
 		super(x, y);
-		antialiasing = true;
+		antialiasing = PreferencesMenu.getPref('antialiasing');
 		setData(name, callback);
 		idle();
 	}

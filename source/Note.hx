@@ -112,7 +112,7 @@ class Note extends FlxSprite
 				}
 
 				setGraphicSize(Std.int(width * 0.7));
-				antialiasing = true;
+				antialiasing = PreferencesMenu.getPref('antialiasing');
 		}
 		updateHitbox();
 

@@ -16,7 +16,7 @@ class HealthIcon extends AttachedSprite
 		this.canBounce = canBounce;
 		offsetY = -30;
 		changeIcon(char);
-		antialiasing = true;
+		antialiasing = PreferencesMenu.getPref('antialiasing');
 	}
 
 	override function update(elapsed:Float)

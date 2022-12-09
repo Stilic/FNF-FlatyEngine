@@ -44,7 +44,7 @@ class LoadingState extends MusicBeatState
 		funkay.loadGraphic(Paths.image('funkay'));
 		funkay.setGraphicSize(0, FlxG.height);
 		funkay.updateHitbox();
-		funkay.antialiasing = true;
+		funkay.antialiasing = PreferencesMenu.getPref('antialiasing');
 		add(funkay);
 		funkay.scrollFactor.set();
 		funkay.screenCenter();

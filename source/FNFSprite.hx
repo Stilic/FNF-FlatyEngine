@@ -11,6 +11,8 @@ class FNFSprite extends FlxSprite
 	{
 		super(X, Y, SimpleGraphic);
 		animOffsets = new Map<String, Array<Float>>();
+
+		antialiasing = PreferencesMenu.getPref('antialiasing');
 	}
 
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void

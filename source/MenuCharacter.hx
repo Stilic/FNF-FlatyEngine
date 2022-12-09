@@ -28,6 +28,6 @@ class MenuCharacter extends FlxSprite
 
 		animation.play(character);
 		updateHitbox();
-		antialiasing = true;
+		antialiasing = PreferencesMenu.getPref('antialiasing');
 	}
 }
