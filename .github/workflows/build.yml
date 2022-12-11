@@ -127,7 +127,6 @@ jobs:
           haxelib install flixel-addons
           haxelib install flxanimate
           haxelib install hxCodec
-          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
       - name: Compile
         run: haxelib run lime build html5
       - name: Deploy
