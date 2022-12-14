@@ -166,9 +166,9 @@ class Cache
 	{
 		AtlasText.clearCache();
 
-		for (key => shoudRemove in persistantAssets)
+		for (key => shouldRemove in persistantAssets)
 		{
-			if (shoudRemove)
+			if (shouldRemove)
 				persistantAssets.remove(key);
 		}
 
