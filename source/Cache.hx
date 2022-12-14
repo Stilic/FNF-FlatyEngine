@@ -219,9 +219,9 @@ class Cache
 		if (FlxG.sound.music != null && FlxG.sound.music._sound != null && !usedSounds.contains(FlxG.sound.music._sound))
 			usedSounds.push(FlxG.sound.music._sound);
 
-		for (key in sounds.keys())
+		for (key => sound in sounds)
 		{
-			if (!usedSounds.contains(sounds.get(key)) && !isPersistant(key))
+			if (!usedSounds.contains(sound) && !isPersistant(key))
 				removeSound(key);
 		}
 	}
