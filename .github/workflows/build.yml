@@ -19,8 +19,7 @@ jobs:
           haxe-version: 4.2.5
       - name: Install Haxelib
         run: |
-          sudo apt-get install libvlc-dev
-          sudo apt-get install libvlccore-dev
+          sudo apt-get install libvlc-dev libvlccore-dev vlc glibc-source libidn-dev libidn12
           haxelib setup ~/haxelib
           haxelib install lime
           haxelib install openfl
